@@ -8,6 +8,9 @@ class UntranslatableFieldException(Exception):
 class UpdateException(Exception):
     pass
 
+class IncorrectVersionException(Exception):
+    pass
+
 
 def get_ns_alias(root, ns):
     """Returns the XML Namespace alias defined for a namespace in a given

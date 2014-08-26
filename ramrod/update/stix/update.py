@@ -1,5 +1,7 @@
 from ramrod.update import (UnknownVersionException,
-    UntranslatableFieldException, UpdateException)
+    UntranslatableFieldException, UpdateException, IncorrectVersionException)
+
+STIX_VERSIONS = ('1.0', '1.0.1', '1.1', '1.1.1')
 
 class STIX_1_0_Updater(object):
     def __init__(self):
@@ -44,6 +46,19 @@ class STIX_1_0_Updater(object):
         pass
 
     def update(self, root, force=False):
+        """Attempts to update an input STIX v1.0 document to STIX v1.0.1
+
+        Args:
+            root: TODO fill out
+            force: TODO fill out
+
+        Returns:
+            None
+
+        Raises:
+            IncorrectVersionException: TODO fill out
+        
+        """
         pass
 
 
