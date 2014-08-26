@@ -1,11 +1,11 @@
 from ramrod.update import (UnknownVersionException,
     UntranslatableFieldException, UpdateException)
 
-class STIXUpdater(object):
+class STIX_1_0_Updater(object):
     def __init__(self):
         pass
 
-    def can_update_1_0(self, root):
+    def can_update(self, root):
         """Determines if the input document can be upgraded from STIX v1.0 to
         STIX v1.0.1.
 
@@ -40,15 +40,25 @@ class STIXUpdater(object):
 
         return True
 
+    def clean(self, root):
+        pass
 
-    def can_update_1_0_1(self, root):
-         """Determines if the input document can be upgraded from STIX v1.0.1
-         to STIX v1.1.
+    def update(self, root, force=False):
+        pass
+
+
+class STIX_1_0_1_Updater(object):
+    def __init__(self):
+        pass
+
+    def can_update(self, root):
+        """Determines if the input document can be upgraded from STIX v1.0.1
+        to STIX v1.1.
 
         A STIX document cannot be upgraded if any of the following constructs
         are found in the document:
 
-        * TODO: Add constructs
+         * TODO: Add constructs
 
         Args:
             root (lxml.etree._Element): The top-level node of the STIX
@@ -59,9 +69,20 @@ class STIXUpdater(object):
 
         """
 
-    def can_update_1_1(self, root):
+    def clean(self, root):
+        pass
+
+    def update(self, root, force=False):
+        pass
+
+
+class STIX_1_1_Updater(object):
+    def __init__(self):
+        pass
+
+    def can_update(self, root):
         """Determines if the input document can be upgraded from STIX v1.1
-         to STIX v1.1.1.
+        to STIX v1.1.1.
 
         A STIX document cannot be upgraded if any of the following constructs
         are found in the document:
@@ -77,22 +98,12 @@ class STIXUpdater(object):
 
         """
 
-    def update_stix_1_0(self, root):
-        return True
+    def clean(self, root):
+        pass
 
-    def update_stix_1_0_1(self, root):
-        return True
+    def update(self, root, force=False):
+        pass
 
-    def update_stix_1_1(self, root):
-        return True
 
-    def can_update(self, root, version='1.1.1'):
-        return True
-
-    def update_stix(self, root, version='1.1.1'):
-        self.can_update(root, version)
-
-        try:
-            version = root.attrib['version']
-        except:
-            pass
+def update(doc, version='1.1.1', force=False):
+    pass
