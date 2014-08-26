@@ -43,21 +43,37 @@ class STIX_1_0_Updater(object):
         return True
 
     def clean(self, root):
+        """Attempts to remove untranslatable fields from the input document.
+
+        Args:
+            root: TODO fill out
+
+        Returns:
+            list: A list of lxml.etree._Element instances of objects removed
+            from the input document.
+
+        """
         pass
 
     def update(self, root, force=False):
         """Attempts to update an input STIX v1.0 document to STIX v1.0.1
 
         Args:
-            root: TODO fill out
-            force: TODO fill out
+            root (lxml.etree._Element): The top-level node of the STIX
+                document.
+            force: If True, untranslatable fields are removed from the input
+                document. If False, an UntranslateableFieldException is raised
+                when an untranslatable field is encountered.
 
         Returns:
             None
 
         Raises:
             IncorrectVersionException: TODO fill out
-        
+            UntranslatableFieldException: Raised if ``force`` is set to
+                ``False`` and an untranslatable field is encountered in the
+                input document.
+
         """
         pass
 
