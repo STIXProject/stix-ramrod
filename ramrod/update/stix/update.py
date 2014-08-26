@@ -7,6 +7,7 @@ class STIX_1_0_Updater(object):
     def __init__(self):
         pass
 
+
     def can_update(self, root):
         """Determines if the input document can be upgraded from STIX v1.0 to
         STIX v1.0.1.
@@ -42,6 +43,7 @@ class STIX_1_0_Updater(object):
 
         return True
 
+
     def clean(self, root):
         """Attempts to remove untranslatable fields from the input document.
 
@@ -54,6 +56,7 @@ class STIX_1_0_Updater(object):
 
         """
         pass
+
 
     def update(self, root, force=False):
         """Attempts to update an input STIX v1.0 document to STIX v1.0.1
@@ -82,6 +85,7 @@ class STIX_1_0_1_Updater(object):
     def __init__(self):
         pass
 
+
     def can_update(self, root):
         """Determines if the input document can be upgraded from STIX v1.0.1
         to STIX v1.1.
@@ -102,6 +106,7 @@ class STIX_1_0_1_Updater(object):
 
     def clean(self, root):
         pass
+
 
     def update(self, root, force=False):
         pass
@@ -131,6 +136,7 @@ class STIX_1_1_Updater(object):
 
     def clean(self, root):
         pass
+
 
     def update(self, root, force=False):
         pass
