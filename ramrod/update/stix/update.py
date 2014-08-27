@@ -7,30 +7,31 @@ from ramrod.update import (UnknownVersionException,
 STIX_VERSIONS = ('1.0', '1.0.1', '1.1', '1.1.1')
 
 class STIX_1_0_Updater(object):
-    NSMAP = {'http://data-marking.mitre.org/Marking-1': 'marking',
-             'http://data-marking.mitre.org/extensions/MarkingStructure#Simple-1': 'simpleMarking',
-             'http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1': 'tlpMarking',
-             'http://stix.mitre.org/Campaign-1': 'campaign',
-             'http://stix.mitre.org/CourseOfAction-1': 'coa',
-             'http://stix.mitre.org/ExploitTarget-1': 'et',
-             'http://stix.mitre.org/Incident-1': 'incident',
-             'http://stix.mitre.org/Indicator-2': 'indicator',
-             'http://stix.mitre.org/TTP-1': 'ttp',
-             'http://stix.mitre.org/ThreatActor-1': 'ta',
-             'http://stix.mitre.org/common-1': 'stixCommon',
-             'http://stix.mitre.org/default_vocabularies-1': 'stixVocabs',
-             'http://stix.mitre.org/extensions/AP#CAPEC2.5-1': 'capecAP',
-             'http://stix.mitre.org/extensions/Address#CIQAddress3.0-1': 'ciqAddress',
-             'http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1': 'ciqIdentity',
-             'http://stix.mitre.org/extensions/Malware#MAEC4.0-1': 'maecMalware',
-             'http://stix.mitre.org/extensions/StructuredCOA#Generic-1': 'genericStructuredCOA',
-             'http://stix.mitre.org/extensions/TestMechanism#Generic-1': 'genericTM',
-             'http://stix.mitre.org/extensions/TestMechanism#OVAL5.10-1': 'ovalTM',
-             'http://stix.mitre.org/extensions/TestMechanism#OpenIOC2010-1': 'openiocTM',
-             'http://stix.mitre.org/extensions/TestMechanism#Snort-1': 'snortTM',
-             'http://stix.mitre.org/extensions/TestMechanism#YARA-1': 'yaraTM',
-             'http://stix.mitre.org/extensions/Vulnerability#CVRF-1': 'vulnCVRF',
-             'http://stix.mitre.org/stix-1': 'stix'}
+    NSMAP = {'campaign': 'http://stix.mitre.org/Campaign-1',
+             'stix-capec': 'http://stix.mitre.org/extensions/AP#CAPEC2.5-1',
+             'ciqAddress': 'http://stix.mitre.org/extensions/Address#CIQAddress3.0-1',
+             'stix-ciq': 'http://stix.mitre.org/extensions/Identity#stix-ciq3.0-1',
+             'coa': 'http://stix.mitre.org/CourseOfAction-1',
+             'et': 'http://stix.mitre.org/ExploitTarget-1',
+             'genericStructuredCOA': 'http://stix.mitre.org/extensions/StructuredCOA#Generic-1',
+             'genericTM': 'http://stix.mitre.org/extensions/TestMechanism#Generic-1',
+             'incident': 'http://stix.mitre.org/Incident-1',
+             'indicator': 'http://stix.mitre.org/Indicator-2',
+             'stix-maec': 'http://stix.mitre.org/extensions/Malware#MAEC4.0-1',
+             'marking': 'http://data-marking.mitre.org/Marking-1',
+             'stix-openioc': 'http://stix.mitre.org/extensions/TestMechanism#OpenIOC2010-1',
+             'stix-oval': 'http://stix.mitre.org/extensions/TestMechanism#OVAL5.10-1',
+             'simpleMarking': 'http://data-marking.mitre.org/extensions/MarkingStructure#Simple-1',
+             'snortTM': 'http://stix.mitre.org/extensions/TestMechanism#Snort-1',
+             'stix': 'http://stix.mitre.org/stix-1',
+             'stixCommon': 'http://stix.mitre.org/common-1',
+             'stixVocabs': 'http://stix.mitre.org/default_vocabularies-1',
+             'ta': 'http://stix.mitre.org/ThreatActor-1',
+             'tlpMarking': 'http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1',
+             'ttp': 'http://stix.mitre.org/TTP-1',
+             'stix-cvrf': 'http://stix.mitre.org/extensions/Vulnerability#CVRF-1',
+             'yaraTM': 'http://stix.mitre.org/extensions/TestMechanism#YARA-1'}
+
 
     def __init__(self):
         pass
@@ -60,7 +61,7 @@ class STIX_1_0_Updater(object):
         nodes = root.xpath(xpath, namespaces=nsmap)
 
         disallowed = ("MAEC4.0InstanceType", "CAPEC2.5InstanceType",
-                      "CIQIdentity3.0InstanceType")
+                      "stix-ciq3.0InstanceType")
 
         for node in nodes:
             xsi_type = node.attrib["{http://www.w3.org/2001/XMLSchema-instance}type"]
@@ -89,7 +90,7 @@ class STIX_1_0_Updater(object):
         nodes = root.xpath(xpath, namespaces=nsmap)
 
         disallowed = ("MAEC4.0InstanceType", "CAPEC2.5InstanceType",
-                      "CIQIdentity3.0InstanceType")
+                      "stix-ciq3.0InstanceType")
 
         for node in nodes:
             xsi_type = node.attrib["{http://www.w3.org/2001/XMLSchema-instance}type"]
@@ -146,7 +147,6 @@ class STIX_1_0_Updater(object):
                 input document.
 
         """
-
         xpath_versions = ("//indicator:Indicator[@version] | "
                           "stix:Indicator[@version] | "
                           "stixCommon:Indicator[@version] | "
@@ -169,7 +169,7 @@ class STIX_1_0_Updater(object):
                           "stix:Exploit_Target[@version] | "
                           "stixCommon:Exploit_Target[@version]")
 
-        nodes = root.xpath(xpath_versions, namespaces=nsmap)
+        nodes = root.xpath(xpath_versions, namespaces=self.NSMAP)
 
 
 
@@ -178,30 +178,31 @@ class STIX_1_0_Updater(object):
 
 
 class STIX_1_0_1_Updater(object):
-    NSMAP = {'http://data-marking.mitre.org/Marking-1': 'marking',
-             'http://data-marking.mitre.org/extensions/MarkingStructure#Simple-1': 'simpleMarking',
-             'http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1': 'tlpMarking',
-             'http://stix.mitre.org/Campaign-1': 'campaign',
-             'http://stix.mitre.org/CourseOfAction-1': 'coa',
-             'http://stix.mitre.org/ExploitTarget-1': 'et',
-             'http://stix.mitre.org/Incident-1': 'incident',
-             'http://stix.mitre.org/Indicator-2': 'indicator',
-             'http://stix.mitre.org/TTP-1': 'ttp',
-             'http://stix.mitre.org/ThreatActor-1': 'ta',
-             'http://stix.mitre.org/common-1': 'stixCommon',
-             'http://stix.mitre.org/default_vocabularies-1': 'stixVocabs',
-             'http://stix.mitre.org/extensions/AP#CAPEC2.6-1': 'capecAP',
-             'http://stix.mitre.org/extensions/Address#CIQAddress3.0-1': 'ciqAddress',
-             'http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1': 'stix-ciq',
-             'http://stix.mitre.org/extensions/Malware#MAEC4.0-1': 'maecMalware',
-             'http://stix.mitre.org/extensions/StructuredCOA#Generic-1': 'genericStructuredCOA',
-             'http://stix.mitre.org/extensions/TestMechanism#Generic-1': 'genericTM',
-             'http://stix.mitre.org/extensions/TestMechanism#OVAL5.10-1': 'ovalTM',
-             'http://stix.mitre.org/extensions/TestMechanism#OpenIOC2010-1': 'openiocTM',
-             'http://stix.mitre.org/extensions/TestMechanism#Snort-1': 'snortTM',
-             'http://stix.mitre.org/extensions/TestMechanism#YARA-1': 'yaraTM',
-             'http://stix.mitre.org/extensions/Vulnerability#CVRF-1': 'vulnCVRF',
-             'http://stix.mitre.org/stix-1': 'stix'}
+    NSMAP = {'campaign': 'http://stix.mitre.org/Campaign-1',
+             'stix-capec': 'http://stix.mitre.org/extensions/AP#CAPEC2.6-1',
+             'ciqAddress': 'http://stix.mitre.org/extensions/Address#CIQAddress3.0-1',
+             'coa': 'http://stix.mitre.org/CourseOfAction-1',
+             'et': 'http://stix.mitre.org/ExploitTarget-1',
+             'genericStructuredCOA': 'http://stix.mitre.org/extensions/StructuredCOA#Generic-1',
+             'genericTM': 'http://stix.mitre.org/extensions/TestMechanism#Generic-1',
+             'incident': 'http://stix.mitre.org/Incident-1',
+             'indicator': 'http://stix.mitre.org/Indicator-2',
+             'stix-maec': 'http://stix.mitre.org/extensions/Malware#MAEC4.0-1',
+             'marking': 'http://data-marking.mitre.org/Marking-1',
+             'stix-openioc': 'http://stix.mitre.org/extensions/TestMechanism#OpenIOC2010-1',
+             'stix-oval': 'http://stix.mitre.org/extensions/TestMechanism#OVAL5.10-1',
+             'simpleMarking': 'http://data-marking.mitre.org/extensions/MarkingStructure#Simple-1',
+             'snortTM': 'http://stix.mitre.org/extensions/TestMechanism#Snort-1',
+             'stix': 'http://stix.mitre.org/stix-1',
+             'stix-ciq': 'http://stix.mitre.org/extensions/Identity#stix-ciq3.0-1',
+             'stixCommon': 'http://stix.mitre.org/common-1',
+             'stixVocabs': 'http://stix.mitre.org/default_vocabularies-1',
+             'ta': 'http://stix.mitre.org/ThreatActor-1',
+             'tlpMarking': 'http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1',
+             'ttp': 'http://stix.mitre.org/TTP-1',
+             'stix-cvrf': 'http://stix.mitre.org/extensions/Vulnerability#CVRF-1',
+             'yaraTM': 'http://stix.mitre.org/extensions/TestMechanism#YARA-1'}
+
 
     def __init__(self):
         pass
@@ -234,31 +235,32 @@ class STIX_1_0_1_Updater(object):
 
 
 class STIX_1_1_Updater(object):
-    NSMAP = {'http://data-marking.mitre.org/Marking-1': 'marking',
-             'http://data-marking.mitre.org/extensions/MarkingStructure#Simple-1': 'simpleMarking',
-             'http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1': 'tlpMarking',
-             'http://data-marking.mitre.org/extensions/MarkingStructure#Terms_Of_Use-1': 'TOUMarking',
-             'http://stix.mitre.org/Campaign-1': 'campaign',
-             'http://stix.mitre.org/CourseOfAction-1': 'coa',
-             'http://stix.mitre.org/ExploitTarget-1': 'et',
-             'http://stix.mitre.org/Incident-1': 'incident',
-             'http://stix.mitre.org/Indicator-2': 'indicator',
-             'http://stix.mitre.org/TTP-1': 'ttp',
-             'http://stix.mitre.org/ThreatActor-1': 'ta',
-             'http://stix.mitre.org/common-1': 'stixCommon',
-             'http://stix.mitre.org/default_vocabularies-1': 'stixVocabs',
-             'http://stix.mitre.org/extensions/AP#CAPEC2.7-1': 'stix-capec',
-             'http://stix.mitre.org/extensions/Address#CIQAddress3.0-1': 'stix-ciqaddress',
-             'http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1': 'stix-ciqidentity',
-             'http://stix.mitre.org/extensions/Malware#MAEC4.1-1': 'stix-maec',
-             'http://stix.mitre.org/extensions/StructuredCOA#Generic-1': 'genericStructuredCOA',
-             'http://stix.mitre.org/extensions/TestMechanism#Generic-1': 'genericTM',
-             'http://stix.mitre.org/extensions/TestMechanism#OVAL5.10-1': 'stix-oval',
-             'http://stix.mitre.org/extensions/TestMechanism#OpenIOC2010-1': 'stix-openioc',
-             'http://stix.mitre.org/extensions/TestMechanism#Snort-1': 'snortTM',
-             'http://stix.mitre.org/extensions/TestMechanism#YARA-1': 'yaraTM',
-             'http://stix.mitre.org/extensions/Vulnerability#CVRF-1': 'stix-cvrf',
-             'http://stix.mitre.org/stix-1': 'stix'}
+    NSMAP = {'TOUMarking': 'http://data-marking.mitre.org/extensions/MarkingStructure#Terms_Of_Use-1',
+             'campaign': 'http://stix.mitre.org/Campaign-1',
+             'coa': 'http://stix.mitre.org/CourseOfAction-1',
+             'et': 'http://stix.mitre.org/ExploitTarget-1',
+             'genericStructuredCOA': 'http://stix.mitre.org/extensions/StructuredCOA#Generic-1',
+             'genericTM': 'http://stix.mitre.org/extensions/TestMechanism#Generic-1',
+             'incident': 'http://stix.mitre.org/Incident-1',
+             'indicator': 'http://stix.mitre.org/Indicator-2',
+             'marking': 'http://data-marking.mitre.org/Marking-1',
+             'simpleMarking': 'http://data-marking.mitre.org/extensions/MarkingStructure#Simple-1',
+             'snortTM': 'http://stix.mitre.org/extensions/TestMechanism#Snort-1',
+             'stix': 'http://stix.mitre.org/stix-1',
+             'stix-capec': 'http://stix.mitre.org/extensions/AP#CAPEC2.7-1',
+             'stix-ciqaddress': 'http://stix.mitre.org/extensions/Address#CIQAddress3.0-1',
+             'stix-stix-ciq': 'http://stix.mitre.org/extensions/Identity#stix-ciq3.0-1',
+             'stix-cvrf': 'http://stix.mitre.org/extensions/Vulnerability#CVRF-1',
+             'stix-maec': 'http://stix.mitre.org/extensions/Malware#MAEC4.1-1',
+             'stix-openioc': 'http://stix.mitre.org/extensions/TestMechanism#OpenIOC2010-1',
+             'stix-oval': 'http://stix.mitre.org/extensions/TestMechanism#OVAL5.10-1',
+             'stixCommon': 'http://stix.mitre.org/common-1',
+             'stixVocabs': 'http://stix.mitre.org/default_vocabularies-1',
+             'ta': 'http://stix.mitre.org/ThreatActor-1',
+             'tlpMarking': 'http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1',
+             'ttp': 'http://stix.mitre.org/TTP-1',
+             'yaraTM': 'http://stix.mitre.org/extensions/TestMechanism#YARA-1'}
+
 
     def __init__(self):
         pass
