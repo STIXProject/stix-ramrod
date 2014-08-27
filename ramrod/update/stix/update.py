@@ -1,7 +1,6 @@
 import copy
-from collections import
 
-from ramrod.update import (UnknownVersionException,
+from ramrod.update import (NS_XSI, TAG_XSI_TYPE, UnknownVersionException,
     UntranslatableFieldException, UpdateException, IncorrectVersionException)
 
 STIX_VERSIONS = ('1.0', '1.0.1', '1.1', '1.1.1')
@@ -64,7 +63,7 @@ class STIX_1_0_Updater(object):
                       "stix-ciq3.0InstanceType")
 
         for node in nodes:
-            xsi_type = node.attrib["{http://www.w3.org/2001/XMLSchema-instance}type"]
+            xsi_type = node.attrib[TAG_XSI_TYPE]
             type_ = xsi_type.split(":")[1]
 
             if type_ in disallowed:
@@ -85,7 +84,7 @@ class STIX_1_0_Updater(object):
 
         """
         removed = []
-        nsmap = {"xsi":  "http://www.w3.org/2001/XMLSchema-instance"}
+        nsmap = {"xsi":  NS_XSI}
         xpath = "//*[@xsi:type]"
         nodes = root.xpath(xpath, namespaces=nsmap)
 
@@ -93,7 +92,7 @@ class STIX_1_0_Updater(object):
                       "stix-ciq3.0InstanceType")
 
         for node in nodes:
-            xsi_type = node.attrib["{http://www.w3.org/2001/XMLSchema-instance}type"]
+            xsi_type = node.attrib[TAG_XSI_TYPE]
             type_ = xsi_type.split(":")[1]
 
             if type_ in disallowed:
@@ -103,6 +102,55 @@ class STIX_1_0_Updater(object):
                 parent.remove(node)
 
         return removed
+
+
+    def _update_versions(self, root):
+        xpath_versions = ("//indicator:Indicator[@version] | "
+                          "stix:Indicator[@version] | "
+                          "stixCommon:Indicator[@version] | "
+                          "incident:Incident[@version] | "
+                          "stix:Incident[@version] | "
+                          "stixCommon:Incident[@version] | "
+                          "ttp:TTP[@version] | "
+                          "stix:TTP[@version] | "
+                          "stixCommon:TTP[@version] | "
+                          "coa:Course_Of_Action[@version] | "
+                          "stix:Course_Of_Action[@version] | "
+                          "stixCommon:Course_Of_Action[@version] |"
+                          "ta:Threat_Actor[@version]| "
+                          "stix:Threat_Actor[@version] | "
+                          "stixCommon:Threat_Actor[@version] | "
+                          "campaign:Campaign[@version] | "
+                          "stix:Campaign[@version] | "
+                          "stixCommon:Campaign[@version] | "
+                          "et:Exploit_Target[@version] | "
+                          "stix:Exploit_Target[@version] | "
+                          "stixCommon:Exploit_Target[@version]")
+
+        nodes = root.xpath(xpath_versions, namespaces=self.NSMAP)
+        for node in nodes:
+            tag = node.tag
+            name = tag[tag.index("}")+1:]
+
+            if name == "Indicator":
+                node.attrib['version'] = '2.0.1'
+            else:
+                node.attrib['version'] = '1.0.1'
+
+    def _update_vocabs(self, root):
+        vocabs = ('MotivationVocab-1.0',
+                  'PlanningAndOperationalSupportVocab-1.0')
+        nsmap = {"xsi":  NS_XSI}
+        xpath = "//*[@xsi:type]"
+        nodes = root.xpath(xpath, namespaces=nsmap)
+
+        for node in nodes:
+            xsi_type = node.attrib[TAG_XSI_TYPE]
+            type_ = xsi_type.split(":")[1]
+
+            if type_ in vocabs:
+                new_type = type_ + ".1"
+
 
 
     def update(self, root, force=False):
@@ -147,29 +195,8 @@ class STIX_1_0_Updater(object):
                 input document.
 
         """
-        xpath_versions = ("//indicator:Indicator[@version] | "
-                          "stix:Indicator[@version] | "
-                          "stixCommon:Indicator[@version] | "
-                          "incident:Incident[@version] | "
-                          "stix:Incident[@version] | "
-                          "stixCommon:Incident[@version] | "
-                          "ttp:TTP[@version] | "
-                          "stix:TTP[@version] | "
-                          "stixCommon:TTP[@version] | "
-                          "coa:Course_Of_Action[@version] | "
-                          "stix:Course_Of_Action[@version] | "
-                          "stixCommon:Course_Of_Action[@version] |"
-                          "ta:Threat_Actor[@version]| "
-                          "stix:Threat_Actor[@version] | "
-                          "stixCommon:Threat_Actor[@version] | "
-                          "campaign:Campaign[@version] | "
-                          "stix:Campaign[@version] | "
-                          "stixCommon:Campaign[@version] | "
-                          "et:Exploit_Target[@version] | "
-                          "stix:Exploit_Target[@version] | "
-                          "stixCommon:Exploit_Target[@version]")
-
-        nodes = root.xpath(xpath_versions, namespaces=self.NSMAP)
+        self._update_versions(root)
+        self._update_vocabs(root)
 
 
 
