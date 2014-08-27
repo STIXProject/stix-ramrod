@@ -138,18 +138,34 @@ class STIX_1_0_Updater(object):
                 node.attrib['version'] = '1.0.1'
 
     def _update_vocabs(self, root):
-        vocabs = ('MotivationVocab-1.0',
-                  'PlanningAndOperationalSupportVocab-1.0')
+        vocabs = {
+            'MotivationVocab-1.0': 'MotivationVocab-1.0.1',
+            'PlanningAndOperationalSupportVocab-1.0': 'PlanningAndOperationalSupportVocab-1.0.1'
+        }
+
+        values = {
+            "Ideological - Anti-Establisment": "Ideological - Anti-Establishment",
+            "Planning - Open-Source Intelligence (OSINT) Gethering": "Planning - Open-Source Intelligence (OSINT) Gathering"
+        }
+
         nsmap = {"xsi":  NS_XSI}
         xpath = "//*[@xsi:type]"
         nodes = root.xpath(xpath, namespaces=nsmap)
 
         for node in nodes:
             xsi_type = node.attrib[TAG_XSI_TYPE]
-            type_ = xsi_type.split(":")[1]
+            alias, type_ = xsi_type.split(":")
 
             if type_ in vocabs:
-                new_type = type_ + ".1"
+                # Update the xsi:type attribute to identify the new
+                # controlled vocabulary
+                new_xsi_type = "%s:%s" % (alias, vocabs[type_])
+                node.attrib[TAG_XSI_TYPE] = new_xsi_type
+
+                # Update the node value if there is a new value in the updated
+                # controlled vocabulary
+                value = node.text
+                node.text = values.get(value, value)
 
 
 
