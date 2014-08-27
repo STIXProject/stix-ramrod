@@ -1,4 +1,8 @@
 
+
+NS_XSI = "http://www.w3.org/2001/XMLSchema-instance"
+TAG_XSI_TYPE = "{http://www.w3.org/2001/XMLSchema-instance}type"
+
 class UnknownVersionException(Exception):
     pass
 
