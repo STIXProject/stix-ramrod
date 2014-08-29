@@ -1,11 +1,12 @@
 import copy
 
-from ramrod.update import (NS_XSI, TAG_XSI_TYPE, UnknownVersionException,
-    UntranslatableFieldException, UpdateException, IncorrectVersionException)
+from ramrod.update import *
 
 STIX_VERSIONS = ('1.0', '1.0.1', '1.1', '1.1.1')
 
+
 class STIX_1_0_Updater(object):
+    STIX_VERSION = '1.0'
     NSMAP = {'campaign': 'http://stix.mitre.org/Campaign-1',
              'stix-capec': 'http://stix.mitre.org/extensions/AP#CAPEC2.5-1',
              'ciqAddress': 'http://stix.mitre.org/extensions/Address#CIQAddress3.0-1',
@@ -33,10 +34,29 @@ class STIX_1_0_Updater(object):
 
 
     def __init__(self):
-        pass
+        self.cleaned_fields = ()
 
 
-    def can_update(self, root, remove=False):
+    def _get_disallowed(self, root):
+        nsmap = {"xsi":  "http://www.w3.org/2001/XMLSchema-instance"}
+        xpath = "//*[@xsi:type]"
+        nodes = root.xpath(xpath, namespaces=nsmap)
+
+        disallowed = ("MAEC4.0InstanceType", "CAPEC2.5InstanceType",
+                      "stix-ciq3.0InstanceType")
+
+        instances = []
+        for node in nodes:
+            xsi_type = node.attrib[TAG_XSI_TYPE]
+            type_ = xsi_type.split(":")[1]
+
+            if type_ in disallowed:
+                instances.append(type_)
+
+        return instances
+
+
+    def can_update(self, root):
         """Determines if the input document can be upgraded from STIX v1.0 to
         STIX v1.0.1.
 
@@ -55,21 +75,9 @@ class STIX_1_0_Updater(object):
             bool: True if the document can be updated, False otherwise.
 
         """
-        nsmap = {"xsi":  "http://www.w3.org/2001/XMLSchema-instance"}
-        xpath = "//*[@xsi:type]"
-        nodes = root.xpath(xpath, namespaces=nsmap)
 
-        disallowed = ("MAEC4.0InstanceType", "CAPEC2.5InstanceType",
-                      "stix-ciq3.0InstanceType")
-
-        for node in nodes:
-            xsi_type = node.attrib[TAG_XSI_TYPE]
-            type_ = xsi_type.split(":")[1]
-
-            if type_ in disallowed:
-                return False
-
-        return True
+        disallowed = self._get_disallowed()
+        return True if disallowed else False
 
 
     def clean(self, root):
@@ -84,25 +92,29 @@ class STIX_1_0_Updater(object):
 
         """
         removed = []
-        nsmap = {"xsi":  NS_XSI}
-        xpath = "//*[@xsi:type]"
-        nodes = root.xpath(xpath, namespaces=nsmap)
+        disallowed = self._get_disallowed(root)
 
-        disallowed = ("MAEC4.0InstanceType", "CAPEC2.5InstanceType",
-                      "stix-ciq3.0InstanceType")
+        for node in disallowed:
+            dup = copy.deepcopy(node)
+            remove_xml_node(node)
+            removed.append(dup)
 
-        for node in nodes:
-            xsi_type = node.attrib[TAG_XSI_TYPE]
-            type_ = xsi_type.split(":")[1]
+        self.cleaned_fields = tuple(removed)
 
-            if type_ in disallowed:
-                dup = copy.deepcopy(node)
-                removed.append(dup)
-                parent = node.getparent()
-                parent.remove(node)
 
-        return removed
+    def _remove_schemalocations(self, root):
+        remove_xml_attribute(root, TAG_SCHEMALOCATION)
 
+
+    def _check_version(self, root):
+        if 'version' in root.attrib:
+            expected = self.STIX_VERSION
+            found = root.attrib['version']
+
+            if found != expected:
+                raise IncorrectVersionException(expected, found)
+        else:
+            raise UnknownVersionException()
 
     def _update_versions(self, root):
         xpath_versions = ("//indicator:Indicator[@version] | "
@@ -137,6 +149,7 @@ class STIX_1_0_Updater(object):
             else:
                 node.attrib['version'] = '1.0.1'
 
+
     def _update_vocabs(self, root):
         vocabs = {
             'MotivationVocab-1.0': 'MotivationVocab-1.0.1',
@@ -145,7 +158,8 @@ class STIX_1_0_Updater(object):
 
         values = {
             "Ideological - Anti-Establisment": "Ideological - Anti-Establishment",
-            "Planning - Open-Source Intelligence (OSINT) Gethering": "Planning - Open-Source Intelligence (OSINT) Gathering"
+            "Planning - Open-Source Intelligence (OSINT) Gethering": "Planning - Open-Source Intelligence (OSINT) Gathering",
+            "Planning ": "Planning"
         }
 
         nsmap = {"xsi":  NS_XSI}
@@ -166,7 +180,6 @@ class STIX_1_0_Updater(object):
                 # controlled vocabulary
                 value = node.text
                 node.text = values.get(value, value)
-
 
 
     def update(self, root, force=False):
@@ -211,13 +224,12 @@ class STIX_1_0_Updater(object):
                 input document.
 
         """
-        self._update_versions(root)
-        self._update_vocabs(root)
+        if self.can_update(root, force):
+            self._remove_schemalocations(root)
+            self._update_versions(root)
+            self._update_vocabs(root)
 
-
-
-
-
+        return root
 
 
 class STIX_1_0_1_Updater(object):
