@@ -2,11 +2,11 @@
 # Example Usage
 
 import ramrod
-from ramrod import UpdateException
+from ramrod import UpdateError
 
 try:
     ramrod.update('doc.xml')
-except UpdateException as ex:
+except UpdateError as ex:
     for node in ex.disallowed:
         print node.tag, node.sourceline
 
