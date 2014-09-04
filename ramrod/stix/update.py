@@ -1,6 +1,6 @@
 import copy
 
-from ramrod.update import *
+from ramrod import *
 
 STIX_VERSIONS = ('1.0', '1.0.1', '1.1', '1.1.1')
 
@@ -53,6 +53,7 @@ class STIX_1_0_Updater(object):
             if type_ in disallowed:
                 instances.append(type_)
 
+        self.disallowed = disallowed
         return instances
 
 
@@ -75,7 +76,6 @@ class STIX_1_0_Updater(object):
             bool: True if the document can be updated, False otherwise.
 
         """
-
         disallowed = self._get_disallowed()
         return True if disallowed else False
 
@@ -181,6 +181,11 @@ class STIX_1_0_Updater(object):
                 value = node.text
                 node.text = values.get(value, value)
 
+    def _update(self, root):
+        self._remove_schemalocations(root)
+        self._update_versions(root)
+        self._update_vocabs(root)
+
 
     def update(self, root, force=False):
         """Attempts to update an input STIX v1.0 document to STIX v1.0.1.
@@ -224,10 +229,14 @@ class STIX_1_0_Updater(object):
                 input document.
 
         """
-        if self.can_update(root, force):
-            self._remove_schemalocations(root)
-            self._update_versions(root)
-            self._update_vocabs(root)
+
+        if self.can_update(root):
+            self._update(root)
+        elif force:
+            self.clean(root)
+            self._update(root)
+        else:
+            raise UpdateException(self.disallowed)
 
         return root
 
@@ -320,6 +329,7 @@ class STIX_1_1_Updater(object):
     def __init__(self):
         pass
 
+
     def can_update(self, root):
         """Determines if the input document can be upgraded from STIX v1.1
         to STIX v1.1.1.
@@ -344,7 +354,3 @@ class STIX_1_1_Updater(object):
 
     def update(self, root, force=False):
         pass
-
-
-def update(doc, version='1.1.1', force=False):
-    pass

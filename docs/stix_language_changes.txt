@@ -1,0 +1,57 @@
+STIX v1.1 to STIX v1.1.1
+========================
+
+
+STIX v1.0.1 to STIX v1.1
+========================
+
+Core
+----
+* STIX_Package/@version 1.0.1 => 1.1
+* Threat_Actor/@version 1.0.1 => 1.1
+* TTP/@version 1.0.1 => 1.1
+* Campaign/@version 1.0.1 => 1.1
+* COA/@version 1.0.1 => 1.1
+* Incident/@version 1.0.1 => 1.1
+* Indicator/@version 2.0.1 => 2.1
+* Campaign/@version 1.0.1 => 1.1
+* Exploit Target@version 1.0.1 => 1.1
+
+
+
+STIX v1.0 to STIX v1.0.1
+========================
+
+Core
+----
+* STIX_Package/@version 1.0 => 1.0.1
+* Threat_Actor/@version 1.0 => 1.0.1
+* TTP/@version 1.0 => 1.0.1
+* Campaign/@version 1.0 => 1.0.1
+* COA/@version 1.0 => 1.0.1
+* Incident/@version 1.0 => 1.0.1
+* Indicator/@version 2.0 => 2.0.1
+* Campaign/@version 1.0 => 1.0.1
+* Exploit Target@version 1.0 => 1.0.1
+
+Vocabularies
+------------
+* MotivationVocab-1.0 => MotivationVocab-1.0.1
+  * "Ideological - Anti-Establisment" => "Ideological - Anti-Establishment"
+* PlanningAndOperationalSupportVocab 1.0 => 1.0.1
+  * "Planning " => "Planning"
+  * "Planning - Open-Source Intelligence (OSINT) Gethering" => "Planning - Open-Source Intelligence (OSINT) Gathering"
+
+Untranslatable
+--------------
+* MAEC 4.0 Malware extension
+* CAPEC 2.5 Attack Pattern extension
+* CIQ Identity 3.0 Extension
+
+
+
+
+
+
+
+
