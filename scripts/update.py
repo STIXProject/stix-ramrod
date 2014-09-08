@@ -1,23 +1,7 @@
 #!/usr/bin/env python
 
-# Example Usage
-"""
-import ramrod
-from ramrod import UpdateError
-
-try:
-    ramrod.update('doc.xml')
-except UpdateError as ex:
-    for node in ex.disallowed:
-        print node.tag, node.sourceline
-
-
-ramrod.update('doc.xml', force=True)
-"""
-
 import sys
 import argparse
-from lxml import etree
 from ramrod import (__version__, update, UpdateError)
 
 def _write_xml(root, outfn):
