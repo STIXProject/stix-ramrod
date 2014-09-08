@@ -26,8 +26,8 @@ class InvalidVersionError(Exception):
         if self.expected and self.found:
             return "Found [%s] but expected [%s]" % (self.expected, self.found)
         else:
-            return "Instance version attribute value does not match expected " \
-                   "version attribute value"
+            return ("Instance version attribute value does not match expected "
+                   "version attribute value")
 
 
 class _BaseUpdater(object):
@@ -50,7 +50,6 @@ class _BaseUpdater(object):
         """
         return root.nsmap.get(ns)
 
-
     def _remove_xml_node(node):
         parent = node.getparent()
         parent.remove(node)
@@ -70,5 +69,3 @@ class _BaseUpdater(object):
 
 def update(doc, force=False):
     pass
-
-

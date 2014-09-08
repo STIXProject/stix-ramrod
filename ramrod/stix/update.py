@@ -249,6 +249,8 @@ class STIX_1_0_Updater(_BaseUpdater):
             if force:
                 self.clean(root)
                 self._update(root)
+            else:
+                raise
 
         return root
 
