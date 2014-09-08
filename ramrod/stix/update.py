@@ -1,9 +1,10 @@
 import copy
 
-from ramrod import *
+from ramrod import (_BaseUpdater, UpdateError, UnknownVersionError,
+                    InvalidVersionError, TAG_XSI_TYPE, TAG_SCHEMALOCATION,
+                    NS_XSI)
 
 STIX_VERSIONS = ('1.0', '1.0.1', '1.1', '1.1.1')
-
 
 class STIX_1_0_Updater(_BaseUpdater):
     STIX_VERSION = '1.0'
@@ -92,7 +93,7 @@ class STIX_1_0_Updater(_BaseUpdater):
         """
         self._check_version(root)
 
-        disallowed = self._get_disallowed()
+        disallowed = self._get_disallowed(root)
         if disallowed:
             raise UpdateError(disallowed)
 
@@ -127,7 +128,8 @@ class STIX_1_0_Updater(_BaseUpdater):
 
 
     def _update_versions(self, root):
-        xpath_versions = ("//indicator:Indicator[@version] | "
+        xpath_versions = ("//stix:STIX_Package | "
+                          "indicator:Indicator[@version] | "
                           "stix:Indicator[@version] | "
                           "stixCommon:Indicator[@version] | "
                           "incident:Incident[@version] | "
@@ -368,3 +370,4 @@ class STIX_1_1_Updater(_BaseUpdater):
 
     def update(self, root, force=False):
         pass
+
