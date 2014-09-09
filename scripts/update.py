@@ -4,11 +4,11 @@ import sys
 import argparse
 from ramrod import (__version__, update, UpdateError)
 
-def _write_xml(root, outfn):
+def _write_xml(tree, outfn):
     if not outfn:
-        root.write(sys.stdout, pretty_print=True)
+        tree.write(sys.stdout, pretty_print=True)
     else:
-        root.write(outfn, pretty_print=True)
+        tree.write(outfn, pretty_print=True)
 
 
 def _validate_args():
@@ -32,10 +32,6 @@ def _get_arg_parser():
     parser.add_argument("-f", "--force", action="store_true", default=False,
                         help="Removes untranslatable fields and attempts to "
                              "force the update process.")
-
-    # parser.add_argument("files", metavar="FILES", nargs="*",
-    #                     help="A whitespace separated list of STIX files or "
-    #                          "directories of STIX files to update.")
 
     return parser
 
