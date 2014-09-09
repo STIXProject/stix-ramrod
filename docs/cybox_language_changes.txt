@@ -1,0 +1,27 @@
+
+CybOX v2.0 to CybOX v2.0.1
+==========================
+Observables/@cybox_update_version => '1' (@cybox_update_version was not in 2.0)
+
+
+
+Core
+----
+
+
+Objects
+-------
+
+
+Vocabularies
+------------
+"EventTypeVocab-1.0" => "EventTypeVocab-1.0.1"
+
+
+
+Untransatable
+-------------
+
+
+
+
