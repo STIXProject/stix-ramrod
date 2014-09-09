@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="14.2">
+    <meta>
+        <filters directoryPatterns="" filePatterns="" positiveFilePatterns="" showHiddenFiles="false"/>
+        <options/>
+    </meta>
+    <projectTree name="stix.xpr">
+        <folder path="stix_1.0.1/"/>
+        <folder path="stix_1.0/"/>
+        <folder path="stix_1.1.1/"/>
+        <folder path="stix_1.1/"/>
+    </projectTree>
+</project>
