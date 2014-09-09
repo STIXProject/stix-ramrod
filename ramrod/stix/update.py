@@ -1,8 +1,8 @@
 import copy
+from lxml import etree
 
 from ramrod import (_BaseUpdater, UpdateError, UnknownVersionError,
-                    InvalidVersionError, TAG_XSI_TYPE, TAG_SCHEMALOCATION,
-                    NS_XSI)
+                    InvalidVersionError, TAG_XSI_TYPE, NS_XSI)
 
 STIX_VERSIONS = ('1.0', '1.0.1', '1.1', '1.1.1')
 
@@ -36,7 +36,12 @@ class STIX_1_0_Updater(_BaseUpdater):
         'yaraTM': 'http://stix.mitre.org/extensions/TestMechanism#YARA-1'
     }
 
-    # STIX v1.0.1 NS => SCHEMALOC
+    DISALLOWED_NAMESPACES = (
+        'http://stix.mitre.org/extensions/AP#CAPEC2.5-1',
+        'http://stix.mitre.org/extensions/Malware#MAEC4.0-1',
+    )
+
+    # STIX v1.0 NS => STIX v1.0.1 SCHEMALOC
     UPDATE_SCHEMALOC_MAP = {
         'http://data-marking.mitre.org/Marking-1': 'http://stix.mitre.org/XMLSchema/data_marking/1.0.1/data_marking.xsd',
         'http://data-marking.mitre.org/extensions/MarkingStructure#Simple-1': 'http://stix.mitre.org/XMLSchema/extensions/marking/simple_marking/1.0.1/simple_marking.xsd',
@@ -50,10 +55,10 @@ class STIX_1_0_Updater(_BaseUpdater):
         'http://stix.mitre.org/ThreatActor-1': 'http://stix.mitre.org/XMLSchema/threat_actor/1.0.1/threat_actor.xsd',
         'http://stix.mitre.org/common-1': 'http://stix.mitre.org/XMLSchema/common/1.0.1/stix_common.xsd',
         'http://stix.mitre.org/default_vocabularies-1': 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd',
-        'http://stix.mitre.org/extensions/AP#CAPEC2.6-1': 'http://stix.mitre.org/XMLSchema/extensions/attack_pattern/capec_2.6.1/1.0.1/capec_2.6.1.xsd',
+        # 'http://stix.mitre.org/extensions/AP#CAPEC2.5-1': 'http://stix.mitre.org/XMLSchema/extensions/attack_pattern/capec_2.6.1/1.0.1/capec_2.6.1.xsd',  # DISALLOWED
         'http://stix.mitre.org/extensions/Address#CIQAddress3.0-1': 'http://stix.mitre.org/XMLSchema/extensions/address/ciq_address_3.0/1.0.1/ciq_address_3.0.xsd',
         'http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1': 'http://stix.mitre.org/XMLSchema/extensions/identity/ciq_identity_3.0/1.0.1/ciq_identity_3.0.xsd',
-        'http://stix.mitre.org/extensions/Malware#MAEC4.0-1': 'http://stix.mitre.org/XMLSchema/extensions/malware/maec_4.0.1/1.0.1/maec_4.0.1.xsd',
+        # 'http://stix.mitre.org/extensions/Malware#MAEC4.0-1': 'http://stix.mitre.org/XMLSchema/extensions/malware/maec_4.0.1/1.0.1/maec_4.0.1.xsd',  # DISALLOWED
         'http://stix.mitre.org/extensions/StructuredCOA#Generic-1': 'http://stix.mitre.org/XMLSchema/extensions/structured_coa/generic/1.0.1/generic.xsd',
         'http://stix.mitre.org/extensions/TestMechanism#Generic-1': 'http://stix.mitre.org/XMLSchema/extensions/test_mechanism/generic/1.0.1/generic.xsd',
         'http://stix.mitre.org/extensions/TestMechanism#OVAL5.10-1': 'http://stix.mitre.org/XMLSchema/extensions/test_mechanism/oval_5.10/1.0.1/oval_5.10.xsd',
@@ -152,14 +157,6 @@ class STIX_1_0_Updater(_BaseUpdater):
         self.cleaned_fields = tuple(removed)
 
 
-    def _remove_schemalocations(self, root):
-        self._remove_xml_attribute(root, TAG_SCHEMALOCATION)
-
-
-    def _update_schemalocs(self, root):
-        pass
-
-
     def _update_versions(self, root):
         xpath_versions = ("//stix:STIX_Package | "
                           "indicator:Indicator[@version] | "
@@ -186,8 +183,8 @@ class STIX_1_0_Updater(_BaseUpdater):
 
         nodes = root.xpath(xpath_versions, namespaces=self.NSMAP)
         for node in nodes:
-            tag = node.tag
-            name = tag[tag.index("}")+1:]
+            tag = etree.QName(node)
+            name = tag.localname
 
             if name == "Indicator":
                 node.attrib['version'] = '2.0.1'
@@ -226,10 +223,15 @@ class STIX_1_0_Updater(_BaseUpdater):
                 value = node.text
                 node.text = values.get(value, value)
 
+
     def _update(self, root):
-        self._remove_schemalocations(root)
-        self._update_versions(root)
-        self._update_vocabs(root)
+        updated = self._update_namespaces(root)
+
+        self._update_schemalocs(updated)
+        self._update_versions(updated)
+        self._update_vocabs(updated)
+
+        return updated
 
 
     def update(self, root, force=False):
@@ -255,7 +257,6 @@ class STIX_1_0_Updater(_BaseUpdater):
         Untranslatable items:
         * MAEC 4.0 Malware extension
         * CAPEC 2.5 Attack Pattern extension
-        * CIQ Identity 3.0 Extension
 
         Args:
             root (lxml.etree._Element): The top-level node of the STIX
@@ -265,7 +266,11 @@ class STIX_1_0_Updater(_BaseUpdater):
                 when an untranslatable field is encountered.
 
         Returns:
-            None
+            An updated copy of the input `root` document. If `force` is
+            ``True``, untranslatable items are removed from the document.
+
+            The ``cleaned_fields`` instance attribute contains a copy of
+            all the fields that were removed after calling ``updated()``.
 
         Raises:
             UnknownVersionError: If the input document does not have a version.
@@ -276,18 +281,17 @@ class STIX_1_0_Updater(_BaseUpdater):
                 input document.
 
         """
-
         try:
             self.check_update(root)
-            self._update(root)
+            updated = self._update(root)
         except UpdateError:
             if force:
                 self.clean(root)
-                self._update(root)
+                updated = self._update(root)
             else:
                 raise
 
-        return root
+        return updated
 
 
 class STIX_1_0_1_Updater(_BaseUpdater):
@@ -458,7 +462,6 @@ class STIX_1_1_Updater(_BaseUpdater):
             bool: True if the document can be updated, False otherwise.
 
         """
-
     def clean(self, root):
         pass
 
