@@ -77,7 +77,9 @@ def _get_etree_root(doc):
     elif isinstance(doc, etree._ElementTree):
         root = doc.getroot()
     else:
-        parser = etree.ETCompatXMLParser(huge_tree=True, strip_cdata=False)
+        parser = etree.ETCompatXMLParser(huge_tree=True,
+                                         remove_comments=False,
+                                         strip_cdata=False)
         tree = etree.parse(doc, parser=parser)
         root = tree.getroot()
 
