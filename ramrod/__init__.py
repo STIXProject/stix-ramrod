@@ -7,6 +7,8 @@ NS_XSI = "http://www.w3.org/2001/XMLSchema-instance"
 TAG_XSI_TYPE = "{%s}type" % NS_XSI
 TAG_SCHEMALOCATION ="{%s}schemaLocation" % NS_XSI
 
+TAG_VOCAB_REFERENCE = "vocab_reference"
+TAG_VOCAB_NAME = 'vocab_name'
 
 class UnknownVersionError(Exception):
     pass
@@ -37,15 +39,18 @@ class InvalidVersionError(Exception):
 class _BaseUpdater(object):
 
     # OVERRIDE THESE IN IMPLEMENTATIONS
+    VERSION = None
     DISALLOWED_NAMESPACES = ()
     NSMAP = {}
     UPDATE_NS_MAP = {}
     UPDATE_SCHEMALOC_MAP = {}
-    UPDATE_VOCAB_NAMES = {}
-    UPDATE_VOCAB_TERMS = {}
+
+    # Controlled Vocabularies
+    UPDATE_VOCABS = {}
 
     def __init__(self):
         pass
+
 
     def _get_ns_alias(self, root, ns):
         """Returns the XML Namespace alias defined for a namespace in a given
@@ -80,29 +85,55 @@ class _BaseUpdater(object):
             # Attribute was not found
             pass
 
+
+    def _check_version(self, root):
+        expected = self.VERSION
+        found = root.attrib.get('version')
+
+        if not found:
+            raise UnknownVersionError()
+
+        if found != expected:
+            raise InvalidVersionError(expected, found)
+
+
     def _update_vocabs(self, root):
+        vocabs = self.UPDATE_VOCABS
         nsmap = {"xsi":  NS_XSI}
         xpath = "//*[@xsi:type]"
         nodes = root.xpath(xpath, namespaces=nsmap)
-
-        vocabs = self.UPDATE_VOCAB_NAMES
-        terms = self.UPDATE_VOCAB_TERMS
 
         for node in nodes:
             xsi_type = node.attrib[TAG_XSI_TYPE]
             alias, type_ = xsi_type.split(":")
 
-            if type_ in vocabs:
-                # Update the xsi:type attribute to identify the new
-                # controlled vocabulary
-                new_xsi_type = "%s:%s" % (alias, vocabs[type_])
-                node.attrib[TAG_XSI_TYPE] = new_xsi_type
+            if type_ not in vocabs:
+                continue
 
-                # Update the node value if there is a new value in the updated
-                # controlled vocabulary
-                value = node.text
-                node.text = terms.get(value, value)
+            attribs    = node.attrib
+            vocab      = vocabs[type_]
+            terms      = vocab['terms']
+            new_type_  = vocab['type']
+            vocab_ref  = vocab['vocab_reference']
+            vocab_name = vocab['vocab_name']
 
+            # Update the xsi:type attribute to identify the new
+            # controlled vocabulary
+            new_xsi_type = "%s:%s" % (alias, new_type_)
+            attribs[TAG_XSI_TYPE] = new_xsi_type
+
+            # Update the vocab_reference attribute if present
+            if TAG_VOCAB_REFERENCE in attribs:
+                attribs[TAG_VOCAB_REFERENCE] = vocab_ref
+
+            # Update the vocab_name attribute if present
+            if TAG_VOCAB_NAME in attribs:
+                attribs[TAG_VOCAB_NAME] = vocab_name
+
+            # Update the node value if there is a new value in the updated
+            # controlled vocabulary
+            value = node.text
+            node.text = terms.get(value, value)
 
 
     def _remove_schemalocations(self, root):

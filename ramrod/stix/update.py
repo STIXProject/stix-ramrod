@@ -7,7 +7,7 @@ from ramrod import (_BaseUpdater, UpdateError, UnknownVersionError,
 STIX_VERSIONS = ('1.0', '1.0.1', '1.1', '1.1.1')
 
 class STIX_1_0_Updater(_BaseUpdater):
-    STIX_VERSION = '1.0'
+    VERSION = '1.0'
 
     NSMAP = {
         'campaign': 'http://stix.mitre.org/Campaign-1',
@@ -69,16 +69,38 @@ class STIX_1_0_Updater(_BaseUpdater):
         'http://stix.mitre.org/stix-1': 'http://stix.mitre.org/XMLSchema/core/1.0.1/stix_core.xsd'
     }
 
-    UPDATE_VOCAB_NAMES = {
-        'MotivationVocab-1.0': 'MotivationVocab-1.0.1',
-        'PlanningAndOperationalSupportVocab-1.0': 'PlanningAndOperationalSupportVocab-1.0.1'
+    UPDATE_VOCABS = {
+        'MotivationVocab-1.0': {
+            'type': 'MotivationVocab-1.0.1',
+            'vocab_reference': 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd#MotivationVocab-1.0.1',
+            'vocab_name': 'STIX Default Motivation Vocabulary',
+            'terms': {
+                 "Ideological - Anti-Establisment": "Ideological - Anti-Establishment",
+            }
+        },
+        'PlanningAndOperationalSupportVocab-1.0': {
+            'type': 'PlanningAndOperationalSupportVocab-1.0.1',
+            'vocab_reference': 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd#PlanningAndOperationalSupportVocab-1.0.1',
+            'vocab_name': 'STIX Default Planning and Operational Support Vocabulary',
+            'terms': {
+                "Planning - Open-Source Intelligence (OSINT) Gethering": "Planning - Open-Source Intelligence (OSINT) Gathering",
+                "Planning ": "Planning"
+            }
+        }
     }
 
-    UPDATE_VOCAB_TERMS = {
-        "Ideological - Anti-Establisment": "Ideological - Anti-Establishment",
-        "Planning - Open-Source Intelligence (OSINT) Gethering": "Planning - Open-Source Intelligence (OSINT) Gathering",
-        "Planning ": "Planning"
-    }
+
+    #
+    # UPDATE_VOCAB_NAMES = {
+    #     'MotivationVocab-1.0': 'MotivationVocab-1.0.1',
+    #     'PlanningAndOperationalSupportVocab-1.0': 'PlanningAndOperationalSupportVocab-1.0.1'
+    # }
+    #
+    # UPDATE_VOCAB_TERMS = {
+    #     "Ideological - Anti-Establisment": "Ideological - Anti-Establishment",
+    #     "Planning - Open-Source Intelligence (OSINT) Gethering": "Planning - Open-Source Intelligence (OSINT) Gathering",
+    #     "Planning ": "Planning"
+    # }
 
 
     def __init__(self):
@@ -101,17 +123,6 @@ class STIX_1_0_Updater(_BaseUpdater):
                 instances.append(type_)
 
         return instances
-
-
-    def _check_version(self, root):
-        expected = STIX_1_0_Updater.STIX_VERSION
-        found = root.attrib.get('version')
-
-        if not found:
-            raise UnknownVersionError()
-
-        if found != expected:
-            raise InvalidVersionError(expected, found)
 
 
     def check_update(self, root):
@@ -274,6 +285,8 @@ class STIX_1_0_Updater(_BaseUpdater):
 
 
 class STIX_1_0_1_Updater(_BaseUpdater):
+    VERSION = '1.0.1'
+
     NSMAP = {
         'campaign': 'http://stix.mitre.org/Campaign-1',
         'stix-capec': 'http://stix.mitre.org/extensions/AP#CAPEC2.6-1',
@@ -362,6 +375,8 @@ class STIX_1_0_1_Updater(_BaseUpdater):
 
 
 class STIX_1_1_Updater(_BaseUpdater):
+    VERSION = '1.1'
+
     NSMAP = {
         'TOUMarking': 'http://data-marking.mitre.org/extensions/MarkingStructure#Terms_Of_Use-1',
         'campaign': 'http://stix.mitre.org/Campaign-1',

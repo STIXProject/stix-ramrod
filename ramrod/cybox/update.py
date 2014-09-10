@@ -7,7 +7,7 @@ from ramrod import (_BaseUpdater, UpdateError, UnknownVersionError,
 CYBOX_VERSIONS = ('2.0', '2.0.1', '2.1')
 
 class CYBOX_2_0_Updater(_BaseUpdater):
-    CYBOX_VERSION = '2.0'
+    VERSION = '2.0'
 
     NSMAP = {
         'APIObj': 'http://cybox.mitre.org/objects#APIObject-2',
@@ -180,13 +180,30 @@ class CYBOX_2_0_Updater(_BaseUpdater):
         'http://cybox.mitre.org/objects#X509CertificateObject-2': 'http://cybox.mitre.org/XMLSchema/objects/X509_Certificate/2.0.1/X509_Certificate_Object.xsd',
     }
 
-    UPDATE_VOCAB_NAMES = {
-        'EventTypeVocab-1.0': 'EventTypeVocab-1.0.1',
+
+    UPDATE_VOCABS = {
+        'EventTypeVocab-1.0': {
+            'type': 'EventTypeVocab-1.0.1',
+            'vocab_reference': 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.0.1/cybox_default_vocabularies.xsd#EventTypeVocab-1.0.1',
+            'vocab_name': 'CybOX Default Event Types',
+            'terms': {
+                 "Anomoly Events": "Anomaly Events"
+            }
+        }
     }
 
-    UPDATE_VOCAB_TERMS = {
-        "Anomoly Events": "Anomaly Events"
-    }
+    # UPDATE_VOCAB_NAMES = {
+    #     'EventTypeVocab-1.0': 'EventTypeVocab-1.0.1',
+    # }
+    #
+    # UPDATE_VOCAB_TERMS = {
+    #     "Anomoly Events": "Anomaly Events"
+    # }
+    #
+    # UPDATE_VOCAB_REFS = {
+    #     "http://cybox.mitre.org/XMLSchema/default_vocabularies/2.0/cybox_default_vocabularies.xsd#EventTypeVocab-1.0": "http://cybox.mitre.org/XMLSchema/default_vocabularies/2.0.1/cybox_default_vocabularies.xsd#EventTypeVocab-1.0.1"
+    # }
+
 
     def __init__(self):
         self.cleaned_fields = {}
@@ -194,17 +211,6 @@ class CYBOX_2_0_Updater(_BaseUpdater):
 
     def _update_versions(self, root):
         pass
-
-
-    def _check_version(self, root):
-        expected = CYBOX_2_0_Updater.CYBOX_VERSION
-        found = root.attrib.get('version')
-
-        if not found:
-            raise UnknownVersionError()
-
-        if found != expected:
-            raise InvalidVersionError(expected, found)
 
 
     def check_update(self, root):
