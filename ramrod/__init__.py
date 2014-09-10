@@ -41,6 +41,8 @@ class _BaseUpdater(object):
     NSMAP = {}
     UPDATE_NS_MAP = {}
     UPDATE_SCHEMALOC_MAP = {}
+    UPDATE_VOCAB_NAMES = {}
+    UPDATE_VOCAB_TERMS = {}
 
     def __init__(self):
         pass
@@ -77,6 +79,30 @@ class _BaseUpdater(object):
         except KeyError:
             # Attribute was not found
             pass
+
+    def _update_vocabs(self, root):
+        nsmap = {"xsi":  NS_XSI}
+        xpath = "//*[@xsi:type]"
+        nodes = root.xpath(xpath, namespaces=nsmap)
+
+        vocabs = self.UPDATE_VOCAB_NAMES
+        terms = self.UPDATE_VOCAB_TERMS
+
+        for node in nodes:
+            xsi_type = node.attrib[TAG_XSI_TYPE]
+            alias, type_ = xsi_type.split(":")
+
+            if type_ in vocabs:
+                # Update the xsi:type attribute to identify the new
+                # controlled vocabulary
+                new_xsi_type = "%s:%s" % (alias, vocabs[type_])
+                node.attrib[TAG_XSI_TYPE] = new_xsi_type
+
+                # Update the node value if there is a new value in the updated
+                # controlled vocabulary
+                value = node.text
+                node.text = terms.get(value, value)
+
 
 
     def _remove_schemalocations(self, root):

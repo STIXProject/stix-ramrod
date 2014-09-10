@@ -69,6 +69,17 @@ class STIX_1_0_Updater(_BaseUpdater):
         'http://stix.mitre.org/stix-1': 'http://stix.mitre.org/XMLSchema/core/1.0.1/stix_core.xsd'
     }
 
+    UPDATE_VOCAB_NAMES = {
+        'MotivationVocab-1.0': 'MotivationVocab-1.0.1',
+        'PlanningAndOperationalSupportVocab-1.0': 'PlanningAndOperationalSupportVocab-1.0.1'
+    }
+
+    UPDATE_VOCAB_TERMS = {
+        "Ideological - Anti-Establisment": "Ideological - Anti-Establishment",
+        "Planning - Open-Source Intelligence (OSINT) Gethering": "Planning - Open-Source Intelligence (OSINT) Gathering",
+        "Planning ": "Planning"
+    }
+
 
     def __init__(self):
         self.cleaned_fields = None
@@ -190,38 +201,6 @@ class STIX_1_0_Updater(_BaseUpdater):
                 node.attrib['version'] = '2.0.1'
             else:
                 node.attrib['version'] = '1.0.1'
-
-
-    def _update_vocabs(self, root):
-        vocabs = {
-            'MotivationVocab-1.0': 'MotivationVocab-1.0.1',
-            'PlanningAndOperationalSupportVocab-1.0': 'PlanningAndOperationalSupportVocab-1.0.1'
-        }
-
-        values = {
-            "Ideological - Anti-Establisment": "Ideological - Anti-Establishment",
-            "Planning - Open-Source Intelligence (OSINT) Gethering": "Planning - Open-Source Intelligence (OSINT) Gathering",
-            "Planning ": "Planning"
-        }
-
-        nsmap = {"xsi":  NS_XSI}
-        xpath = "//*[@xsi:type]"
-        nodes = root.xpath(xpath, namespaces=nsmap)
-
-        for node in nodes:
-            xsi_type = node.attrib[TAG_XSI_TYPE]
-            alias, type_ = xsi_type.split(":")
-
-            if type_ in vocabs:
-                # Update the xsi:type attribute to identify the new
-                # controlled vocabulary
-                new_xsi_type = "%s:%s" % (alias, vocabs[type_])
-                node.attrib[TAG_XSI_TYPE] = new_xsi_type
-
-                # Update the node value if there is a new value in the updated
-                # controlled vocabulary
-                value = node.text
-                node.text = values.get(value, value)
 
 
     def _update(self, root):
