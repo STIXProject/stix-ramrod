@@ -1,27 +1,28 @@
 
 CybOX v2.0 to CybOX v2.0.1
 ==========================
-Observables/@cybox_update_version => '1' (@cybox_update_version was not in 2.0)
-
-
 
 Core
 ----
+Observables/@cybox_update_version => '1' (@cybox_update_version was not in 2.0)
 
+Common
+------
+N/A
 
 Objects
 -------
-
+N/A
 
 Vocabularies
 ------------
-"EventTypeVocab-1.0" => "EventTypeVocab-1.0.1"
-
+* `EventTypeVocab-1.0` => `EventTypeVocab-1.0.1`
+  * `Anomoly Events` => `Anomaly Events`
 
 
 Untransatable
 -------------
-
+N/A
 
 
 
