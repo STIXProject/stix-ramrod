@@ -4,7 +4,8 @@ from lxml import etree
 from ramrod import (_BaseUpdater, UpdateError, UnknownVersionError,
                     InvalidVersionError, TAG_XSI_TYPE, NS_XSI)
 
-CYBOX_VERSIONS = ('2.0', '2.0.1', '2.1')
+from . import (TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR, TAG_CYBOX_UPDATE)
+
 
 class CYBOX_2_0_Updater(_BaseUpdater):
     VERSION = '2.0'
@@ -194,12 +195,20 @@ class CYBOX_2_0_Updater(_BaseUpdater):
         }
     }
 
+
     def __init__(self):
         self.cleaned_fields = {}
 
 
     def _update_versions(self, root):
-        pass
+        xpath_versions = "//cybox:Observables"
+
+        nodes = root.xpath(xpath_versions, namespaces=self.NSMAP)
+        for node in nodes:
+            attribs = node.attrib
+            attribs[TAG_CYBOX_MAJOR]  = '2'
+            attribs[TAG_CYBOX_MINOR]  = '0'
+            attribs[TAG_CYBOX_UPDATE] = '1'
 
 
     def _get_disallowed(self, root):
@@ -231,6 +240,10 @@ class CYBOX_2_0_Updater(_BaseUpdater):
 
 
     def clean(self, root):
+        """No disallowed items so no cleaning necessary when going between
+        CybOX 2.0 and CybOX 2.0.1. This returns immediately.
+
+        """
         pass
 
 
@@ -256,3 +269,12 @@ class CYBOX_2_0_Updater(_BaseUpdater):
                 raise
 
         return updated
+
+
+class CYBOX_2_0_1_Updater(_BaseUpdater):
+    pass
+
+
+class CYBOX_2_1_Updater(_BaseUpdater):
+    pass
+
