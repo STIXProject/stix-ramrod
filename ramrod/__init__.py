@@ -71,17 +71,13 @@ class _BaseUpdater(object):
 
 
     def _remove_xml_node(self, node):
-        """Removes `node` from the parent of `node`.
-
-        """
+        """Removes `node` from the parent of `node`."""
         parent = node.getparent()
         parent.remove(node)
 
 
     def _copy_xml_node(self, node):
-        """Returns a copy of `node`.
-
-        """
+        """Returns a copy of `node`."""
         return copy.deepcopy(node)
 
 
