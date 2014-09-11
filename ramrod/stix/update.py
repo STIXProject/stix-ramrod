@@ -4,7 +4,9 @@ from lxml import etree
 from ramrod import (_BaseUpdater, UpdateError, UnknownVersionError,
                     InvalidVersionError, TAG_XSI_TYPE, NS_XSI)
 
-STIX_VERSIONS = ('1.0', '1.0.1', '1.1', '1.1.1')
+from ramrod.cybox import (CYBOX_2_0_Updater)
+
+
 
 class STIX_1_0_Updater(_BaseUpdater):
     VERSION = '1.0'
@@ -138,11 +140,10 @@ class STIX_1_0_Updater(_BaseUpdater):
 
         """
         self._check_version(root)
-
         disallowed = self._get_disallowed(root)
+
         if disallowed:
             raise UpdateError(disallowed)
-
 
 
     def clean(self, root):
@@ -205,6 +206,7 @@ class STIX_1_0_Updater(_BaseUpdater):
 
     def _update(self, root):
         updated = self._update_namespaces(root)
+        updated = self._update_cybox(updated)
 
         self._update_schemalocs(updated)
         self._update_versions(updated)
