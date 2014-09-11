@@ -9,6 +9,8 @@ CYBOX_VERSIONS = ('2.0', '2.0.1', '2.1')
 class CYBOX_2_0_Updater(_BaseUpdater):
     VERSION = '2.0'
 
+    DEFAULT_VOCAB_NAMESPACE = 'http://cybox.mitre.org/default_vocabularies-1'
+
     NSMAP = {
         'APIObj': 'http://cybox.mitre.org/objects#APIObject-2',
         'AccountObj': 'http://cybox.mitre.org/objects#AccountObject-2',
@@ -192,25 +194,16 @@ class CYBOX_2_0_Updater(_BaseUpdater):
         }
     }
 
-    # UPDATE_VOCAB_NAMES = {
-    #     'EventTypeVocab-1.0': 'EventTypeVocab-1.0.1',
-    # }
-    #
-    # UPDATE_VOCAB_TERMS = {
-    #     "Anomoly Events": "Anomaly Events"
-    # }
-    #
-    # UPDATE_VOCAB_REFS = {
-    #     "http://cybox.mitre.org/XMLSchema/default_vocabularies/2.0/cybox_default_vocabularies.xsd#EventTypeVocab-1.0": "http://cybox.mitre.org/XMLSchema/default_vocabularies/2.0.1/cybox_default_vocabularies.xsd#EventTypeVocab-1.0.1"
-    # }
-
-
     def __init__(self):
         self.cleaned_fields = {}
 
 
     def _update_versions(self, root):
         pass
+
+
+    def _get_disallowed(self, root):
+        return None
 
 
     def check_update(self, root):

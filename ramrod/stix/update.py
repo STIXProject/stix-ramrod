@@ -9,6 +9,8 @@ STIX_VERSIONS = ('1.0', '1.0.1', '1.1', '1.1.1')
 class STIX_1_0_Updater(_BaseUpdater):
     VERSION = '1.0'
 
+    DEFAULT_VOCAB_NAMESPACE = 'http://stix.mitre.org/default_vocabularies-1'
+
     NSMAP = {
         'campaign': 'http://stix.mitre.org/Campaign-1',
         'stix-capec': 'http://stix.mitre.org/extensions/AP#CAPEC2.5-1',
@@ -88,19 +90,6 @@ class STIX_1_0_Updater(_BaseUpdater):
             }
         }
     }
-
-
-    #
-    # UPDATE_VOCAB_NAMES = {
-    #     'MotivationVocab-1.0': 'MotivationVocab-1.0.1',
-    #     'PlanningAndOperationalSupportVocab-1.0': 'PlanningAndOperationalSupportVocab-1.0.1'
-    # }
-    #
-    # UPDATE_VOCAB_TERMS = {
-    #     "Ideological - Anti-Establisment": "Ideological - Anti-Establishment",
-    #     "Planning - Open-Source Intelligence (OSINT) Gethering": "Planning - Open-Source Intelligence (OSINT) Gathering",
-    #     "Planning ": "Planning"
-    # }
 
 
     def __init__(self):
