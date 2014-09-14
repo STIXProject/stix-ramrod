@@ -16,7 +16,6 @@ class _CYBOX_Updater(_BaseUpdater):
         self.XPATH_ROOT = "//cybox:Observables"
 
 
-
 class CYBOX_2_0_Updater(_CYBOX_Updater):
     VERSION = '2.0'
 
@@ -219,7 +218,7 @@ class CYBOX_2_0_Updater(_CYBOX_Updater):
 
 
     def _get_disallowed(self, root):
-        return None
+        return []
 
 
     def check_update(self, root, check_versions=True):

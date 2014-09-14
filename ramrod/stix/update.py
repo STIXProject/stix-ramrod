@@ -144,20 +144,23 @@ class STIX_1_0_Updater(_BaseUpdater):
         xpath = "//*[@xsi:type]"
         nodes = root.xpath(xpath, namespaces=nsmap)
 
-        disallowed = ("MAEC4.0InstanceType", "CAPEC2.5InstanceType")
+        types = ("MAEC4.0InstanceType", "CAPEC2.5InstanceType")
 
-        instances = []
+        disallowed = []
         for node in nodes:
             xsi_type = node.attrib[TAG_XSI_TYPE]
             type_ = xsi_type.split(":")[1]
 
-            if type_ in disallowed:
-                instances.append(type_)
+            if type_ in types:
+                disallowed.append(type_)
 
-        return instances
+        cybox = self._CYBOX_UPDATER._get_disallowed(root)
+        disallowed.extend(cybox)
+
+        return disallowed
 
 
-    def check_update(self, root):
+    def check_update(self, root, check_version=True):
         """Determines if the input document can be upgraded from STIX v1.0 to
         STIX v1.0.1.
 
@@ -180,11 +183,13 @@ class STIX_1_0_Updater(_BaseUpdater):
                 be updated.
 
         """
-        self._check_version(root)
-        disallowed = self._get_disallowed(root)
+        if check_version:
+            self._check_version(root)
+
+        disallowed  = self._get_disallowed(root)
 
         if disallowed:
-            raise UpdateError(disallowed)
+            raise UpdateError(disallowed=disallowed)
 
 
     def clean(self, root):

@@ -15,12 +15,14 @@ class UnknownVersionError(Exception):
 
 
 class UpdateError(Exception):
-    def __init__(self, msg, disallowed=None):
+    def __init__(self, msg=None, disallowed=None):
         super(UpdateError, self).__init__(msg)
         self.disallowed = disallowed
 
     def __str__(self):
-        return super(UpdateError, self).__str__()
+        s = "Update Error: %s\n%s" % (super(UpdateError, self).__str__(), self.disallowed)
+        return s
+
 
 
 class InvalidVersionError(Exception):
