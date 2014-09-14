@@ -7,10 +7,18 @@ from ramrod import (_BaseUpdater, UpdateError, UnknownVersionError,
 from . import (TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR, TAG_CYBOX_UPDATE)
 
 
-class CYBOX_2_0_Updater(_BaseUpdater):
-    VERSION = '2.0'
-
+class _CYBOX_Updater(_BaseUpdater):
     DEFAULT_VOCAB_NAMESPACE = 'http://cybox.mitre.org/default_vocabularies-1'
+
+    def __init__(self):
+        super(_CYBOX_Updater, self).__init__()
+        self.XPATH_VERSION = "//cybox:Observables"
+        self.XPATH_ROOT = "//cybox:Observables"
+
+
+
+class CYBOX_2_0_Updater(_CYBOX_Updater):
+    VERSION = '2.0'
 
     NSMAP = {
         'APIObj': 'http://cybox.mitre.org/objects#APIObject-2',
@@ -197,13 +205,12 @@ class CYBOX_2_0_Updater(_BaseUpdater):
 
 
     def __init__(self):
-        self.cleaned_fields = {}
+        self.cleaned_fields = ()
 
 
     def _update_versions(self, root):
-        xpath_versions = "//cybox:Observables"
-
-        nodes = root.xpath(xpath_versions, namespaces=self.NSMAP)
+        xpath = self.XPATH_VERSIONED
+        nodes = root.xpath(xpath, namespaces=self.NSMAP)
         for node in nodes:
             attribs = node.attrib
             attribs[TAG_CYBOX_MAJOR]  = '2'
@@ -215,7 +222,7 @@ class CYBOX_2_0_Updater(_BaseUpdater):
         return None
 
 
-    def check_update(self, root):
+    def check_update(self, root, check_versions=True):
         """Determines if the input document can be upgraded from CybOX 2.0
         to CybOX 2.0.1.
 
@@ -232,7 +239,8 @@ class CYBOX_2_0_Updater(_BaseUpdater):
             TODO fill out.
 
         """
-        self._check_version(root)
+        if check_versions:
+            self._check_version(root)
 
         disallowed = self._get_disallowed(root)
         if disallowed:
@@ -240,7 +248,7 @@ class CYBOX_2_0_Updater(_BaseUpdater):
 
 
     def clean(self, root):
-        """No disallowed items so no cleaning necessary when going between
+        """Ther are no disallowed items so no cleaning necessary when going between
         CybOX 2.0 and CybOX 2.0.1. This returns immediately.
 
         """
@@ -261,7 +269,7 @@ class CYBOX_2_0_Updater(_BaseUpdater):
         try:
             self.check_update(root)
             updated = self._update(root)
-        except UpdateError:
+        except (UpdateError, UnknownVersionError):
             if force:
                 self.clean(root)
                 updated = self._update(root)

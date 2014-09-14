@@ -24,13 +24,15 @@ class UpdateError(Exception):
 
 
 class InvalidVersionError(Exception):
-    def __init__(self, expected=None, found=None):
+    def __init__(self, node=None, expected=None, found=None):
+        self.node = node
         self.expected = expected
         self.found = found
 
     def __str__(self):
-        if self.expected and self.found:
-            return "Found [%s] but expected [%s]" % (self.expected, self.found)
+        if all(((self.node is not None), self.expected, self.found)):
+            return ("Line %s:Found [%s] but expected [%s]" %
+                    (self.node.sourceline, self.expected, self.found))
         else:
             return ("Instance version attribute value does not match expected "
                    "version attribute value")
@@ -50,7 +52,8 @@ class _BaseUpdater(object):
     UPDATE_VOCABS = {}
 
     def __init__(self):
-        pass
+        self.XPATH_VERSIONED_NODES = "."
+        self.XPATH_ROOT_NODES = "."
 
 
     def _get_ns_alias(self, root, ns):
@@ -96,6 +99,18 @@ class _BaseUpdater(object):
             pass
 
 
+    def _get_versioned_nodes(self, root):
+        xpath = self.XPATH_VERSIONED_NODES
+        namespaces = self.NSMAP
+        return root.xpath(xpath, namespaces=namespaces)
+
+
+    def _get_root_nodes(self, root):
+        xpath = self.XPATH_ROOT_NODES
+        namespaces = self.NSMAP
+        return root.xpath(xpath, namespaces=namespaces)
+
+
     def _check_version(self, root):
         """Checks that the version of the document `root` is valid for an
         implementation of ``_BaseUpdater``.
@@ -111,14 +126,17 @@ class _BaseUpdater(object):
                 does not match the value of ``VERSION``.
 
         """
+        roots = self._get_versioned_nodes(root)
         expected = self.VERSION
-        found = root.attrib.get('version')
 
-        if not found:
-            raise UnknownVersionError()
+        for node in roots:
+            found = node.attrib.get('version')
 
-        if found != expected:
-            raise InvalidVersionError(expected, found)
+            if not found:
+                raise UnknownVersionError()
+
+            if found != expected:
+                raise InvalidVersionError(node, expected, found)
 
 
     def _get_ext_namespace(self, node):

@@ -9,5 +9,6 @@
         <folder path="stix_1.0/"/>
         <folder path="stix_1.1.1/"/>
         <folder path="stix_1.1/"/>
+        <folder path="../scripts/samples/"/>
     </projectTree>
 </project>

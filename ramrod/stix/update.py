@@ -93,9 +93,50 @@ class STIX_1_0_Updater(_BaseUpdater):
         }
     }
 
+    CYBOX_UPDATER_CLASS = CYBOX_2_0_Updater
 
     def __init__(self):
+        self.XPATH_VERSIONED_NODES = (
+            "//stix:STIX_Package | "
+            "indicator:Indicator[@version] | "
+            "stix:Indicator[@version] | "
+            "stixCommon:Indicator[@version] | "
+            "incident:Incident[@version] | "
+            "stix:Incident[@version] | "
+            "stixCommon:Incident[@version] | "
+            "ttp:TTP[@version] | "
+            "stix:TTP[@version] | "
+            "stixCommon:TTP[@version] | "
+            "coa:Course_Of_Action[@version] | "
+            "stix:Course_Of_Action[@version] | "
+            "stixCommon:Course_Of_Action[@version] |"
+            "ta:Threat_Actor[@version]| "
+            "stix:Threat_Actor[@version] | "
+            "stixCommon:Threat_Actor[@version] | "
+            "campaign:Campaign[@version] | "
+            "stix:Campaign[@version] | "
+            "stixCommon:Campaign[@version] | "
+            "et:Exploit_Target[@version] | "
+            "stix:Exploit_Target[@version] | "
+            "stixCommon:Exploit_Target[@version]"
+        )
+
+        self._CYBOX_UPDATER = self._get_cybox_updater()
         self.cleaned_fields = None
+
+
+    def _get_cybox_updater(self):
+        updater_class = STIX_1_0_Updater.CYBOX_UPDATER_CLASS
+
+        updater = updater_class()
+        updater.NSMAP = dict(self.NSMAP.items() + updater_class.NSMAP.items())
+        updater.XPATH_VERSIONED_NODES = (
+            "//stix:Observables | "
+            "//incident:Structured_Description | "
+            "//ttp:Observable_Characterization"
+        )
+
+        return updater
 
 
     def _get_disallowed(self, root):
@@ -170,30 +211,7 @@ class STIX_1_0_Updater(_BaseUpdater):
 
 
     def _update_versions(self, root):
-        xpath_versions = ("//stix:STIX_Package | "
-                          "indicator:Indicator[@version] | "
-                          "stix:Indicator[@version] | "
-                          "stixCommon:Indicator[@version] | "
-                          "incident:Incident[@version] | "
-                          "stix:Incident[@version] | "
-                          "stixCommon:Incident[@version] | "
-                          "ttp:TTP[@version] | "
-                          "stix:TTP[@version] | "
-                          "stixCommon:TTP[@version] | "
-                          "coa:Course_Of_Action[@version] | "
-                          "stix:Course_Of_Action[@version] | "
-                          "stixCommon:Course_Of_Action[@version] |"
-                          "ta:Threat_Actor[@version]| "
-                          "stix:Threat_Actor[@version] | "
-                          "stixCommon:Threat_Actor[@version] | "
-                          "campaign:Campaign[@version] | "
-                          "stix:Campaign[@version] | "
-                          "stixCommon:Campaign[@version] | "
-                          "et:Exploit_Target[@version] | "
-                          "stix:Exploit_Target[@version] | "
-                          "stixCommon:Exploit_Target[@version]")
-
-        nodes = root.xpath(xpath_versions, namespaces=self.NSMAP)
+        nodes = self._get_versioned_nodes(root)
         for node in nodes:
             tag = etree.QName(node)
             name = tag.localname
@@ -206,7 +224,7 @@ class STIX_1_0_Updater(_BaseUpdater):
 
     def _update(self, root):
         updated = self._update_namespaces(root)
-        updated = self._update_cybox(updated)
+        #updated = self._update_cybox(updated)
 
         self._update_schemalocs(updated)
         self._update_versions(updated)
@@ -265,7 +283,7 @@ class STIX_1_0_Updater(_BaseUpdater):
         try:
             self.check_update(root)
             updated = self._update(root)
-        except UpdateError:
+        except (UpdateError, UnknownVersionError):
             if force:
                 self.clean(root)
                 updated = self._update(root)
