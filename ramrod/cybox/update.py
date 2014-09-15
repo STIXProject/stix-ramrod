@@ -13,7 +13,7 @@ class _CyboxUpdater(_BaseUpdater):
     def __init__(self):
         super(_CyboxUpdater, self).__init__()
         self.XPATH_VERSIONED_NODES = "//cybox:Observables"
-        self.XPATH_ROOT = "//cybox:Observables"
+        self.XPATH_ROOT_NODES = "//cybox:Observables"
         self.XPATH_OBJECT_PROPS = "//cybox:Object/cybox:Properties"
 
 

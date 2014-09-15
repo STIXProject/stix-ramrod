@@ -129,12 +129,12 @@ class STIX_1_0_Updater(_BaseUpdater):
 
         updater = updater_class()
         updater.NSMAP = dict(self.NSMAP.items() + updater_class.NSMAP.items())
-        updater.XPATH_VERSIONED_NODES = (
+        updater.XPATH_ROOT_NODES = (
             "//stix:Observables | "
             "//incident:Structured_Description | "
             "//ttp:Observable_Characterization"
         )
-
+        updater.XPATH_VERSIONED_NODES = updater.XPATH_ROOT_NODES
         return updater
 
 
