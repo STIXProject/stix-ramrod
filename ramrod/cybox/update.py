@@ -7,16 +7,17 @@ from ramrod import (_BaseUpdater, UpdateError, UnknownVersionError,
 from . import (TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR, TAG_CYBOX_UPDATE)
 
 
-class _CYBOX_Updater(_BaseUpdater):
+class _CyboxUpdater(_BaseUpdater):
     DEFAULT_VOCAB_NAMESPACE = 'http://cybox.mitre.org/default_vocabularies-1'
 
     def __init__(self):
-        super(_CYBOX_Updater, self).__init__()
-        self.XPATH_VERSION = "//cybox:Observables"
+        super(_CyboxUpdater, self).__init__()
+        self.XPATH_VERSIONED_NODES = "//cybox:Observables"
         self.XPATH_ROOT = "//cybox:Observables"
+        self.XPATH_OBJECT_PROPS = "//cybox:Object/cybox:Properties"
 
 
-class CYBOX_2_0_Updater(_CYBOX_Updater):
+class Cybox_2_0_Updater(_CyboxUpdater):
     VERSION = '2.0'
 
     NSMAP = {
@@ -204,17 +205,46 @@ class CYBOX_2_0_Updater(_CYBOX_Updater):
 
 
     def __init__(self):
+        super(Cybox_2_0_Updater, self).__init__()
         self.cleaned_fields = ()
 
 
     def _update_versions(self, root):
-        xpath = self.XPATH_VERSIONED
-        nodes = root.xpath(xpath, namespaces=self.NSMAP)
+        nodes = self._get_versioned_nodes(root)
+
         for node in nodes:
             attribs = node.attrib
             attribs[TAG_CYBOX_MAJOR]  = '2'
             attribs[TAG_CYBOX_MINOR]  = '0'
             attribs[TAG_CYBOX_UPDATE] = '1'
+
+
+    def _update_lists(self, root):
+        """Replaces CybOX v2.0 list delimiters with CybOX v2.0.1 list
+        delimiters.
+
+        CybOX v2.0 allows lists of Object Property values to be defined by
+        expressing a ``,`` delimited string. Because ``,`` is reserved, actual
+        commas should be recorded as ``<![CDATA[&comma;]]>``.
+
+        CybOX v2.0.1 uses ``##comma##`` as a list delimiter, allowing commas
+        to be processed without CybOX Language semantics.
+
+        TODO: Should this check for @apply_condition and only modify field
+            values if found?
+
+        """
+        props = root.xpath(self.XPATH_OBJECT_PROPS, namespaces=self.NSMAP)
+
+        for prop in props:
+            for child in prop.iterdescendants():
+                if not self._is_leaf(child):
+                    continue
+
+                text = child.text
+                text = text.replace(",", "##comma##")
+                text = text.replace("&comma;", ",")
+                child.text = text
 
 
     def _get_disallowed(self, root):
@@ -247,8 +277,8 @@ class CYBOX_2_0_Updater(_CYBOX_Updater):
 
 
     def clean(self, root):
-        """Ther are no disallowed items so no cleaning necessary when going between
-        CybOX 2.0 and CybOX 2.0.1. This returns immediately.
+        """There are no disallowed items so no cleaning necessary when going
+        between CybOX 2.0 and CybOX 2.0.1. This returns immediately.
 
         """
         pass
@@ -260,6 +290,7 @@ class CYBOX_2_0_Updater(_CYBOX_Updater):
         self._update_schemalocs(updated)
         self._update_versions(updated)
         self._update_vocabs(updated)
+        self._update_lists(updated)
 
         return updated
 
@@ -278,10 +309,10 @@ class CYBOX_2_0_Updater(_CYBOX_Updater):
         return updated
 
 
-class CYBOX_2_0_1_Updater(_BaseUpdater):
+class Cybox_2_0_1_Updater(_BaseUpdater):
     pass
 
 
-class CYBOX_2_1_Updater(_BaseUpdater):
+class Cybox_2_1_Updater(_BaseUpdater):
     pass
 

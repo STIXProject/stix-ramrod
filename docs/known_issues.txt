@@ -1,0 +1,3 @@
++ Content can only be upgraded (not downgraded)
++ Assumes schema-valid content is being passed in
++ xsi:schemaLocation attributes are only changed on the root node

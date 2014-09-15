@@ -4,8 +4,7 @@ from lxml import etree
 from ramrod import (_BaseUpdater, UpdateError, UnknownVersionError,
                     InvalidVersionError, TAG_XSI_TYPE, NS_XSI)
 
-from ramrod.cybox import (CYBOX_2_0_Updater)
-
+from ramrod.cybox import (Cybox_2_0_Updater)
 
 
 class STIX_1_0_Updater(_BaseUpdater):
@@ -93,7 +92,7 @@ class STIX_1_0_Updater(_BaseUpdater):
         }
     }
 
-    CYBOX_UPDATER_CLASS = CYBOX_2_0_Updater
+    CYBOX_UPDATER_CLASS = Cybox_2_0_Updater
 
     def __init__(self):
         self.XPATH_VERSIONED_NODES = (
@@ -227,9 +226,14 @@ class STIX_1_0_Updater(_BaseUpdater):
                 node.attrib['version'] = '1.0.1'
 
 
+    def _update_cybox(self, root):
+        updated = self._CYBOX_UPDATER._update(root)
+        return updated
+
+
     def _update(self, root):
         updated = self._update_namespaces(root)
-        #updated = self._update_cybox(updated)
+        updated = self._update_cybox(updated)
 
         self._update_schemalocs(updated)
         self._update_versions(updated)

@@ -58,6 +58,11 @@ class _BaseUpdater(object):
         self.XPATH_ROOT_NODES = "."
 
 
+    def _is_leaf(self, node):
+        """Returns ``True`` if the `node` has no children."""
+        return (len(node) == 0)
+
+
     def _get_ns_alias(self, root, ns):
         """Returns the XML Namespace alias defined for a namespace in a given
         instance document.
@@ -326,6 +331,11 @@ class _BaseUpdater(object):
         return updated
 
 
+def _get_xml_parser():
+    parser = etree.ETCompatXMLParser(huge_tree=True,
+                                     remove_comments=False,
+                                     strip_cdata=False)
+
 def _get_etree_root(doc):
     """Returns an instance of lxml.etree._Element for the given input.
 
@@ -343,9 +353,7 @@ def _get_etree_root(doc):
     elif isinstance(doc, etree._ElementTree):
         root = doc.getroot()
     else:
-        parser = etree.ETCompatXMLParser(huge_tree=True,
-                                         remove_comments=False,
-                                         strip_cdata=False)
+        parser = _get_xml_parser()
         tree = etree.parse(doc, parser=parser)
         root = tree.getroot()
 

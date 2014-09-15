@@ -8,7 +8,7 @@ Observables/@cybox_update_version => '1' (@cybox_update_version was not in 2.0)
 
 Common
 ------
-N/A
+BaseObjectPropertyType: default delimiter "," => "##comma##"
 
 Objects
 -------
