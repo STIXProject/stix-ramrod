@@ -25,7 +25,6 @@ class UpdateError(Exception):
         return s
 
 
-
 class InvalidVersionError(Exception):
     def __init__(self, node=None, expected=None, found=None):
         self.node = node
@@ -120,31 +119,11 @@ class _BaseUpdater(object):
 
 
     def _check_version(self, root):
-        """Checks that the version of the document `root` is valid for an
-        implementation of ``_BaseUpdater``.
-
-        Note:
-            The ``version`` attribute of `root` is compared against the
-            ``VERSION`` class-level attribute.
-
-        Raises:
-            UnknownVersionError: If `root` does not contain a ``version``
-                attribute.
-            InvalidVersionError: If the ``version`` attribute value for `root`
-                does not match the value of ``VERSION``.
+        """Checks that the version of the document matches the expected
+        version. Derived classes need to implement this method.
 
         """
-        roots = self._get_root_nodes(root)
-        expected = self.VERSION
-
-        for node in roots:
-            found = node.attrib.get('version')
-
-            if not found:
-                raise UnknownVersionError()
-
-            if StrictVersion(found) != StrictVersion(expected):
-                raise InvalidVersionError(node, expected, found)
+        raise NotImplementedError()
 
 
     def _get_ext_namespace(self, node):
@@ -218,19 +197,6 @@ class _BaseUpdater(object):
         self._remove_xml_attribute(root, TAG_SCHEMALOCATION)
 
 
-    def _clean_schemalocs(self, pairs):
-        """Returns a list of ``(ns, schemaloc)`` tuples that are allowed
-        for the updated document.
-
-        """
-        cleaned = []
-        for ns, loc in pairs:
-            if ns not in self.DISALLOWED_NAMESPACES:
-                cleaned.append((ns,loc))
-
-        return cleaned
-
-
     def _create_schemaloc_str(self, pairs):
         """Creates a valid ``xsi:schemaLocation`` string.
 
@@ -245,16 +211,27 @@ class _BaseUpdater(object):
         return schemaloc_str
 
 
+    def _clean_schemalocs(self, pairs):
+        """Returns a list of ``(ns, schemaloc)`` tuples that are allowed
+        for the updated document.
+
+        """
+        cleaned = []
+        for ns, loc in pairs:
+            if ns in self.DISALLOWED_NAMESPACES:
+                continue
+            cleaned.append((ns,loc))
+
+        return cleaned
+
+
     def _remap_schemalocs(self, pairs):
         remapped = []
 
         for ns, loc in pairs:
-            if ns in self.UPDATE_SCHEMALOC_MAP:
-                new_loc = self.UPDATE_SCHEMALOC_MAP[ns]
-            else:
-                new_loc = loc
-
-            remapped.append((ns, new_loc))
+            updated_ns  = self.UPDATE_NS_MAP.get(ns, ns)
+            updated_loc = self.UPDATE_SCHEMALOC_MAP.get(updated_ns, loc)
+            remapped.append((updated_ns, updated_loc))
 
         return remapped
 
@@ -391,6 +368,7 @@ def _update_stix(root, from_, to_, force):
     if to_ not in STIX_VERSIONS:
         raise UpdateError("The `to_` parameter specified an unknown STIX "
                           "version: %s" % to_)
+
     updated = root
     idx_from = STIX_VERSIONS.index(from_)
     idx_to = STIX_VERSIONS.index(to_)

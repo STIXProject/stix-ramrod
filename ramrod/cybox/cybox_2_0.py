@@ -1,70 +1,14 @@
-import copy
-from lxml import etree
-from distutils.version import StrictVersion
+from ramrod import (UpdateError, UnknownVersionError)
 
-from ramrod import (_BaseUpdater, UpdateError, UnknownVersionError,
-                    InvalidVersionError, TAG_XSI_TYPE, NS_XSI)
-
-from . import (TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR, TAG_CYBOX_UPDATE)
-
-
-class _CyboxUpdater(_BaseUpdater):
-    DEFAULT_VOCAB_NAMESPACE = 'http://cybox.mitre.org/default_vocabularies-1'
-
-    def __init__(self):
-        super(_CyboxUpdater, self).__init__()
-        self.XPATH_VERSIONED_NODES = "//cybox:Observables"
-        self.XPATH_ROOT_NODES = "//cybox:Observables"
-        self.XPATH_OBJECT_PROPS = "//cybox:Object/cybox:Properties"
-
-
-    def _get_observables_version(self, observables):
-        cybox_major  = observables.attrib.get(TAG_CYBOX_MAJOR)
-        cybox_minor  = observables.attrib.get(TAG_CYBOX_MINOR)
-        cybox_update = observables.attrib.get(TAG_CYBOX_UPDATE)
-
-        if not any((cybox_major, cybox_minor, cybox_update)):
-            raise UnknownVersionError()
-
-        if cybox_update:
-            version = "%s.%s.%s" % (cybox_major, cybox_minor, cybox_update)
-        else:
-            version = "%s.%s" % (cybox_major, cybox_minor)
-
-        return version
-
-
-    def _check_version(self, root):
-        """Checks the versions of the Observables instances found in the
-        `root` document. This overrides the ``_BaseUpdater._check_version()``
-        method.
-
-        Note:
-            The ``version`` attribute of `root` is compared against the
-            ``VERSION`` class-level attribute.
-
-        Args:
-            root: The root node for the document.
-
-        Raises:
-            UnknownVersionError: If `root` does not contain a ``version``
-                attribute.
-            InvalidVersionError: If the ``version`` attribute value for `root`
-                does not match the value of ``VERSION``.
-
-        """
-        roots = self._get_root_nodes(root)
-        expected = self.VERSION
-
-        for node in roots:
-            found = self._get_observables_version(node)
-
-            if StrictVersion(expected) != StrictVersion(found):
-                raise InvalidVersionError(node, expected, found)
-
+from . import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
+               TAG_CYBOX_UPDATE)
 
 class Cybox_2_0_Updater(_CyboxUpdater):
     VERSION = '2.0'
+    XPATH_VERSIONED_NODES = "//cybox:Observables"
+    XPATH_ROOT_NODES = "//cybox:Observables"
+    XPATH_OBJECT_PROPS = "//cybox:Object/cybox:Properties"
+    DEFAULT_VOCAB_NAMESPACE = 'http://cybox.mitre.org/default_vocabularies-1'
 
     NSMAP = {
         'APIObj': 'http://cybox.mitre.org/objects#APIObject-2',
@@ -249,10 +193,8 @@ class Cybox_2_0_Updater(_CyboxUpdater):
         }
     }
 
-
     def __init__(self):
         super(Cybox_2_0_Updater, self).__init__()
-        self.cleaned_fields = ()
 
 
     def _update_versions(self, root):
@@ -351,12 +293,3 @@ class Cybox_2_0_Updater(_CyboxUpdater):
                 raise
 
         return updated
-
-
-class Cybox_2_0_1_Updater(_BaseUpdater):
-    pass
-
-
-class Cybox_2_1_Updater(_BaseUpdater):
-    pass
-
