@@ -15,12 +15,12 @@ class UnknownVersionError(Exception):
 
 
 class UpdateError(Exception):
-    def __init__(self, msg=None, disallowed=None):
-        super(UpdateError, self).__init__(msg)
+    def __init__(self, message=None, disallowed=None):
+        super(UpdateError, self).__init__(message)
         self.disallowed = disallowed
 
     def __str__(self):
-        s = "Update Error: %s\n%s" % (super(UpdateError, self).__str__(), self.disallowed)
+        s = "Update Error: %s\n%s" % (self.message, self.disallowed)
         return s
 
 
@@ -289,7 +289,7 @@ class _BaseUpdater(object):
         a disallowed field/type is discovered, it is removed.
 
         Note:
-            Disallowed namespaces are defined by the ``DISALLOWED__NAMESPACES``
+            Disallowed namespaces are defined by the ``DISALLOWED_NAMESPACES``
             class-level attribute.
 
         Args:
@@ -390,17 +390,13 @@ def _update_stix(root, from_, to_, force):
     if to_ not in STIX_VERSIONS:
         raise UpdateError("The `to_` parameter specified an unknown STIX "
                           "version: %s" % to_)
-
+    updated = root
     idx_from = STIX_VERSIONS.index(from_)
     idx_to = STIX_VERSIONS.index(to_)
-
-    updated = root
-    while idx_from < idx_to:
-        version = STIX_VERSIONS[idx_from]
+    for version in STIX_VERSIONS[idx_from:idx_to]:
         klass   = STIX_UPDATERS[version]
         updater = klass()
         updated = updater.update(updated, force)
-        idx_from += 1
 
     return updated
 
