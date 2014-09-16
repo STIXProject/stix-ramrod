@@ -120,6 +120,7 @@ class STIX_1_0_Updater(_BaseUpdater):
             "stixCommon:Exploit_Target[@version]"
         )
 
+        self.XPATH_ROOT_NODES = "//stix:STIX_Package"
         self._CYBOX_UPDATER = self._get_cybox_updater()
         self.cleaned_fields = None
 
@@ -184,6 +185,7 @@ class STIX_1_0_Updater(_BaseUpdater):
         """
         if check_version:
             self._check_version(root)
+            self._CYBOX_UPDATER._check_version(root)
 
         disallowed  = self._get_disallowed(root)
 
@@ -227,13 +229,12 @@ class STIX_1_0_Updater(_BaseUpdater):
 
 
     def _update_cybox(self, root):
-        updated = self._CYBOX_UPDATER._update(root)
+        updated = self._CYBOX_UPDATER.update(root)
         return updated
 
 
     def _update(self, root):
-        updated = self._update_namespaces(root)
-        updated = self._update_cybox(updated)
+        updated = self._update_cybox(root)
 
         self._update_schemalocs(updated)
         self._update_versions(updated)

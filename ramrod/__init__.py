@@ -1,5 +1,6 @@
 import copy
 from lxml import etree
+from distutils.version import StrictVersion
 
 __version__ = "1.0a"
 
@@ -34,7 +35,7 @@ class InvalidVersionError(Exception):
     def __str__(self):
         if all(((self.node is not None), self.expected, self.found)):
             return ("Line %s:Found [%s] but expected [%s]" %
-                    (self.node.sourceline, self.expected, self.found))
+                    (self.node.sourceline, self.found, self.expected))
         else:
             return ("Instance version attribute value does not match expected "
                    "version attribute value")
@@ -133,7 +134,7 @@ class _BaseUpdater(object):
                 does not match the value of ``VERSION``.
 
         """
-        roots = self._get_versioned_nodes(root)
+        roots = self._get_root_nodes(root)
         expected = self.VERSION
 
         for node in roots:
@@ -142,7 +143,7 @@ class _BaseUpdater(object):
             if not found:
                 raise UnknownVersionError()
 
-            if found != expected:
+            if StrictVersion(found) != StrictVersion(expected):
                 raise InvalidVersionError(node, expected, found)
 
 

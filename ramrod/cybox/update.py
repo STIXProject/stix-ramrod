@@ -1,5 +1,6 @@
 import copy
 from lxml import etree
+from distutils.version import StrictVersion
 
 from ramrod import (_BaseUpdater, UpdateError, UnknownVersionError,
                     InvalidVersionError, TAG_XSI_TYPE, NS_XSI)
@@ -15,6 +16,51 @@ class _CyboxUpdater(_BaseUpdater):
         self.XPATH_VERSIONED_NODES = "//cybox:Observables"
         self.XPATH_ROOT_NODES = "//cybox:Observables"
         self.XPATH_OBJECT_PROPS = "//cybox:Object/cybox:Properties"
+
+
+    def _get_observables_version(self, observables):
+        cybox_major  = observables.attrib.get(TAG_CYBOX_MAJOR)
+        cybox_minor  = observables.attrib.get(TAG_CYBOX_MINOR)
+        cybox_update = observables.attrib.get(TAG_CYBOX_UPDATE)
+
+        if not any((cybox_major, cybox_minor, cybox_update)):
+            raise UnknownVersionError()
+
+        if cybox_update:
+            version = "%s.%s.%s" % (cybox_major, cybox_minor, cybox_update)
+        else:
+            version = "%s.%s" % (cybox_major, cybox_minor)
+
+        return version
+
+
+    def _check_version(self, root):
+        """Checks the versions of the Observables instances found in the
+        `root` document. This overrides the ``_BaseUpdater._check_version()``
+        method.
+
+        Note:
+            The ``version`` attribute of `root` is compared against the
+            ``VERSION`` class-level attribute.
+
+        Args:
+            root: The root node for the document.
+
+        Raises:
+            UnknownVersionError: If `root` does not contain a ``version``
+                attribute.
+            InvalidVersionError: If the ``version`` attribute value for `root`
+                does not match the value of ``VERSION``.
+
+        """
+        roots = self._get_root_nodes(root)
+        expected = self.VERSION
+
+        for node in roots:
+            found = self._get_observables_version(node)
+
+            if StrictVersion(expected) != StrictVersion(found):
+                raise InvalidVersionError(node, expected, found)
 
 
 class Cybox_2_0_Updater(_CyboxUpdater):
@@ -252,7 +298,7 @@ class Cybox_2_0_Updater(_CyboxUpdater):
 
 
     def check_update(self, root, check_versions=True):
-        """Determines if the input document can be upgraded from CybOX 2.0
+        """Determines if the input document can be updated from CybOX 2.0
         to CybOX 2.0.1.
 
         A CybOX document cannot be upgraded if any of the following constructs
@@ -285,14 +331,12 @@ class Cybox_2_0_Updater(_CyboxUpdater):
 
 
     def _update(self, root):
-        updated = self._update_namespaces(root)
+        self._update_schemalocs(root)
+        self._update_versions(root)
+        self._update_vocabs(root)
+        self._update_lists(root)
 
-        self._update_schemalocs(updated)
-        self._update_versions(updated)
-        self._update_vocabs(updated)
-        self._update_lists(updated)
-
-        return updated
+        return root
 
 
     def update(self, root, force=False):
