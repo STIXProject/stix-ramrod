@@ -40,6 +40,13 @@ class InvalidVersionError(Exception):
                    "version attribute value")
 
 
+class Vocab(object):
+    TYPE = None
+    VOCAB_REFERENCE = None
+    VOCAB_NAME = None
+    TERMS = {}
+
+
 class _BaseUpdater(object):
 
     # OVERRIDE THESE IN IMPLEMENTATIONS
@@ -169,10 +176,10 @@ class _BaseUpdater(object):
 
             attribs    = node.attrib
             vocab      = vocabs[type_]
-            terms      = vocab.get('terms', {})
-            new_type_  = vocab['type']
-            vocab_ref  = vocab['vocab_reference']
-            vocab_name = vocab['vocab_name']
+            terms      = vocab.TERMS
+            new_type_  = vocab.TYPE
+            vocab_ref  = vocab.VOCAB_REFERENCE
+            vocab_name = vocab.VOCAB_NAME
 
             # Update the xsi:type attribute to identify the new
             # controlled vocabulary

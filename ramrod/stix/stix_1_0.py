@@ -1,9 +1,29 @@
 import copy
 from lxml import etree
 
-from ramrod import (UpdateError, UnknownVersionError, TAG_XSI_TYPE)
+from ramrod import (Vocab, UpdateError, UnknownVersionError, TAG_XSI_TYPE)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_Updater
+
+
+class MotivationVocab(Vocab):
+    TYPE = 'MotivationVocab-1.0.1'
+    VOCAB_REFERENCE = 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd#MotivationVocab-1.0.1'
+    VOCAB_NAME = 'STIX Default Motivation Vocabulary'
+    TERMS = {
+        "Ideological - Anti-Establisment": "Ideological - Anti-Establishment",
+    }
+
+
+class PlanningAndOperationalSupportVocab(Vocab):
+    TYPE = 'PlanningAndOperationalSupportVocab-1.0.1'
+    VOCAB_REFERENCE = 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd#PlanningAndOperationalSupportVocab-1.0.1',
+    VOCAB_NAME = 'STIX Default Planning and Operational Support Vocabulary'
+    TERMS = {
+        "Planning - Open-Source Intelligence (OSINT) Gethering": "Planning - Open-Source Intelligence (OSINT) Gathering",
+        "Planning ": "Planning"
+    }
+
 
 class STIX_1_0_Updater(_STIXUpdater):
     VERSION = '1.0'
@@ -71,23 +91,8 @@ class STIX_1_0_Updater(_STIXUpdater):
     }
 
     UPDATE_VOCABS = {
-        'MotivationVocab-1.0': {
-            'type': 'MotivationVocab-1.0.1',
-            'vocab_reference': 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd#MotivationVocab-1.0.1',
-            'vocab_name': 'STIX Default Motivation Vocabulary',
-            'terms': {
-                 "Ideological - Anti-Establisment": "Ideological - Anti-Establishment",
-            }
-        },
-        'PlanningAndOperationalSupportVocab-1.0': {
-            'type': 'PlanningAndOperationalSupportVocab-1.0.1',
-            'vocab_reference': 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd#PlanningAndOperationalSupportVocab-1.0.1',
-            'vocab_name': 'STIX Default Planning and Operational Support Vocabulary',
-            'terms': {
-                "Planning - Open-Source Intelligence (OSINT) Gethering": "Planning - Open-Source Intelligence (OSINT) Gathering",
-                "Planning ": "Planning"
-            }
-        }
+        'MotivationVocab-1.0': MotivationVocab,
+        'PlanningAndOperationalSupportVocab-1.0': PlanningAndOperationalSupportVocab
     }
 
     XPATH_VERSIONED_NODES = (

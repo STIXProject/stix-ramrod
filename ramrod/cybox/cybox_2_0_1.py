@@ -1,7 +1,30 @@
-from ramrod import (UpdateError, UnknownVersionError)
+from ramrod import (Vocab, UpdateError, UnknownVersionError)
 
 from . import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
                TAG_CYBOX_UPDATE)
+
+
+class ObjectRelationshipVocab(Vocab):
+    TYPE = 'ObjectRelationshipVocab-1.1'
+    VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#ObjectRelationshipVocab-1.1',
+    VOCAB_NAME = 'CybOX Default Object-Object Relationships'
+
+
+
+class ToolTypeVocab(Vocab):
+    TYPE = 'ToolTypeVocab-1.1'
+    VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#ToolTypeVocab-1.1'
+    VOCAB_NAME = 'CybOX Default Tool Types'
+    TERMS = {
+        'A/V': 'AV'
+    }
+
+
+class ActionNameVocab(Vocab):
+    TYPE = 'ActionNameVocab-1.1'
+    VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#DefinedActionNameVocab-1.1'
+    VOCAB_NAME = 'CybOX Default Action Names'
+
 
 
 class Cybox_2_0_1_Updater(_CyboxUpdater):
@@ -195,6 +218,14 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         'http://cybox.mitre.org/objects#WinWaitableTimerObject-2': 'http://cybox.mitre.org/XMLSchema/objects/Win_Waitable_Timer/2.1/Win_Waitable_Timer_Object.xsd',
         'http://cybox.mitre.org/objects#X509CertificateObject-2': 'http://cybox.mitre.org/XMLSchema/objects/X509_Certificate/2.1/X509_Certificate_Object.xsd',
     }
+
+
+    UPDATE_VOCABS = {
+        'ObjectRelationshipVocab-1.0': ObjectRelationshipVocab,
+        'ToolTypeVocab-1.0': ToolTypeVocab,
+        'ActionNameVocab-1.0': ActionNameVocab
+    }
+
 
     def __init__(self):
         super(Cybox_2_0_1_Updater, self).__init__()
