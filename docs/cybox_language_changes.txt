@@ -1,4 +1,37 @@
 
+CybOX v2.0.1 to CybOX v2.1
+
+Core
+----
+Observables/@cybox_minor_version => '1'
+Observables/@cybox_update_version  => '0'/undef
+
+!! Observables/Observables/Object/Event/Action/Property IDs are now unique !! 
+  * (do we need to assign new ids? Maybe just if `force` is True)
+
+ Action/Relationships: cybox:RelationshipsType => cybox:ActionRelationshipsType (no instnace doc change)
+
+
+Common
+------
+DateRangeType/Start_Date: xs:date => "DateWithPrecisionType" (no instance doc change)
+DateRangeType/End_Date: xs:date => "DateWithPrecisionType" (no instance doc change)
+
+TimeType/* xs:date => "DateTimeWithPrecisionType" (no instance doc change)
+
+ToolConfigurationType/Configuration_Settings/minOccurs = "0" (remove if empty instance is found)
+
+BuildInformationType/Compilation_Date xs:dateTime => "DateTimeWithPrecisionType" (no instance doc change)
+
+
+
+Objects
+-------
+
+Vocabularies
+------------
+
+
 CybOX v2.0 to CybOX v2.0.1
 ==========================
 
