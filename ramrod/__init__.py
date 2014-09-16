@@ -169,7 +169,7 @@ class _BaseUpdater(object):
 
             attribs    = node.attrib
             vocab      = vocabs[type_]
-            terms      = vocab['terms']
+            terms      = vocab.get('terms', {})
             new_type_  = vocab['type']
             vocab_ref  = vocab['vocab_reference']
             vocab_name = vocab['vocab_name']
