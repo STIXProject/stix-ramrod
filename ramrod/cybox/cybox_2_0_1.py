@@ -10,7 +10,6 @@ class ObjectRelationshipVocab(Vocab):
     VOCAB_NAME = 'CybOX Default Object-Object Relationships'
 
 
-
 class ToolTypeVocab(Vocab):
     TYPE = 'ToolTypeVocab-1.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#ToolTypeVocab-1.1'
@@ -24,7 +23,6 @@ class ActionNameVocab(Vocab):
     TYPE = 'ActionNameVocab-1.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#DefinedActionNameVocab-1.1'
     VOCAB_NAME = 'CybOX Default Action Names'
-
 
 
 class Cybox_2_0_1_Updater(_CyboxUpdater):
@@ -238,12 +236,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
             attribs = node.attrib
             attribs[TAG_CYBOX_MAJOR]  = '2'
             attribs[TAG_CYBOX_MINOR]  = '1'
-
-            try:
-                del attribs[TAG_CYBOX_UPDATE]
-            except KeyError:
-                # `cybox_updater` attribute not found, no need to remove it!
-                pass
+            del attribs[TAG_CYBOX_UPDATE]
 
 
     def _update_lists(self, root):
