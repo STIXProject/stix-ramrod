@@ -223,9 +223,8 @@ class _BaseUpdater(object):
         for the updated document.
 
         """
-
         return [(ns, loc) for ns, loc in pairs if ns not in self.DISALLOWED_NAMESPACES]
-    
+
 
     def _remap_schemalocs(self, pairs):
         remapped = []
