@@ -1,3 +1,5 @@
 + Content can only be upgraded (not downgraded)
 + Assumes schema-valid content is being passed in
 + xsi:schemaLocation attributes are only changed on the root node
++ CybOX Object fields that were updated to be BaseObjectPropertyType types
+  do not have a `condition` attribute added if within an Indicator
