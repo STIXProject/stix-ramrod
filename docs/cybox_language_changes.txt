@@ -3,30 +3,164 @@ CybOX v2.0.1 to CybOX v2.1
 
 Core
 ----
-Observables/@cybox_minor_version => '1'
-Observables/@cybox_update_version  => '0'/undef
+* Observables/@cybox_minor_version => '1'
+
+* Observables/@cybox_update_version  => '0'/undef
 
 !! Observables/Observables/Object/Event/Action/Property IDs are now unique !! 
   * (do we need to assign new ids? Maybe just if `force` is True)
 
- Action/Relationships: cybox:RelationshipsType => cybox:ActionRelationshipsType (no instnace doc change)
+* Action/Relationships: cybox:RelationshipsType => cybox:ActionRelationshipsType (no instnace doc change)
 
 
 Common
 ------
-DateRangeType/Start_Date: xs:date => "DateWithPrecisionType" (no instance doc change)
-DateRangeType/End_Date: xs:date => "DateWithPrecisionType" (no instance doc change)
+* DateRangeType/Start_Date: xs:date => "DateWithPrecisionType" (no instance doc change)
 
-TimeType/* xs:date => "DateTimeWithPrecisionType" (no instance doc change)
+* DateRangeType/End_Date: xs:date => "DateWithPrecisionType" (no instance doc change)
 
-ToolConfigurationType/Configuration_Settings/minOccurs = "0" (remove if empty instance is found)
+* TimeType/* xs:date => "DateTimeWithPrecisionType" (no instance doc change)
 
-BuildInformationType/Compilation_Date xs:dateTime => "DateTimeWithPrecisionType" (no instance doc change)
+* ToolConfigurationType/Configuration_Settings/minOccurs = "0" (remove if empty instance is found)
 
+* BuildInformationType/Compilation_Date xs:dateTime => "DateTimeWithPrecisionType" (no instance doc change)
+
+* ExecutionEnvironmentType/Start_Time xs:dateTime => "DateTimeWithPrecisionType" (no instance doc change)
+
+* CipherType/CipherEnum added. Check for uses of this that may require translation from formerly free-text fields (It shouldn't because CipherType is a union of xs:string and the enum).
+
+* RegionalRegistryType/RegionalRegistryEnum added. Check for uses that may require translation from formerly free-text fields (It shouldn't because RegionalRegistryType is a union of xs:string and the enum).
 
 
 Objects
 -------
+
+DNSQueryObjectType
+~~~~~~~~~~~~~~~~~~
+* DNSEntryType/DNS_Entry now optional. Remove empty instances.
+* DNSQuestionType/QName now optional. Remove empty instances.
+
+DiskPartitionObjectType
+~~~~~~~~~~~~~~~~~~~~~~~
+* Partition_ID now optional
+
+FileObjectType
+~~~~~~~~~~~~~~
+* EPJumpCodeType/Depth now optional
+
+HTTPSessionObjectType
+~~~~~~~~~~~~~~~~~~~~~
+* HTTPRequestHeaderFieldsType/DNT URIObjecType => StringObjectPropertyType
+* HTTPRequestHeaderFieldsType/X_Requested_For => X_Forwarded_For
+* HTTPResponseHeaderFieldsType/Refresh IntegerObjectPropertyType => StringObjectPropertyType
+* HTTPResponseHeaderFieldsType/Vary URIObjectType => StringObjectPropertyType
+* HTTPResponseHeaderFieldType/X_Forwarded_Proto Removed. Move to HTTPRequestHeaderFieldsType/X_Forwarded_For?
+* HTTPMessageType/Message_Body now optional
+* HostFieldType/Domain_Name now optional
+* HTTPMethodType/@datatype now optional
+
+LinuxPackageObjectType
+~~~~~~~~~~~~~~~~~~~~~~
+* Name now optional.
+
+NetworkConnectionObjectType
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* Layer7ProtocolType/@datatype now optional
+
+NetworkPacketObjectType
+~~~~~~~~~~~~~~~~~~~~~~~
+* ARPType/Protol_Addr_Size = > Proto_Addr_Size
+* RouterSolicitationOptionsType/Src_Link_Addr NDPSrcLinkAddrType => NDPLinkAddrType (no instance change)
+* RouterAdvertisementOptionsType/Src_Link_Addr NDPSrcLinkAddrType => NDPLinkAddrType (no instance change)
+* NeighborSolicitationOptionsType/Src_Link_Addr NDPSrcLinkAddrType => NDPLinkAddrType (no instance change)
+* NeighborOptionsType/Target_Link_Addr NDPTargetLinkAddrType => NDPLinkAddrType (no instance change)
+* RedirectOptionsType/Target_Link_Addr NDPTargetLinkAddrType => NDPLinkAddrType (no instance change)
+* IPv6HeaderType/IP_Version IPVersionTypeEnum => IPVersionType (fixed value, no instance change maybe?)
+* IPv6ExtHeaderType/Excapsulating_Security_Payload => Encapsulating_Security_Payload
+* ICMPv4PacketType/Error_Msg now optional
+* ICMPv4PacketType/Info_Msg now optional
+* ICMPv4PacketType/Traceroute now optional
+* ICMPv4ErrorMessageType/Destination_Unreachable now optional
+* ICMPv4ErrorMessageType/Source_Quench now optional
+* ICMPv4ErrorMessageType/Redirect_Message now optional
+* ICMPv4ErrorMessageType/Time_Exceeded now optional
+* ICMPv4InfoMessageType/Echo_Reply now optional
+* ICMPv4InfoMessageType/Echo_Request now optional
+* ICMPv4InfoMessageType/Timestamp_Request now optional
+* ICMPv4InfoMessageType/Timestamp_Reply now optional
+* ICMPv4InfoMessageType/Address_Mask_Reply now optional
+* ICMPv4TracerouteType/Outbound_Packet_Forward_Success now optional
+* ICMPv4TracerouteType/Outbound_Packet_no_Route now optional
+* ICMPv6PacketType/Error_Msg now optional
+* ICMPv6PacketType/Info_Msg now optional
+* ICMPv4EchoReplyType/Echo_Reply now optional
+* ICMPv4RedirectMessageType/Network_Redirect now optional
+* ICMPv4RedirectMessageType/Host_Redirect now optional
+* ICMPv4RedirectMessageType/ToS_Host_Redirect now optional
+* ICMPv4RedirectMessageType/Tos_Network_Redirect now optional
+* ICMPv4EchoRequestType/Echo_Request now optional
+* ICMPv4TimeExceededType/TTL_Exceeded_In_Transit now optional
+* ICMPv4TimeExceededType/Frag_Reassembly_Time_Exceeded now optional
+* ICMPv4TimestampRequestType/Timestamp now optional
+* ICMPv4TimestampRequestType/Originate_Timestamp NonNegativeIntegerObjectPropertyType => UnsignedInteger...
+* ICMPv4TimestampReplyType/Timestamp_Reply now optional
+* ICMPv4TimestampReplyType/Originate_Timestamp now optional
+* ICMPv4TimestampReplyType/Receive_Timestamp now optional
+* ICMPv4TimestampReplyType/Transmit_Timestamp now optional
+* ICMPv4AddressMaskRequestType/Address_Mask_Request now optional
+* ICMPv4AddressMaskReplyType/Address_Mask_Reply now optional
+* PrefixType/IPv6_Addr now optional
+* PrefixType/IP_Addr_Prefix now optional
+* EncapsulatingSecurityPayloadType/Authenication_Data => Authentication_Data
+
+ProductObjectType
+~~~~~~~~~~~~~~~~~
+* Product now optional
+* Vendor now optional
+
+SystemObjectType
+~~~~~~~~~~~~~~~~
+* IPInfoType/IP_Address now optional
+
+URIObjectType
+~~~~~~~~~~~~~
+* Value now optional
+
+WindowsComputerAccountObjectType
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* KerberosType/Delegation now optional
+* KerberosDelegationType/Bitmask now optional
+* KerberosDelegationType/Service now optional
+
+
+WindowsExecutableFileObject
+~~~~~~~~~~~~~~~~~~~~~~~
+* PEResourceType/Type PEPEResourceTypeEnum => PEResourceContentType (no instance document change)
+* PESectionType/Type removed (move to ^ ?)
+* StreamObjectType/Size_In_Bytes now optional
+
+WindowsMailslotObjectType
+~~~~~~~~~~~~~~~~~~~~~
+!! Handle WindowsHandleListType => WindowsHandleObjectType Untranslatable if len(node) > 1
+
+WindowsNetworkShareObjectType
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* Netname now optional
+
+WindowsPrefetchEntryObjectType
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* VolumeType/VolumeItem now optional
+* VolumeType/DeviceItem now optional
+
+WindowsTaskObjectType
+~~~~~~~~~~~~~~~~~~~~~
+!! TriggerType/Trigger_Type TriggerType => TaskTriggerType (Untranslatable if found)
+
+
+
+
+
+
 
 Vocabularies
 ------------
