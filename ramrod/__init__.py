@@ -2,7 +2,7 @@ import copy
 from lxml import etree
 from distutils.version import StrictVersion
 
-__version__ = "1.0a"
+__version__ = "1.0a1"
 
 NS_XSI = "http://www.w3.org/2001/XMLSchema-instance"
 TAG_XSI_TYPE = "{%s}type" % NS_XSI
