@@ -1,14 +1,19 @@
-from ramrod import (UpdateError, UnknownVersionError)
+from ramrod import (Vocab, UpdateError, UnknownVersionError)
 
 from . import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
                TAG_CYBOX_UPDATE)
 
+class EventTypeVocab(Vocab):
+    TYPE = 'EventTypeVocab-1.0.1'
+    VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.0.1/cybox_default_vocabularies.xsd#EventTypeVocab-1.0.1'
+    VOCAB_NAME = 'CybOX Default Event Types'
+    TERMS = {
+        "Anomoly Events": "Anomaly Events"
+    }
+
+
 class Cybox_2_0_Updater(_CyboxUpdater):
     VERSION = '2.0'
-    XPATH_VERSIONED_NODES = "//cybox:Observables"
-    XPATH_ROOT_NODES = "//cybox:Observables"
-    XPATH_OBJECT_PROPS = "//cybox:Object/cybox:Properties"
-    DEFAULT_VOCAB_NAMESPACE = 'http://cybox.mitre.org/default_vocabularies-1'
 
     NSMAP = {
         'APIObj': 'http://cybox.mitre.org/objects#APIObject-2',
@@ -183,15 +188,9 @@ class Cybox_2_0_Updater(_CyboxUpdater):
 
 
     UPDATE_VOCABS = {
-        'EventTypeVocab-1.0': {
-            'type': 'EventTypeVocab-1.0.1',
-            'vocab_reference': 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.0.1/cybox_default_vocabularies.xsd#EventTypeVocab-1.0.1',
-            'vocab_name': 'CybOX Default Event Types',
-            'terms': {
-                 "Anomoly Events": "Anomaly Events"
-            }
-        }
+        'EventTypeVocab-1.0': EventTypeVocab
     }
+
 
     def __init__(self):
         super(Cybox_2_0_Updater, self).__init__()

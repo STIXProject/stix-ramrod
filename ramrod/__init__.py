@@ -1,4 +1,5 @@
 import copy
+from collections import defaultdict
 from lxml import etree
 from distutils.version import StrictVersion
 
@@ -11,14 +12,16 @@ TAG_SCHEMALOCATION ="{%s}schemaLocation" % NS_XSI
 TAG_VOCAB_REFERENCE = "vocab_reference"
 TAG_VOCAB_NAME = 'vocab_name'
 
+
 class UnknownVersionError(Exception):
     pass
 
 
 class UpdateError(Exception):
-    def __init__(self, message=None, disallowed=None):
+    def __init__(self, message=None, disallowed=None, duplicates=None):
         super(UpdateError, self).__init__(message)
         self.disallowed = disallowed
+        self.duplicates = duplicates
 
     def __str__(self):
         s = "Update Error: %s\n%s" % (self.message, self.disallowed)
@@ -33,7 +36,7 @@ class InvalidVersionError(Exception):
 
     def __str__(self):
         if all(((self.node is not None), self.expected, self.found)):
-            return ("Line %s:Found [%s] but expected [%s]" %
+            return ("Line %s:Found '%s' but expected '%s'" %
                     (self.node.sourceline, self.found, self.expected))
         else:
             return ("Instance version attribute value does not match expected "
@@ -85,6 +88,27 @@ class _BaseUpdater(object):
 
         """
         return root.nsmap.get(ns)
+
+
+    def _get_duplicates(self, root):
+        """This checks `root` for nodes with duplicate IDs.
+
+        Returns:
+            A dictionary where the ID is the key and the values are lists of
+            lxml._Element nodes.
+
+        """
+        id_nodes = defaultdict(list)
+        roots = self._get_root_nodes(root)
+        for node in roots:
+            for child in node:
+                if 'id' not in node.attrib:
+                    continue
+
+                id_ = child.attrib['id']
+                id_nodes[id_].append(child)
+
+        return dict((id_, nodes) for id_, nodes in id_nodes if len(nodes) > 1)
 
 
     def _remove_xml_node(self, node):

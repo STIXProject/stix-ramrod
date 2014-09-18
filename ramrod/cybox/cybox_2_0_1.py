@@ -1,5 +1,6 @@
+import copy
+from collections import defaultdict
 from ramrod import (Vocab, UpdateError, UnknownVersionError)
-
 from . import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
                TAG_CYBOX_UPDATE)
 
@@ -27,9 +28,6 @@ class ActionNameVocab(Vocab):
 
 class Cybox_2_0_1_Updater(_CyboxUpdater):
     VERSION = '2.0.1'
-    XPATH_VERSIONED_NODES = "//cybox:Observables"
-    XPATH_ROOT_NODES = "//cybox:Observables"
-    XPATH_OBJECT_PROPS = "//cybox:Object/cybox:Properties"
 
     NSMAP = {
         'APIObj': 'http://cybox.mitre.org/objects#APIObject-2',
@@ -236,10 +234,18 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
             attribs = node.attrib
             attribs[TAG_CYBOX_MAJOR]  = '2'
             attribs[TAG_CYBOX_MINOR]  = '1'
-            del attribs[TAG_CYBOX_UPDATE]
+
+            try:
+                del attribs[TAG_CYBOX_UPDATE]
+            except KeyError:
+                pass
 
 
     def _update_lists(self, root):
+        pass
+
+
+    def _update_optionals(self, root):
         pass
 
 
@@ -248,13 +254,16 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
 
     def check_update(self, root, check_versions=True):
-        """Determines if the input document can be updated from CybOX 2.0
-        to CybOX 2.0.1.
+        """Determines if the input document can be updated from CybOX 2.0.1
+        to CybOX 2.1.
 
         A CybOX document cannot be upgraded if any of the following constructs
         are found in the document:
 
         * TODO: Add constructs
+
+        CybOX 2.1 also introduces schematic enforcement of ID uniqueness. Any
+        nodes with duplicate IDs are reported.
 
         Args:
             root (lxml.etree._Element): The top-level node of the STIX
@@ -267,17 +276,37 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         if check_versions:
             self._check_version(root)
 
+        duplicates = self._get_duplicates(root)
         disallowed = self._get_disallowed(root)
-        if disallowed:
-            raise UpdateError(disallowed)
+
+        if any((disallowed, duplicates)):
+            raise UpdateError(disallowed=disallowed, duplicates=duplicates)
 
 
-    def clean(self, root):
-        """There are no disallowed items so no cleaning necessary when going
-        between CybOX 2.0 and CybOX 2.0.1. This returns immediately.
+    def _clean_disallowed(self, disallowed):
+        removed = []
 
-        """
+        for node in disallowed:
+            dup = copy.deepcopy(node)
+            self._remove_xml_node(node)
+            removed.append(dup)
+
+        return removed
+
+
+    def _clean_duplicates(self, duplicates):
         pass
+
+
+    def clean(self, root, disallowed=None, duplicates=None):
+        disallowed = disallowed or self._get_disallowed(root)
+        duplicates = duplicates or self._get_duplicates(root)
+
+        self._clean_duplicates(duplicates)  # TODO: What does this do?
+        removed = self._clean_disallowed(disallowed)
+
+        self.cleaned_fields = tuple(removed)
+        return root
 
 
     def _update(self, root):
@@ -285,6 +314,8 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         self._update_versions(root)
         self._update_vocabs(root)
         self._update_lists(root)
+        self._update_optionals(root)
+
 
         return root
 

@@ -9,6 +9,11 @@ CYBOX_VERSIONS = ('2.0', '2.0.1', '2.1')
 
 
 class _CyboxUpdater(_BaseUpdater):
+    DEFAULT_VOCAB_NAMESPACE = 'http://cybox.mitre.org/default_vocabularies-1'
+
+    XPATH_VERSIONED_NODES = "//cybox:Observables"
+    XPATH_ROOT_NODES = "//cybox:Observables"
+    XPATH_OBJECT_PROPS = "//cybox:Object/cybox:Properties"
 
     def __init__(self):
         super(_CyboxUpdater, self).__init__()
