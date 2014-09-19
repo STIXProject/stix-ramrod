@@ -1,5 +1,6 @@
 
 CybOX v2.0.1 to CybOX v2.1
+==========================
 
 Core
 ----
@@ -155,10 +156,6 @@ WindowsPrefetchEntryObjectType
 WindowsTaskObjectType
 ~~~~~~~~~~~~~~~~~~~~~
 !! TriggerType/Trigger_Type TriggerType => TaskTriggerType (Untranslatable if found)
-
-
-
-
 
 
 

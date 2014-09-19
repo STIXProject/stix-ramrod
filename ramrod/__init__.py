@@ -1,6 +1,7 @@
 import copy
 from collections import defaultdict
 from lxml import etree
+from lxml.etree import QName
 from distutils.version import StrictVersion
 
 __version__ = "1.0a1"
@@ -48,6 +49,58 @@ class Vocab(object):
     VOCAB_REFERENCE = None
     VOCAB_NAME = None
     TERMS = {}
+
+
+class _DisallowedElement(object):
+    XPATH = "."
+    CTX_TYPE_NAME = None
+    CTX_TYPE_NAMESPACE = None
+    NSMAP = None
+
+
+    def __init__(self,):
+        pass
+
+
+    @classmethod
+    def _interrogate(cls, nodes):
+        return nodes
+
+
+    @classmethod
+    def _get_contexts(cls, root):
+        type_name, type_ns = cls.CTX_TYPE_NAME, cls.CTX_TYPE_NAMESPACE
+
+        if not type_name:
+            return (root,)
+
+        if not all((type_name, type_ns)):
+            raise Exception("Need BOTH CTX_TYPE_NAME and CTX_TYPE_NAMESPACE "
+                            "defined.")
+
+        contexts = []
+        typed_nodes = _get_typed_nodes(root)
+        for node in typed_nodes:
+            alias, type_ = _get_type_info(node)
+            ns = _get_ext_namespace(node)
+
+            if all((type_ == type_name, ns == type_ns)):
+                contexts.append(node)
+
+        return contexts
+
+    @classmethod
+    def find(cls, root):
+        contexts = cls._get_contexts(root)
+        xpath, nsmap = cls.XPATH, cls.NSMAP
+
+        found = []
+        for ctx in contexts:
+            nodes = ctx.xpath(xpath, namespaces=nsmap)
+            interrogated = cls._interrogate(nodes)
+            found.extend(interrogated)
+
+        return found
 
 
 class _BaseUpdater(object):
@@ -157,42 +210,13 @@ class _BaseUpdater(object):
         raise NotImplementedError()
 
 
-    def _get_ext_namespace(self, node):
-        """Returns the namespace which contains the type definition for
-        the `node`. The type definition is specified by the ``xsi:type``
-        attribute which is formatted as ``[alias]:[type name]``.
-
-        This method splits the ``xsi:type`` attribute value into an alias
-        and a type name and performs a namespace lookup for the alias.
-
-        Args:
-            node: An instance of lxml.etree._Element which contains an
-                ``xsi:type`` attribute.
-
-        Returns:
-            The namespace for the type defintion of this node.
-
-        Raises:
-            KeyError if the node does not contain an ``xsi:type`` attribute.
-
-        """
-        xsi_type = node.attrib[TAG_XSI_TYPE]
-        alias, type_ = xsi_type.split(":")
-        namespace = node.nsmap[alias]
-        return namespace
-
-
     def _update_vocabs(self, root):
         vocabs = self.UPDATE_VOCABS
-        nsmap = {"xsi":  NS_XSI}
-        xpath = "//*[@xsi:type]"
-        nodes = root.xpath(xpath, namespaces=nsmap)
+        typed_nodes = _get_typed_nodes(root)
 
-        for node in nodes:
-            xsi_type = node.attrib[TAG_XSI_TYPE]
-            alias, type_ = xsi_type.split(":")
-
-            ext_ns = self._get_ext_namespace(node)
+        for node in typed_nodes:
+            alias, type_ = _get_type_info(node)
+            ext_ns = _get_ext_namespace(node)
 
             if ((ext_ns != self.DEFAULT_VOCAB_NAMESPACE) or
                 (type_ not in vocabs)):
@@ -332,6 +356,44 @@ class _BaseUpdater(object):
         updated[:] = root[:]
 
         return updated
+
+
+def _get_type_info(node):
+    xsi_type = node.attrib[TAG_XSI_TYPE]
+    alias, type_ = xsi_type.split(':')
+    return (alias, type_)
+
+
+def _get_typed_nodes(root):
+    nsmap = {'xsi': NS_XSI}
+    xpath = ".//*[@xsi:type]"
+    nodes = root.xpath(xpath, namespaces=nsmap)
+    return nodes
+
+
+def _get_ext_namespace(node):
+    """Returns the namespace which contains the type definition for
+    the `node`. The type definition is specified by the ``xsi:type``
+    attribute which is formatted as ``[alias]:[type name]``.
+
+    This method splits the ``xsi:type`` attribute value into an alias
+    and a type name and performs a namespace lookup for the alias.
+
+    Args:
+        node: An instance of lxml.etree._Element which contains an
+            ``xsi:type`` attribute.
+
+    Returns:
+        The namespace for the type defintion of this node.
+
+    Raises:
+        KeyError if the node does not contain an ``xsi:type`` attribute.
+
+    """
+    xsi_type = node.attrib[TAG_XSI_TYPE]
+    alias, type_ = xsi_type.split(":")
+    namespace = node.nsmap[alias]
+    return namespace
 
 
 def _get_xml_parser():

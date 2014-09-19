@@ -6,6 +6,7 @@ class _STIXUpdater(_BaseUpdater):
     def __init__(self):
         super(_STIXUpdater, self).__init__()
         self.cleaned_fields = ()
+        self._init_cybox_updater()
 
 
     def _init_cybox_updater(self):

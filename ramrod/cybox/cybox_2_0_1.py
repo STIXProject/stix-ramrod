@@ -1,6 +1,6 @@
 import copy
 from collections import defaultdict
-from ramrod import (Vocab, UpdateError, UnknownVersionError)
+from ramrod import (Vocab, _DisallowedElement, UpdateError, UnknownVersionError)
 from . import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
                TAG_CYBOX_UPDATE)
 
@@ -24,6 +24,44 @@ class ActionNameVocab(Vocab):
     TYPE = 'ActionNameVocab-1.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#DefinedActionNameVocab-1.1'
     VOCAB_NAME = 'CybOX Default Action Names'
+
+
+class DisallowedTaskTrigger(_DisallowedElement):
+    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#WinTaskObject-2"
+    CTX_TYPE_NAME = "WindowsTaskObjectType"
+    XPATH = ".//WinTaskObj:Task_Trigger"
+
+
+class DisallowedWindowsMailslotHandle(_DisallowedElement):
+    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#WinMailslotObject-2"
+    CTX_TYPE_NAME = "WindowsMailslotObjectType"
+    XPATH = "./WinMailslotObj:Handle"
+
+    @classmethod
+    def _interrogate(cls, nodes):
+        """Checks if any of the nodes in `nodes` contains more than one child
+        element.
+
+        In CybOX 2.0.1, the ``Handle`` element defined within the
+        ``WindowsMailslotObjectType`` contained a list of
+        ``WindowsHandleObjectType`` instances. CybOX 2.1 changed the top-level
+        ``Handle`` element to be a single instance of
+        ``WindowsHandleObjectType``.
+
+        Content translation from CybOX 2.0.1 to CybOX 2.1 is only possible if
+        the 2.0.1 content contains only one child.
+
+        Returns:
+            A list of nodes that contain more than one ``Handle`` child.
+
+        """
+        contraband = []
+        for node in nodes:
+            if len(node) > 1:
+                contraband.append(node)
+
+        return contraband
+
 
 
 class Cybox_2_0_1_Updater(_CyboxUpdater):
@@ -113,6 +151,11 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         'cyboxVocabs': 'http://cybox.mitre.org/default_vocabularies-2',
         'cybox-cpe': 'http://cybox.mitre.org/extensions/platform#CPE2.3-1',
     }
+
+    DISALLOWED = (
+        DisallowedTaskTrigger,
+        DisallowedWindowsMailslotHandle
+    )
 
     UPDATE_NS_MAP = {
         'http://cybox.mitre.org/objects#WinDriverObject-2': 'http://cybox.mitre.org/objects#WinDriverObject-3',
@@ -250,7 +293,13 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
 
     def _get_disallowed(self, root):
-        return []
+        disallowed = []
+
+        for klass in self.DISALLOWED:
+            found = klass.find(root)
+            disallowed.extend(found)
+
+        return disallowed
 
 
     def check_update(self, root, check_versions=True):
@@ -332,3 +381,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
                 raise
 
         return updated
+
+# Wiring
+DisallowedTaskTrigger.NSMAP = Cybox_2_0_1_Updater.NSMAP
+DisallowedWindowsMailslotHandle.NSMAP = Cybox_2_0_1_Updater.NSMAP

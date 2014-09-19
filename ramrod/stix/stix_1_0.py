@@ -1,7 +1,8 @@
 import copy
 from lxml import etree
 
-from ramrod import (Vocab, UpdateError, UnknownVersionError, TAG_XSI_TYPE)
+from ramrod import (Vocab, _DisallowedElement, UpdateError,
+                    UnknownVersionError, TAG_XSI_TYPE)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_Updater
 
@@ -23,6 +24,16 @@ class PlanningAndOperationalSupportVocab(Vocab):
         "Planning - Open-Source Intelligence (OSINT) Gethering": "Planning - Open-Source Intelligence (OSINT) Gathering",
         "Planning ": "Planning"
     }
+
+
+class DisallowedMAEC(_DisallowedElement):
+    CTX_TYPE_NAME = "MAEC4.0InstanceType"
+    CTX_TYPE_NAMESPACE = "http://stix.mitre.org/extensions/Malware#MAEC4.0-1"
+
+
+class DisallowedCAPEC(_DisallowedElement):
+    CTX_TYPE_NAME =  "CAPEC2.5InstanceType"
+    CTX_TYPE_NAMESPACE = "http://stix.mitre.org/extensions/AP#CAPEC2.5-1"
 
 
 class STIX_1_0_Updater(_STIXUpdater):
@@ -62,6 +73,11 @@ class STIX_1_0_Updater(_STIXUpdater):
         'http://stix.mitre.org/extensions/Malware#MAEC4.0-1',
     )
 
+    DISALLOWED = (
+        DisallowedCAPEC,
+        DisallowedMAEC
+    )
+
     # STIX v1.0.1 NS => STIX v1.0.1 SCHEMALOC
     UPDATE_SCHEMALOC_MAP = {
         'http://data-marking.mitre.org/Marking-1': 'http://stix.mitre.org/XMLSchema/data_marking/1.0.1/data_marking.xsd',
@@ -96,7 +112,7 @@ class STIX_1_0_Updater(_STIXUpdater):
     }
 
     XPATH_VERSIONED_NODES = (
-        "//stix:STIX_Package | "
+        ".//stix:STIX_Package | "
         "indicator:Indicator[@version] | "
         "stix:Indicator[@version] | "
         "stixCommon:Indicator[@version] | "
@@ -120,7 +136,7 @@ class STIX_1_0_Updater(_STIXUpdater):
         "stixCommon:Exploit_Target[@version]"
     )
 
-    XPATH_ROOT_NODES = "//stix:STIX_Package"
+    XPATH_ROOT_NODES = ".//stix:STIX_Package"
 
 
     def __init__(self):
@@ -142,19 +158,11 @@ class STIX_1_0_Updater(_STIXUpdater):
 
 
     def _get_disallowed(self, root):
-        nsmap = {"xsi":  "http://www.w3.org/2001/XMLSchema-instance"}
-        xpath = "//*[@xsi:type]"
-        nodes = root.xpath(xpath, namespaces=nsmap)
-
-        types = ("MAEC4.0InstanceType", "CAPEC2.5InstanceType")
-
         disallowed = []
-        for node in nodes:
-            xsi_type = node.attrib[TAG_XSI_TYPE]
-            type_ = xsi_type.split(":")[1]
 
-            if type_ in types:
-                disallowed.append(type_)
+        for klass in self.DISALLOWED:
+            found = klass.find(root)
+            disallowed.extend(found)
 
         cybox = self._cybox_updater._get_disallowed(root)
         disallowed.extend(cybox)
@@ -303,3 +311,7 @@ class STIX_1_0_Updater(_STIXUpdater):
                 raise
 
         return updated
+
+# Wiring
+DisallowedMAEC.NSMAP = STIX_1_0_Updater.NSMAP
+DisallowedCAPEC.NSMAP = STIX_1_0_Updater.NSMAP
