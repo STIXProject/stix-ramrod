@@ -1,6 +1,6 @@
 import copy
-from collections import defaultdict
 from ramrod import (Vocab, _DisallowedElement, UpdateError, UnknownVersionError)
+from ramrod.utils import ignored
 from . import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
                TAG_CYBOX_UPDATE)
 
@@ -278,10 +278,8 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
             attribs[TAG_CYBOX_MAJOR]  = '2'
             attribs[TAG_CYBOX_MINOR]  = '1'
 
-            try:
+            with ignored(KeyError):
                 del attribs[TAG_CYBOX_UPDATE]
-            except KeyError:
-                pass
 
 
     def _update_lists(self, root):
@@ -289,7 +287,8 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
 
     def _update_optionals(self, root):
-        pass
+        """Oh god there are a lot..."""
+
 
 
     def _get_disallowed(self, root):

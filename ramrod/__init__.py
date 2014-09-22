@@ -211,6 +211,7 @@ class _BaseUpdater(object):
 
 
     def _update_vocabs(self, root):
+        default_vocab_ns = self.DEFAULT_VOCAB_NAMESPACE
         vocabs = self.UPDATE_VOCABS
         typed_nodes = _get_typed_nodes(root)
 
@@ -218,8 +219,7 @@ class _BaseUpdater(object):
             alias, type_ = _get_type_info(node)
             ext_ns = _get_ext_namespace(node)
 
-            if ((ext_ns != self.DEFAULT_VOCAB_NAMESPACE) or
-                (type_ not in vocabs)):
+            if not all((ext_ns == default_vocab_ns, type_ in vocabs)):
                 continue
 
             attribs    = node.attrib
