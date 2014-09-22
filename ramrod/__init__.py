@@ -68,7 +68,7 @@ class _DisallowedElement(object):
 
 
     @classmethod
-    def _get_contexts(cls, root):
+    def _get_contexts(cls, root, typed_nodes=None):
         type_name, type_ns = cls.CTX_TYPE_NAME, cls.CTX_TYPE_NAMESPACE
 
         if not type_name:
@@ -78,8 +78,10 @@ class _DisallowedElement(object):
             raise Exception("Need BOTH CTX_TYPE_NAME and CTX_TYPE_NAMESPACE "
                             "defined.")
 
+        if not typed_nodes:
+            typed_nodes = _get_typed_nodes(root)
+
         contexts = []
-        typed_nodes = _get_typed_nodes(root)
         for node in typed_nodes:
             alias, type_ = _get_type_info(node)
             ns = _get_ext_namespace(node)
@@ -90,8 +92,8 @@ class _DisallowedElement(object):
         return contexts
 
     @classmethod
-    def find(cls, root):
-        contexts = cls._get_contexts(root)
+    def find(cls, root, typed_nodes=None):
+        contexts = cls._get_contexts(root, typed_nodes)
         xpath, nsmap = cls.XPATH, cls.NSMAP
 
         found = []
@@ -101,6 +103,11 @@ class _DisallowedElement(object):
             found.extend(interrogated)
 
         return found
+
+
+
+
+
 
 
 class _BaseUpdater(object):
