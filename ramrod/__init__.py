@@ -522,11 +522,11 @@ def _update_cybox(root, from_, to_, force):
     from ramrod.cybox import CYBOX_UPDATERS, CYBOX_VERSIONS
 
     if from_ not in CYBOX_VERSIONS:
-        raise UpdateError("The `from_` parameter specified an unknown STIX "
+        raise UpdateError("The `from_` parameter specified an unknown CybOX "
                           "version: %s" % from_)
 
     if to_ not in CYBOX_VERSIONS:
-        raise UpdateError("The `to_` parameter specified an unknown STIX "
+        raise UpdateError("The `to_` parameter specified an unknown CybOX "
                           "version: %s" % to_)
 
     if StrictVersion(from_) > StrictVersion(to_):
