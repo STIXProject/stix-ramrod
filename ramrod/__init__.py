@@ -53,10 +53,7 @@ class Vocab(object):
 
 class _DisallowedFields(object):
     XPATH = "."
-    CTX_TYPE_NAME = None
-    CTX_TYPE_NAMESPACE = None
     CTX_TYPES = {}
-
     NSMAP = None
 
 
@@ -71,14 +68,10 @@ class _DisallowedFields(object):
 
     @classmethod
     def _get_contexts(cls, root, typed=None):
-        type_name, type_ns = cls.CTX_TYPE_NAME, cls.CTX_TYPE_NAMESPACE
+        ctx = cls.CTX_TYPES
 
-        if not type_name:
+        if not ctx:
             return (root,)
-
-        if not all((type_name, type_ns)):
-            raise Exception("Need BOTH CTX_TYPE_NAME and CTX_TYPE_NAMESPACE "
-                            "defined.")
 
         if not typed:
             typed = _get_typed_nodes(root)
@@ -88,7 +81,7 @@ class _DisallowedFields(object):
             alias, type_ = _get_type_info(node)
             ns = _get_ext_namespace(node)
 
-            if all((type_ == type_name, ns == type_ns)):
+            if ctx.get(type_) == ns:
                 contexts.append(node)
 
         return contexts

@@ -28,15 +28,18 @@ class ActionNameVocab(Vocab):
 
 
 class DisallowedTaskTrigger(_DisallowedFields):
-    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#WinTaskObject-2"
-    CTX_TYPE_NAME = "WindowsTaskObjectType"
     XPATH = ".//WinTaskObj:Task_Trigger"
+    CTX_TYPES = {
+        "WindowsTaskObjectType": "http://cybox.mitre.org/objects#WinTaskObject-2"
+    }
 
 
 class DisallowedWindowsMailslotHandle(_DisallowedFields):
-    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#WinMailslotObject-2"
-    CTX_TYPE_NAME = "WindowsMailslotObjectType"
     XPATH = "./WinMailslotObj:Handle"
+    CTX_TYPES = {
+        "WindowsMailslotObjectType": "http://cybox.mitre.org/objects#WinMailslotObject-2"
+    }
+
 
     @classmethod
     def _interrogate(cls, nodes):
@@ -69,54 +72,65 @@ class OptionalCommonFields(_OptionalElements):
 
 
 class OptionalDNSCacheFields(_OptionalElements):
-    CTX_TYPE_NAME = "DNSCacheObjectType"
-    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#DNSCacheObject-2"
     XPATH = ".//DNSCacheObj:DNS_Entry"
+    CTX_TYPES = {
+        "DNSCacheObjectType": "http://cybox.mitre.org/objects#DNSCacheObject-2"
+    }
 
 
 class OptionalDNSQueryFields(_OptionalElements):
-    CTX_TYPE_NAME = "DNSQueryObjectType"
-    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#DNSQueryObject-2"
     XPATH = ".//DNSQueryObj:QName"
+    CTX_TYPES = {
+        "DNSQueryObjectType": "http://cybox.mitre.org/objects#DNSQueryObject-2"
+    }
 
 
 class OptionalDiskPartitionFields(_OptionalElements):
-    CTX_TYPE_NAME = "DiskPartitionObjectType"
-    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#DiskPartitionObject-2"
     XPATH = ".//DiskPartitionObj:Partition_ID"
+    CTX_TYPES = {
+        "DiskPartitionObjectType": "http://cybox.mitre.org/objects#DiskPartitionObject-2"
+    }
 
 
 class OptionalFileFields(_OptionalElements):
-    CTX_TYPE_NAME = "FileObjectType"
-    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#FileObject-2"
     XPATH = ".//FileObj:Depth"
+    CTX_TYPES = {
+        "FileObjectType": "http://cybox.mitre.org/objects#FileObject-2"
+    }
 
 
 class OptionalHTTPSessionFields(_OptionalElements):
-    CTX_TYPE_NAME = "HTTPSessionObjectType"
-    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#HTTPSessionObject-2"
     XPATH = (
         ".//HTTPSessionObj:Message_Body | "
         ".//HTTPSessionObj:Domain_Name"
     )
+    CTX_TYPES = {
+        "HTTPSessionObjectType": "http://cybox.mitre.org/objects#HTTPSessionObject-2"
+    }
+
 
 class OptionalHTTPSessionAttribs(_OptionalAttributes):
-    CTX_TYPE_NAME = "HTTPSessionObjectType"
-    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#HTTPSessionObject-2"
     XPATH = ".//HTTPSessionObj:HTTP_Method"
     ATTRIBUTES = ('datatype')
+    CTX_TYPES = {
+        "HTTPSessionObjectType": "http://cybox.mitre.org/objects#HTTPSessionObject-2"
+    }
 
 
 class OptionalLinkPackageFields(_OptionalElements):
-    CTX_TYPE_NAME = "LinuxPackageObjectType"
-    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#LinuxPackageObject-2"
     XPATH = ".//LinuxPackageObj:Name"
+    CTX_TYPES = {
+        "LinuxPackageObjectType": "http://cybox.mitre.org/objects#LinuxPackageObject-2"
+    }
 
 
 class OptionalNetworkConnectioAttribs(_OptionalAttributes):
-    # CTX_TYPE_NAME = "NetworkConnectionObjectType"
-    # CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#LinuxPackageObject-2"
-    XPATH = ".//Name"
+    XPATH = ".//NetworkConnectionObj:Layer7_Protcol"
+    ATTRIBUTES = ('datatype')
+    CTX_TYPES = {
+        "NetworkConnectionObjectType": "http://cybox.mitre.org/objects#LinuxPackageObject-2",
+        "ProcessObj:ProcessObjectType": "http://cybox.mitre.org/objects/ProcessObject-2"
+    }
 
 
 class Cybox_2_0_1_Updater(_CyboxUpdater):
@@ -219,8 +233,9 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         OptionalDNSQueryFields,
         OptionalFileFields,
         OptionalHTTPSessionFields,
+        OptionalHTTPSessionAttribs,
         OptionalLinkPackageFields,
-        OptionalNetworkConnectionFields,
+        OptionalNetworkConnectioAttribs,
     )
 
     OPTIONAL_ATTRIBUTES = ()

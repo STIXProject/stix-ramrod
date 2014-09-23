@@ -27,13 +27,15 @@ class PlanningAndOperationalSupportVocab(Vocab):
 
 
 class DisallowedMAEC(_DisallowedFields):
-    CTX_TYPE_NAME = "MAEC4.0InstanceType"
-    CTX_TYPE_NAMESPACE = "http://stix.mitre.org/extensions/Malware#MAEC4.0-1"
+    CTX_TYPES = {
+        "MAEC4.0InstanceType": "http://stix.mitre.org/extensions/Malware#MAEC4.0-1"
+    }
 
 
 class DisallowedCAPEC(_DisallowedFields):
-    CTX_TYPE_NAME =  "CAPEC2.5InstanceType"
-    CTX_TYPE_NAMESPACE = "http://stix.mitre.org/extensions/AP#CAPEC2.5-1"
+    CTX_TYPES = {
+        "CAPEC2.5InstanceType": "http://stix.mitre.org/extensions/AP#CAPEC2.5-1"
+    }
 
 
 class STIX_1_0_Updater(_STIXUpdater):
