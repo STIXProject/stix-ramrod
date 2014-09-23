@@ -3,6 +3,7 @@ from collections import defaultdict
 from lxml import etree
 from lxml.etree import QName
 from distutils.version import StrictVersion
+from ramrod.utils import ignored
 
 __version__ = "1.0a1"
 
@@ -228,11 +229,13 @@ class _BaseUpdater(object):
             attr: A attribute tag to be removed.
 
         """
-        try:
+        with ignored(KeyError):
             del node.attrib[attr]
-        except KeyError:
-            # Attribute was not found
-            pass
+
+
+    def _remove_xml_attributes(self, node, attrs):
+        for attr in attrs:
+            self._remove_xml_attribute(node, attr)
 
 
     def _get_versioned_nodes(self, root):

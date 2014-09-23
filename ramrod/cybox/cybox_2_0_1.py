@@ -373,13 +373,20 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
     def _update_optionals(self, root):
         """Oh god there are a lot..."""
-        optionals = self.OPTIONALS
+        optional_elements = self.OPTIONAL_ELEMENTS
+        optional_attribs = self.OPTIONAL_ATTRIBUTES
 
         typed_nodes = _get_typed_nodes(root)
-        for optional in optionals:
+
+        for optional in optional_elements:
             found = optional.find(root, typed=typed_nodes)
             self._remove_xml_nodes(found)
 
+
+        for optional in optional_attribs:
+            found = optional.find(root, typed=typed_nodes)
+            for node in found:
+                self._remove_xml_attributes(node, optional.ATTRIBUTES)
 
     def _get_disallowed(self, root):
         disallowed = []
