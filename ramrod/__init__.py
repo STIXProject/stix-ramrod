@@ -55,6 +55,8 @@ class _DisallowedFields(object):
     XPATH = "."
     CTX_TYPE_NAME = None
     CTX_TYPE_NAMESPACE = None
+    CTX_TYPES = {}
+
     NSMAP = None
 
 
@@ -105,9 +107,30 @@ class _DisallowedFields(object):
         return found
 
 
-class _OptionalFields(_DisallowedFields):
+class _OptionalAttributes(_DisallowedFields):
+    ATTRIBUTES = ()
+
     def __init__(self):
-        super(_OptionalFields, self).__init__()
+        super(_OptionalAttributes, self).__init__()
+
+    @classmethod
+    def _interrogate(cls, nodes):
+        contraband = []
+
+        attrs = cls.ATTRIBUTES
+        for node in nodes:
+            for attr in attrs:
+                val = node.attrib.get(attr, "")
+                if len(val) == 0:
+                    contraband.append(node)
+                    break
+
+        return contraband
+
+
+class _OptionalElements(_DisallowedFields):
+    def __init__(self):
+        super(_OptionalElements, self).__init__()
 
 
     @classmethod

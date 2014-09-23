@@ -1,7 +1,7 @@
 import copy
 from ramrod.utils import ignored
 from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
-    _OptionalFields, _get_typed_nodes)
+    _OptionalElements, _OptionalAttributes, _get_typed_nodes)
 from . import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
     TAG_CYBOX_UPDATE)
 
@@ -64,35 +64,35 @@ class DisallowedWindowsMailslotHandle(_DisallowedFields):
         return contraband
 
 
-class OptionalCommonFields(_OptionalFields):
+class OptionalCommonFields(_OptionalElements):
     XPATH = "//cyboxCommon:Tool_Configuration"
 
 
-class OptionalDNSCacheFields(_OptionalFields):
+class OptionalDNSCacheFields(_OptionalElements):
     CTX_TYPE_NAME = "DNSCacheObjectType"
     CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#DNSCacheObject-2"
     XPATH = ".//DNSCacheObj:DNS_Entry"
 
 
-class OptionalDNSQueryFields(_OptionalFields):
+class OptionalDNSQueryFields(_OptionalElements):
     CTX_TYPE_NAME = "DNSQueryObjectType"
     CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#DNSQueryObject-2"
     XPATH = ".//DNSQueryObj:QName"
 
 
-class OptionalDiskPartitionFields(_OptionalFields):
+class OptionalDiskPartitionFields(_OptionalElements):
     CTX_TYPE_NAME = "DiskPartitionObjectType"
     CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#DiskPartitionObject-2"
     XPATH = ".//DiskPartitionObj:Partition_ID"
 
 
-class OptionalFileFields(_OptionalFields):
+class OptionalFileFields(_OptionalElements):
     CTX_TYPE_NAME = "FileObjectType"
     CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#FileObject-2"
     XPATH = ".//FileObj:Depth"
 
 
-class OptionalHTTPSessionFields(_OptionalFields):
+class OptionalHTTPSessionFields(_OptionalElements):
     CTX_TYPE_NAME = "HTTPSessionObjectType"
     CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#HTTPSessionObject-2"
     XPATH = (
@@ -100,18 +100,23 @@ class OptionalHTTPSessionFields(_OptionalFields):
         ".//HTTPSessionObj:Domain_Name"
     )
 
+class OptionalHTTPSessionAttribs(_OptionalAttributes):
+    CTX_TYPE_NAME = "HTTPSessionObjectType"
+    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#HTTPSessionObject-2"
+    XPATH = ".//HTTPSessionObj:HTTP_Method"
+    ATTRIBUTES = ('datatype')
 
-class OptionalLinkPackageFields(_OptionalFields):
+
+class OptionalLinkPackageFields(_OptionalElements):
     CTX_TYPE_NAME = "LinuxPackageObjectType"
     CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#LinuxPackageObject-2"
-    XPATH = ".//Name"
+    XPATH = ".//LinuxPackageObj:Name"
 
 
-class OptionalNetworkConnectionFields(_OptionalFields):
+class OptionalNetworkConnectioAttribs(_OptionalAttributes):
     # CTX_TYPE_NAME = "NetworkConnectionObjectType"
     # CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#LinuxPackageObject-2"
     XPATH = ".//Name"
-
 
 
 class Cybox_2_0_1_Updater(_CyboxUpdater):
