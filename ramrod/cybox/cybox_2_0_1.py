@@ -235,7 +235,6 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         OptionalFileFields,
         OptionalHTTPSessionFields,
         OptionalLinkPackageFields,
-
     )
 
     OPTIONAL_ATTRIBUTES = (
