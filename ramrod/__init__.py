@@ -137,7 +137,7 @@ class _OptionalElements(_DisallowedFields):
         """
         contraband = []
         for node in nodes:
-            if all((node.text is None, len(node) == 0)):
+            if all((node.text is None, len(node) == 0), not(node.attrib)):
                 contraband.append(node)
 
         return contraband

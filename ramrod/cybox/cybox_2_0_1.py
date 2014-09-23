@@ -201,7 +201,6 @@ class OptionalWinPrefetchFields(_OptionalElements):
     )
 
 
-
 class Cybox_2_0_1_Updater(_CyboxUpdater):
     VERSION = '2.0.1'
 
