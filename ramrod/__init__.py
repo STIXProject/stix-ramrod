@@ -129,15 +129,15 @@ class _OptionalElements(_DisallowedFields):
 
     @classmethod
     def _interrogate(cls, nodes):
-        """Checks if any of the nodes in `nodes` is empty.
+        """Checks if any of the nodes in `nodes` are empty.
 
         Returns:
-            A list of nodes that contain more than one ``Handle`` child.
+            A list of nodes that are empty.
 
         """
         contraband = []
         for node in nodes:
-            if all((node.text is None, len(node) > 1)):
+            if all((node.text is None, len(node) == 0)):
                 contraband.append(node)
 
         return contraband
