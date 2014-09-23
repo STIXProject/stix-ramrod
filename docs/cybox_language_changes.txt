@@ -36,9 +36,12 @@ Common
 Objects
 -------
 
+DNSCacheObjectType
+~~~~~~~~~~~~~~~~~~
+* DNSEntryType/DNS_Cache_Entry now optional. Remove empty instances.
+
 DNSQueryObjectType
 ~~~~~~~~~~~~~~~~~~
-* DNSEntryType/DNS_Entry now optional. Remove empty instances.
 * DNSQuestionType/QName now optional. Remove empty instances.
 
 DiskPartitionObjectType
@@ -58,7 +61,7 @@ HTTPSessionObjectType
 * HTTPResponseHeaderFieldType/X_Forwarded_Proto Removed. Move to HTTPRequestHeaderFieldsType/X_Forwarded_For?
 * HTTPMessageType/Message_Body now optional
 * HostFieldType/Domain_Name now optional
-* HTTPMethodType/@datatype now optional
+* HTTPMethodType/@datatype now optional  !! How to handle attributes??
 
 LinuxPackageObjectType
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -66,7 +69,7 @@ LinuxPackageObjectType
 
 NetworkConnectionObjectType
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-* Layer7ProtocolType/@datatype now optional
+* Layer7ProtocolType/@datatype now optional !! How to handle attributes??
 
 NetworkPacketObjectType
 ~~~~~~~~~~~~~~~~~~~~~~~

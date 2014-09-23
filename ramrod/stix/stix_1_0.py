@@ -1,7 +1,7 @@
 import copy
 from lxml import etree
 
-from ramrod import (Vocab, _DisallowedElement, UpdateError,
+from ramrod import (Vocab, _DisallowedFields, UpdateError,
                     UnknownVersionError, TAG_XSI_TYPE)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_Updater
@@ -26,12 +26,12 @@ class PlanningAndOperationalSupportVocab(Vocab):
     }
 
 
-class DisallowedMAEC(_DisallowedElement):
+class DisallowedMAEC(_DisallowedFields):
     CTX_TYPE_NAME = "MAEC4.0InstanceType"
     CTX_TYPE_NAMESPACE = "http://stix.mitre.org/extensions/Malware#MAEC4.0-1"
 
 
-class DisallowedCAPEC(_DisallowedElement):
+class DisallowedCAPEC(_DisallowedFields):
     CTX_TYPE_NAME =  "CAPEC2.5InstanceType"
     CTX_TYPE_NAMESPACE = "http://stix.mitre.org/extensions/AP#CAPEC2.5-1"
 

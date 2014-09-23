@@ -51,7 +51,7 @@ class Vocab(object):
     TERMS = {}
 
 
-class _DisallowedElement(object):
+class _DisallowedFields(object):
     XPATH = "."
     CTX_TYPE_NAME = None
     CTX_TYPE_NAMESPACE = None
@@ -68,7 +68,7 @@ class _DisallowedElement(object):
 
 
     @classmethod
-    def _get_contexts(cls, root, typed_nodes=None):
+    def _get_contexts(cls, root, typed=None):
         type_name, type_ns = cls.CTX_TYPE_NAME, cls.CTX_TYPE_NAMESPACE
 
         if not type_name:
@@ -78,11 +78,11 @@ class _DisallowedElement(object):
             raise Exception("Need BOTH CTX_TYPE_NAME and CTX_TYPE_NAMESPACE "
                             "defined.")
 
-        if not typed_nodes:
-            typed_nodes = _get_typed_nodes(root)
+        if not typed:
+            typed = _get_typed_nodes(root)
 
         contexts = []
-        for node in typed_nodes:
+        for node in typed:
             alias, type_ = _get_type_info(node)
             ns = _get_ext_namespace(node)
 
@@ -92,8 +92,8 @@ class _DisallowedElement(object):
         return contexts
 
     @classmethod
-    def find(cls, root, typed_nodes=None):
-        contexts = cls._get_contexts(root, typed_nodes)
+    def find(cls, root, typed=None):
+        contexts = cls._get_contexts(root, typed)
         xpath, nsmap = cls.XPATH, cls.NSMAP
 
         found = []
@@ -105,9 +105,25 @@ class _DisallowedElement(object):
         return found
 
 
+class _OptionalFields(_DisallowedFields):
+    def __init__(self):
+        super(_OptionalFields, self).__init__()
 
 
+    @classmethod
+    def _interrogate(cls, nodes):
+        """Checks if any of the nodes in `nodes` is empty.
 
+        Returns:
+            A list of nodes that contain more than one ``Handle`` child.
+
+        """
+        contraband = []
+        for node in nodes:
+            if all((node.text is None, len(node) > 1)):
+                contraband.append(node)
+
+        return contraband
 
 
 class _BaseUpdater(object):
@@ -175,6 +191,12 @@ class _BaseUpdater(object):
         """Removes `node` from the parent of `node`."""
         parent = node.getparent()
         parent.remove(node)
+
+
+    def _remove_xml_nodes(self, nodes):
+        """Removes each node found in `nodes` from the XML document."""
+        for node in nodes:
+            self._remove_xml_node(node)
 
 
     def _copy_xml_node(self, node):

@@ -1,8 +1,9 @@
 import copy
-from ramrod import (Vocab, _DisallowedElement, UpdateError, UnknownVersionError)
 from ramrod.utils import ignored
+from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
+    _OptionalFields, _get_typed_nodes)
 from . import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
-               TAG_CYBOX_UPDATE)
+    TAG_CYBOX_UPDATE)
 
 
 class ObjectRelationshipVocab(Vocab):
@@ -26,13 +27,13 @@ class ActionNameVocab(Vocab):
     VOCAB_NAME = 'CybOX Default Action Names'
 
 
-class DisallowedTaskTrigger(_DisallowedElement):
+class DisallowedTaskTrigger(_DisallowedFields):
     CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#WinTaskObject-2"
     CTX_TYPE_NAME = "WindowsTaskObjectType"
     XPATH = ".//WinTaskObj:Task_Trigger"
 
 
-class DisallowedWindowsMailslotHandle(_DisallowedElement):
+class DisallowedWindowsMailslotHandle(_DisallowedFields):
     CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#WinMailslotObject-2"
     CTX_TYPE_NAME = "WindowsMailslotObjectType"
     XPATH = "./WinMailslotObj:Handle"
@@ -61,6 +62,55 @@ class DisallowedWindowsMailslotHandle(_DisallowedElement):
                 contraband.append(node)
 
         return contraband
+
+
+class OptionalCommonFields(_OptionalFields):
+    XPATH = "//cyboxCommon:Tool_Configuration"
+
+
+class OptionalDNSCacheFields(_OptionalFields):
+    CTX_TYPE_NAME = "DNSCacheObjectType"
+    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#DNSCacheObject-2"
+    XPATH = ".//DNSCacheObj:DNS_Entry"
+
+
+class OptionalDNSQueryFields(_OptionalFields):
+    CTX_TYPE_NAME = "DNSQueryObjectType"
+    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#DNSQueryObject-2"
+    XPATH = ".//DNSQueryObj:QName"
+
+
+class OptionalDiskPartitionFields(_OptionalFields):
+    CTX_TYPE_NAME = "DiskPartitionObjectType"
+    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#DiskPartitionObject-2"
+    XPATH = ".//DiskPartitionObj:Partition_ID"
+
+
+class OptionalFileFields(_OptionalFields):
+    CTX_TYPE_NAME = "FileObjectType"
+    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#FileObject-2"
+    XPATH = ".//FileObj:Depth"
+
+
+class OptionalHTTPSessionFields(_OptionalFields):
+    CTX_TYPE_NAME = "HTTPSessionObjectType"
+    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#HTTPSessionObject-2"
+    XPATH = (
+        ".//HTTPSessionObj:Message_Body | "
+        ".//HTTPSessionObj:Domain_Name"
+    )
+
+
+class OptionalLinkPackageFields(_OptionalFields):
+    CTX_TYPE_NAME = "LinuxPackageObjectType"
+    CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#LinuxPackageObject-2"
+    XPATH = ".//Name"
+
+
+class OptionalNetworkConnectionFields(_OptionalFields):
+    # CTX_TYPE_NAME = "NetworkConnectionObjectType"
+    # CTX_TYPE_NAMESPACE = "http://cybox.mitre.org/objects#LinuxPackageObject-2"
+    XPATH = ".//Name"
 
 
 
@@ -156,6 +206,19 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         DisallowedTaskTrigger,
         DisallowedWindowsMailslotHandle
     )
+
+    OPTIONALS = (
+        OptionalCommonFields,
+        OptionalDiskPartitionFields,
+        OptionalDNSCacheFields,
+        OptionalDNSQueryFields,
+        OptionalFileFields,
+        OptionalHTTPSessionFields,
+        OptionalLinkPackageFields,
+        OptionalNetworkConnectionFields,
+    )
+
+    OPTIONAL_ATTRIBUTES = ()
 
     UPDATE_NS_MAP = {
         'http://cybox.mitre.org/objects#WinDriverObject-2': 'http://cybox.mitre.org/objects#WinDriverObject-3',
@@ -288,7 +351,12 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
     def _update_optionals(self, root):
         """Oh god there are a lot..."""
+        optionals = self.OPTIONALS
 
+        typed_nodes = _get_typed_nodes(root)
+        for optional in optionals:
+            found = optional.find(root, typed=typed_nodes)
+            self._remove_xml_nodes(found)
 
 
     def _get_disallowed(self, root):
@@ -364,7 +432,6 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         self._update_lists(root)
         self._update_optionals(root)
 
-
         return root
 
 
@@ -381,6 +448,10 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
         return updated
 
-# Wiring
-DisallowedTaskTrigger.NSMAP = Cybox_2_0_1_Updater.NSMAP
-DisallowedWindowsMailslotHandle.NSMAP = Cybox_2_0_1_Updater.NSMAP
+
+# Wiring namespace dictionaries
+for klass in Cybox_2_0_1_Updater.DISALLOWED:
+    klass.NSMAP = Cybox_2_0_1_Updater.NSMAP
+
+for klass in Cybox_2_0_1_Updater.OPTIONALS:
+    klass.NSMAP = Cybox_2_0_1_Updater.NSMAP
