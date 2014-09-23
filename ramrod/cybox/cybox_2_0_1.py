@@ -1,4 +1,5 @@
 import copy
+import itertools
 from ramrod.utils import ignored
 from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
     _OptionalElements, _OptionalAttributes, _get_typed_nodes)
@@ -226,19 +227,21 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         DisallowedWindowsMailslotHandle
     )
 
-    OPTIONALS = (
+    OPTIONAL_ELEMENTS = (
         OptionalCommonFields,
         OptionalDiskPartitionFields,
         OptionalDNSCacheFields,
         OptionalDNSQueryFields,
         OptionalFileFields,
         OptionalHTTPSessionFields,
-        OptionalHTTPSessionAttribs,
         OptionalLinkPackageFields,
-        OptionalNetworkConnectionAttribs,
+
     )
 
-    OPTIONAL_ATTRIBUTES = ()
+    OPTIONAL_ATTRIBUTES = (
+        OptionalHTTPSessionAttribs,
+        OptionalNetworkConnectionAttribs,
+    )
 
     UPDATE_NS_MAP = {
         'http://cybox.mitre.org/objects#WinDriverObject-2': 'http://cybox.mitre.org/objects#WinDriverObject-3',
@@ -470,8 +473,10 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
 
 # Wiring namespace dictionaries
-for klass in Cybox_2_0_1_Updater.DISALLOWED:
-    klass.NSMAP = Cybox_2_0_1_Updater.NSMAP
-
-for klass in Cybox_2_0_1_Updater.OPTIONALS:
+nsmapped = itertools.chain(
+    Cybox_2_0_1_Updater.DISALLOWED,
+    Cybox_2_0_1_Updater.OPTIONAL_ELEMENTS,
+    Cybox_2_0_1_Updater.OPTIONAL_ATTRIBUTES
+)
+for klass in nsmapped:
     klass.NSMAP = Cybox_2_0_1_Updater.NSMAP
