@@ -1,8 +1,9 @@
 import copy
 from collections import defaultdict
+from itertools import izip
+from distutils.version import StrictVersion
 from lxml import etree
 from lxml.etree import QName
-from distutils.version import StrictVersion
 from ramrod.utils import ignored
 
 __version__ = "1.0a1"
@@ -56,7 +57,6 @@ class _DisallowedFields(object):
     XPATH = "."
     CTX_TYPES = {}
     NSMAP = None
-
 
     def __init__(self,):
         pass
@@ -349,7 +349,7 @@ class _BaseUpdater(object):
             return
 
         l = schemalocs.split()
-        pairs = zip(l[::2], l[1::2])
+        pairs = izip(l[::2], l[1::2])
 
         cleaned = self._clean_schemalocs(pairs)
         remapped = self._remap_schemalocs(cleaned)
@@ -550,13 +550,14 @@ def update(doc, to_, from_=None, force=False):
 
     update_methods = {
         'STIX_Package': _update_stix,
-        'Observables': _update_cybox
+        'Observables': _update_cybox,
     }
 
     try:
         update = update_methods[name]
     except KeyError:
-        raise UpdateError("Document root node must be one of %s" % (update_methods.keys(),))
+        error = "Document root node must be one of %s" % (update_methods.keys(),)
+        raise UpdateError(error)
 
     updated = update(root, version, to_, force)
     return etree.ElementTree(updated)

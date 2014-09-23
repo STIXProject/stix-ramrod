@@ -4,11 +4,9 @@ import sys
 import argparse
 import ramrod
 
-def _write_xml(tree, outfn):
-    if not outfn:
-        tree.write(sys.stdout, pretty_print=True)
-    else:
-        tree.write(outfn, pretty_print=True)
+def _write_xml(tree, outfn=None):
+    out = outfn or sys.stdout
+    tree.write(out, pretty_print=True)
 
 
 def _validate_args():
