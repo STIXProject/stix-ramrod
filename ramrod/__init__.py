@@ -504,6 +504,9 @@ def _update_stix(root, from_, to_, force):
         raise UpdateError("The `to_` parameter specified an unknown STIX "
                           "version: %s" % to_)
 
+    if StrictVersion(from_) > StrictVersion(to_):
+        raise UpdateError("Cannot upgrade from %s to %s" % (from_, to_))
+
     updated = root
     idx_from = STIX_VERSIONS.index(from_)
     idx_to = STIX_VERSIONS.index(to_)
@@ -516,11 +519,44 @@ def _update_stix(root, from_, to_, force):
 
 
 def _update_cybox(root, from_, to_, force):
-    pass
+    from ramrod.cybox import CYBOX_UPDATERS, CYBOX_VERSIONS
+
+    if from_ not in CYBOX_VERSIONS:
+        raise UpdateError("The `from_` parameter specified an unknown STIX "
+                          "version: %s" % from_)
+
+    if to_ not in CYBOX_VERSIONS:
+        raise UpdateError("The `to_` parameter specified an unknown STIX "
+                          "version: %s" % to_)
+
+    if StrictVersion(from_) > StrictVersion(to_):
+        raise UpdateError("Cannot upgrade from %s to %s" % (from_, to_))
+
+    updated = root
+    idx_from = CYBOX_VERSIONS.index(from_)
+    idx_to = CYBOX_VERSIONS.index(to_)
+    for version in CYBOX_VERSIONS[idx_from:idx_to]:
+        klass   = CYBOX_UPDATERS[version]
+        updater = klass()
+        updated = updater.update(updated, force)
+
+    return updated
 
 
 def update(doc, to_='1.1.1', force=False):
     root = _get_etree_root(doc)
-    stix_version = _get_version(root)
-    updated = _update_stix(root, stix_version, to_, force)
+    name = QName(root).localname
+    version = _get_version(root)
+
+    update_methods = {
+        'STIX_Package': _update_stix,
+        'Observables': _update_cybox
+    }
+
+    try:
+        update = update_methods[name]
+    except KeyError:
+        raise UpdateError("Document root node must be one of %s" % (update_methods.keys(),))
+
+    updated = update(root, version, to_, force)
     return etree.ElementTree(updated)
