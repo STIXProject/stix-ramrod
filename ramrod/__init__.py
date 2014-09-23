@@ -504,7 +504,7 @@ def _update_stix(root, from_, to_, force):
         raise UpdateError("The `to_` parameter specified an unknown STIX "
                           "version: %s" % to_)
 
-    if StrictVersion(from_) > StrictVersion(to_):
+    if StrictVersion(from_) >= StrictVersion(to_):
         raise UpdateError("Cannot upgrade from %s to %s" % (from_, to_))
 
     updated = root
@@ -529,7 +529,7 @@ def _update_cybox(root, from_, to_, force):
         raise UpdateError("The `to_` parameter specified an unknown CybOX "
                           "version: %s" % to_)
 
-    if StrictVersion(from_) > StrictVersion(to_):
+    if StrictVersion(from_) >= StrictVersion(to_):
         raise UpdateError("Cannot upgrade from %s to %s" % (from_, to_))
 
     updated = root
