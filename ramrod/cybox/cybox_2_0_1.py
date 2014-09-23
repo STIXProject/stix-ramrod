@@ -229,7 +229,7 @@ class TransHTTPSessionXRequestedFor(_RenamedField):
     NEW_TAG = "{http://cybox.mitre.org/objects#HTTPSessionObject-2}X_Forwarded_For"
 
 
-class TransHTTPSessionXRequestedFor(_TranslatableField):
+class TransHTTPSessionRefresh(_TranslatableField):
     XPATH_NODE = ".//HTTPSessionObj:Refresh"
     COPY_ATTRIBUTES = True # TODO: make sure this correct
     OVERRIDE_ATTRIBUTES = {
@@ -237,17 +237,17 @@ class TransHTTPSessionXRequestedFor(_TranslatableField):
     }
 
 
-class TransNetPacketProtolAddrSize(_RenamedField):
+class TransNetPacketProtoAddrSize(_RenamedField):
     XPATH_NODE = ".//PacketObj:Protol_Addr_Size"
     NEW_TAG = "{http://cybox.mitre.org/objects#PacketObject-2}Proto_Addr_Size"
 
 
-class TransNetPacketExcapsulatingSecurityPayload(_RenamedField):
+class TransNetPacketEncapsulatingSecurityPayload(_RenamedField):
     XPATH_NODE = ".//PacketObj:Excapulating_Security_Payload"
     NEW_TAG = "{http://cybox.mitre.org/objects#PacketObject-2}Encapsulating_Security_Payload"
 
 
-class TransNetPacketAuthenicationData(_RenamedField):
+class TransNetPacketAuthenticationData(_RenamedField):
     XPATH_NODE = ".//PacketObj:Authenication_Data"
     NEW_TAG = "{http://cybox.mitre.org/objects#PacketObject-2}Authentication_Data"
 
@@ -372,7 +372,13 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
 
     TRANSLATABLE_FIELDS = (
-
+        TransHTTPSessionDNT,
+        TransHTTPSessionVary,
+        TransHTTPSessionRefresh,
+        TransHTTPSessionXRequestedFor,
+        TransNetPacketAuthenticationData,
+        TransNetPacketEncapsulatingSecurityPayload,
+        TransNetPacketProtoAddrSize,
     )
 
     UPDATE_NS_MAP = {
