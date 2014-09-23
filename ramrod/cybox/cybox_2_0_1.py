@@ -370,7 +370,6 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         OptionalNetworkConnectionAttribs,
     )
 
-
     TRANSLATABLE_FIELDS = (
         TransHTTPSessionDNT,
         TransHTTPSessionVary,
