@@ -2,7 +2,7 @@
 
 import sys
 import argparse
-from ramrod import (__version__, update, UpdateError)
+import ramrod
 
 def _write_xml(tree, outfn):
     if not outfn:
@@ -17,7 +17,7 @@ def _validate_args():
 
 def _get_arg_parser():
     parser = argparse.ArgumentParser(description="STIX Document Updater v%s"
-                                    % __version__)
+                                    % ramrod.__version__)
 
     parser.add_argument("--infile", default=None, required=True,
                         help="Input XML document filename.")
@@ -41,9 +41,9 @@ def main():
 
     try:
         _validate_args()
-        updated = update(args.infile, to_=args.to, )
+        updated = ramrod.update(args.infile, to_=args.to, )
         _write_xml(updated, args.outfile)
-    except UpdateError as ex:
+    except ramrod.UpdateError as ex:
         print str(ex)
 
 if __name__ == "__main__":
