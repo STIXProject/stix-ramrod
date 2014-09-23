@@ -27,7 +27,11 @@ class UpdateError(Exception):
         self.duplicates = duplicates
 
     def __str__(self):
-        s = "Update Error: %s\n%s" % (self.message, self.disallowed)
+        if self.disallowed:
+            s = "Update Error: %s\n%s" % (self.message, self.disallowed)
+        else:
+            s = "Update Error: %s" % (self.message)
+
         return s
 
 
@@ -51,6 +55,64 @@ class Vocab(object):
     VOCAB_REFERENCE = None
     VOCAB_NAME = None
     TERMS = {}
+
+
+class _TranslatableField(object):
+    NSMAP = None
+    XPATH_NODE = None
+    XPATH_VALUE = None
+    NEW_TAG = None
+    COPY_ATTRIBUTES = False
+    OVERRIDE_ATTRIBUTES = None
+
+
+    @classmethod
+    def _translate_value(cls, old, new):
+        xpath, nsmap = cls.XPATH_VALUE, cls.NSMAP
+        if xpath:
+            value = old.xpath(xpath, namespaces=nsmap)
+            new.text = value.text
+        else:
+            # Used when the fields are the same datatype, just different names
+            new[:] = old[:]  # TODO: verify that namespaces don't get messed up here
+
+
+    @classmethod
+    def _translate_attributes(cls, old, new):
+        if cls.COPY_ATTRIBUTES:
+            new.attrib.update(old.attrib)
+
+        if cls.OVERRIDE_ATTRIBUTES:
+            for name, val in cls.OVERRIDE_ATTRIBUTES:
+                if name not in old.attrib:
+                    continue
+                new.attrib[name] = val
+
+
+    @classmethod
+    def _translate_fields(cls, node):
+        tag = cls.NEW_TAG or node.tag
+        new = etree.Element(tag)
+
+        cls._translate_value(node, new)
+        cls._translate_attributes(node, new)
+
+        return new
+
+
+    @classmethod
+    def _find(cls, root):
+        xpath, nsmap = cls.XPATH_NODE, cls.NSMAP
+        found = root.xpath(xpath, namespaces=nsmap)
+        return found
+
+
+    @classmethod
+    def translate(cls, root):
+        nodes = cls._find(root)
+        for node in nodes:
+            new_node = cls._translate_fields(root, node)
+            _replace_xml_element(node, new_node) # this might cause problems
 
 
 class _DisallowedFields(object):
@@ -406,6 +468,13 @@ class _BaseUpdater(object):
         return updated
 
 
+def _replace_xml_element(old, new):
+    parent = old.getparent()
+    idx = parent.index(old)
+    parent.insert(idx, new)
+    parent.remove(old)
+
+
 def _get_type_info(node):
     xsi_type = node.attrib[TAG_XSI_TYPE]
     alias, type_ = xsi_type.split(':')
@@ -546,7 +615,7 @@ def _update_cybox(root, from_, to_, force):
 def update(doc, to_, from_=None, force=False):
     root = _get_etree_root(doc)
     name = QName(root).localname
-    version = _get_version(root)
+    from_ = from_ or _get_version(root)
 
     update_methods = {
         'STIX_Package': _update_stix,
@@ -559,5 +628,5 @@ def update(doc, to_, from_=None, force=False):
         error = "Document root node must be one of %s" % (update_methods.keys(),)
         raise UpdateError(error)
 
-    updated = update(root, version, to_, force)
+    updated = update(root, from_, to_, force)
     return etree.ElementTree(updated)

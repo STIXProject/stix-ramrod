@@ -2,7 +2,7 @@ import copy
 import itertools
 from ramrod.utils import ignored
 from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
-    _OptionalElements, _OptionalAttributes, _get_typed_nodes)
+    _OptionalElements, _OptionalAttributes, _TranslatableField, _get_typed_nodes)
 from . import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
     TAG_CYBOX_UPDATE)
 
@@ -72,6 +72,10 @@ class DisallowedWinExecutableFile(_DisallowedFields):
     # This could potentially become something that is translated into
     # another field rather than a disallowed field.
     XPATH = ".//{0}:Section/{0}:Type".format('WinExecutableFileObj')
+
+
+class DisallowedHTTPSession(_DisallowedFields):
+    XPATH = ".//HTTPSessionObj:X_Forwarded_Proto"
 
 
 class OptionalCommonFields(_OptionalElements):
@@ -207,6 +211,32 @@ class OptionalWinPrefetchFields(_OptionalElements):
     )
 
 
+class TransHTTPSessionDNT(_TranslatableField):
+    XPATH_NODE = ".//HTTPSessionObj:DNT"
+    XPATH_VALUE = "./URIObj:Value"
+    COPY_ATTRIBUTES = True # TODO: make sure this correct
+
+
+class TransHTTPSessionVary(_TranslatableField):
+    XPATH_NODE = ".//HTTPSessionObj:Vary"
+    XPATH_VALUE = "./URIObj:Value"
+    COPY_ATTRIBUTES = True # TODO: make sure this correct
+
+
+class TransHTTPSessionXRequestedFor(_TranslatableField):
+    XPATH_NODE = ".//HTTPSessionObj:X_Requested_For"
+    NEW_TAG = "{http://cybox.mitre.org/objects#HTTPSessionObject-2}X_Forwarded_For"
+    COPY_ATTRIBUTES = True # TODO: make sure this correct
+
+
+class TransHTTPSessionXRequestedFor(_TranslatableField):
+    XPATH_NODE = ".//HTTPSessionObj:Refresh"
+    COPY_ATTRIBUTES = True # TODO: make sure this correct
+    OVERRIDE_ATTRIBUTES = {
+        'datatype': 'string'
+    }
+
+
 class Cybox_2_0_1_Updater(_CyboxUpdater):
     VERSION = '2.0.1'
 
@@ -296,6 +326,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
     }
 
     DISALLOWED = (
+        DisallowedHTTPSession,
         DisallowedTaskTrigger,
         DisallowedWinExecutableFile,
         DisallowedWindowsMailslotHandle
@@ -322,6 +353,11 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
     OPTIONAL_ATTRIBUTES = (
         OptionalHTTPSessionAttribs,
         OptionalNetworkConnectionAttribs,
+    )
+
+
+    TRANSLATABLE_FIELDS = (
+
     )
 
     UPDATE_NS_MAP = {
@@ -449,6 +485,11 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
                 del attribs[TAG_CYBOX_UPDATE]
 
 
+    def _translate_fields(self, root):
+        for field in self.TRANSLATABLE_FIELDS:
+            field.translate(root)
+
+
     def _update_lists(self, root):
         pass
 
@@ -522,6 +563,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
 
     def _clean_duplicates(self, duplicates):
+        # Not sure what to do here...
         pass
 
 
@@ -542,6 +584,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         self._update_vocabs(root)
         self._update_lists(root)
         self._update_optionals(root)
+        self._translate_fields(root)
 
         return root
 
@@ -564,7 +607,8 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 nsmapped = itertools.chain(
     Cybox_2_0_1_Updater.DISALLOWED,
     Cybox_2_0_1_Updater.OPTIONAL_ELEMENTS,
-    Cybox_2_0_1_Updater.OPTIONAL_ATTRIBUTES
+    Cybox_2_0_1_Updater.OPTIONAL_ATTRIBUTES,
+    Cybox_2_0_1_Updater.TRANSLATABLE_FIELDS
 )
 for klass in nsmapped:
     klass.NSMAP = Cybox_2_0_1_Updater.NSMAP

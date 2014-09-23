@@ -24,7 +24,12 @@ def _get_arg_parser():
                         help="Output XML document filename. Prints to stdout "
                              "if no filename is provided.")
 
-    parser.add_argument("--to", default='1.1.1',
+    parser.add_argument("--from", default=None, dest="from_", metavar="FROM",
+                        help="The version of the input document. If not "
+                             "supplied, RAMROD will try to determine the "
+                             "version of the input document.")
+
+    parser.add_argument("--to", default='1.1.1', dest="to_", metavar="TO",
                         help="Update STIX content to this version.")
 
     parser.add_argument("-f", "--force", action="store_true", default=False,
@@ -39,7 +44,7 @@ def main():
 
     try:
         _validate_args()
-        updated = ramrod.update(args.infile, to_=args.to, )
+        updated = ramrod.update(args.infile, from_=args.from_, to_=args.to_)
         _write_xml(updated, args.outfile)
     except ramrod.UpdateError as ex:
         print str(ex)

@@ -54,7 +54,7 @@ FileObjectType
 
 HTTPSessionObjectType
 ~~~~~~~~~~~~~~~~~~~~~
-* HTTPRequestHeaderFieldsType/DNT URIObjecType => StringObjectPropertyType
+* HTTPRequestHeaderFieldsType/DNT URIObjectType => StringObjectPropertyType
 * HTTPRequestHeaderFieldsType/X_Requested_For => X_Forwarded_For
 * HTTPResponseHeaderFieldsType/Refresh IntegerObjectPropertyType => StringObjectPropertyType
 * HTTPResponseHeaderFieldsType/Vary URIObjectType => StringObjectPropertyType
@@ -141,6 +141,9 @@ WindowsExecutableFileObject
 ~~~~~~~~~~~~~~~~~~~~~~~
 * PEResourceType/Type PEPEResourceTypeEnum => PEResourceContentType (no instance document change)
 * PESectionType/Type removed (move to ^ ?)
+
+WindowsFileObject
+~~~~~~~~~~~~~~~~~
 * StreamObjectType/Size_In_Bytes now optional
 
 WindowsMailslotObjectType
