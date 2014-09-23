@@ -216,7 +216,7 @@ class _OptionalElements(_DisallowedFields):
         """
         contraband = []
         for node in nodes:
-            if all((node.text is None, len(node) == 0), not(node.attrib)):
+            if all((node.text is None, len(node) == 0, not(node.attrib))):
                 contraband.append(node)
 
         return contraband
@@ -572,15 +572,23 @@ def _get_version(root):
         UnknownVersionError: if `root` does not have a ``version`` attribute.
 
     """
-    try:
-        version = root.attrib['version']
-        return version
-    except KeyError:
-        raise UnknownVersionError()
+    from ramrod.stix import _STIXUpdater
+    from ramrod.cybox import _CyboxUpdater
+
+    name = QName(root).localname
+    methods = {
+        'STIX_Package': _STIXUpdater.get_version,
+        'Observables': _CyboxUpdater.get_version
+    }
+
+    get_version = methods[name]
+    return get_version(root)
 
 
-def _update_stix(root, from_, to_, force):
+def _update_stix(root, from_, to_=None, force=False):
     from ramrod.stix import STIX_UPDATERS, STIX_VERSIONS
+
+    to_ = to_ or STIX_VERSIONS[-1]  # The latest version
 
     if from_ not in STIX_VERSIONS:
         raise UpdateError("The `from_` parameter specified an unknown STIX "
@@ -604,8 +612,10 @@ def _update_stix(root, from_, to_, force):
     return updated
 
 
-def _update_cybox(root, from_, to_, force):
+def _update_cybox(root, from_, to_=None, force=False):
     from ramrod.cybox import CYBOX_UPDATERS, CYBOX_VERSIONS
+
+    to_ = to_ or CYBOX_VERSIONS[-1]  # The latest version
 
     if from_ not in CYBOX_VERSIONS:
         raise UpdateError("The `from_` parameter specified an unknown CybOX "
@@ -632,7 +642,6 @@ def _update_cybox(root, from_, to_, force):
 def update(doc, to_, from_=None, force=False):
     root = _get_etree_root(doc)
     name = QName(root).localname
-    from_ = from_ or _get_version(root)
 
     update_methods = {
         'STIX_Package': _update_stix,
@@ -640,6 +649,7 @@ def update(doc, to_, from_=None, force=False):
     }
 
     try:
+        from_ = from_ or _get_version(root)  # _get_version raises KeyError
         update = update_methods[name]
     except KeyError:
         error = "Document root node must be one of %s" % (update_methods.keys(),)

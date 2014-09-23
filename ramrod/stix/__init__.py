@@ -18,6 +18,10 @@ class _STIXUpdater(_BaseUpdater):
         """
         raise NotImplementedError()
 
+    @classmethod
+    def get_version(cls, package):
+        return package.attrib.get('version')
+
 
     def _check_version(self, root):
         """Checks that the version of the document `root` is valid for an
@@ -38,7 +42,7 @@ class _STIXUpdater(_BaseUpdater):
         expected = self.VERSION
 
         for node in roots:
-            found = node.attrib.get('version')
+            found = self.get_version(node)
 
             if not found:
                 raise UnknownVersionError()

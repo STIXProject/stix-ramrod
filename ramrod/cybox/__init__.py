@@ -19,7 +19,8 @@ class _CyboxUpdater(_BaseUpdater):
         super(_CyboxUpdater, self).__init__()
         self.cleaned_fields = ()
 
-    def _get_observables_version(self, observables):
+    @classmethod
+    def get_version(cls, observables):
         cybox_major  = observables.attrib.get(TAG_CYBOX_MAJOR)
         cybox_minor  = observables.attrib.get(TAG_CYBOX_MINOR)
         cybox_update = observables.attrib.get(TAG_CYBOX_UPDATE)
@@ -58,7 +59,7 @@ class _CyboxUpdater(_BaseUpdater):
         expected = self.VERSION
 
         for node in roots:
-            found = self._get_observables_version(node)
+            found = self.get_version(node)
 
             if StrictVersion(expected) != StrictVersion(found):
                 raise InvalidVersionError(node, expected, found)
