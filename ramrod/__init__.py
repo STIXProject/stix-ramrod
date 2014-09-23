@@ -111,7 +111,7 @@ class _TranslatableField(object):
     def translate(cls, root):
         nodes = cls._find(root)
         for node in nodes:
-            new_node = cls._translate_fields(root, node)
+            new_node = cls._translate_fields(node)
             _replace_xml_element(node, new_node) # this might cause problems
 
 
