@@ -114,8 +114,8 @@ class _OptionalAttributes(_DisallowedFields):
         attrs = cls.ATTRIBUTES
         for node in nodes:
             for attr in attrs:
-                val = node.attrib.get(attr, "")
-                if len(val) == 0:
+                val = node.attrib.get(attr)
+                if not val:
                     contraband.append(node)
                     break
 

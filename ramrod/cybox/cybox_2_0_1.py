@@ -68,6 +68,12 @@ class DisallowedWindowsMailslotHandle(_DisallowedFields):
         return contraband
 
 
+class DisallowedWinExecutableFile(_DisallowedFields):
+    # This could potentially become something that is translated into
+    # another field rather than a disallowed field.
+    XPATH = ".//{0}:Section/{0}:Type".format('WinExecutableFileObj')
+
+
 class OptionalCommonFields(_OptionalElements):
     XPATH = "//cyboxCommon:Tool_Configuration"
 
@@ -291,6 +297,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
     DISALLOWED = (
         DisallowedTaskTrigger,
+        DisallowedWinExecutableFile,
         DisallowedWindowsMailslotHandle
     )
 
@@ -447,7 +454,6 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
 
     def _update_optionals(self, root):
-        """Oh god there are a lot..."""
         optional_elements = self.OPTIONAL_ELEMENTS
         optional_attribs = self.OPTIONAL_ATTRIBUTES
 
@@ -462,6 +468,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
             found = optional.find(root, typed=typed_nodes)
             for node in found:
                 self._remove_xml_attributes(node, optional.ATTRIBUTES)
+
 
     def _get_disallowed(self, root):
         disallowed = []
