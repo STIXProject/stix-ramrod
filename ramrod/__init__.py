@@ -543,7 +543,7 @@ def _update_cybox(root, from_, to_, force):
     return updated
 
 
-def update(doc, to_='1.1.1', force=False):
+def update(doc, to_, from_=None, force=False):
     root = _get_etree_root(doc)
     name = QName(root).localname
     version = _get_version(root)
