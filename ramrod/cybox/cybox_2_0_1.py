@@ -124,7 +124,7 @@ class OptionalLinkPackageFields(_OptionalElements):
     }
 
 
-class OptionalNetworkConnectioAttribs(_OptionalAttributes):
+class OptionalNetworkConnectionAttribs(_OptionalAttributes):
     XPATH = ".//NetworkConnectionObj:Layer7_Protcol"
     ATTRIBUTES = ('datatype')
     CTX_TYPES = {
@@ -235,7 +235,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         OptionalHTTPSessionFields,
         OptionalHTTPSessionAttribs,
         OptionalLinkPackageFields,
-        OptionalNetworkConnectioAttribs,
+        OptionalNetworkConnectionAttribs,
     )
 
     OPTIONAL_ATTRIBUTES = ()
