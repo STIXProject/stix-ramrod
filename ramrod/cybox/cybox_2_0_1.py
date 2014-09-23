@@ -30,16 +30,16 @@ class ActionNameVocab(Vocab):
 
 class DisallowedTaskTrigger(_DisallowedFields):
     XPATH = ".//WinTaskObj:Task_Trigger"
-    CTX_TYPES = {
-        "WindowsTaskObjectType": "http://cybox.mitre.org/objects#WinTaskObject-2"
-    }
+    # CTX_TYPES = {
+    #     "WindowsTaskObjectType": "http://cybox.mitre.org/objects#WinTaskObject-2"
+    # }
 
 
 class DisallowedWindowsMailslotHandle(_DisallowedFields):
     XPATH = "./WinMailslotObj:Handle"
-    CTX_TYPES = {
-        "WindowsMailslotObjectType": "http://cybox.mitre.org/objects#WinMailslotObject-2"
-    }
+    # CTX_TYPES = {
+    #     "WindowsMailslotObjectType": "http://cybox.mitre.org/objects#WinMailslotObject-2"
+    # }
 
 
     @classmethod
@@ -74,30 +74,30 @@ class OptionalCommonFields(_OptionalElements):
 
 class OptionalDNSCacheFields(_OptionalElements):
     XPATH = ".//DNSCacheObj:DNS_Entry"
-    CTX_TYPES = {
-        "DNSCacheObjectType": "http://cybox.mitre.org/objects#DNSCacheObject-2"
-    }
+    # CTX_TYPES = {
+    #     "DNSCacheObjectType": "http://cybox.mitre.org/objects#DNSCacheObject-2"
+    # }
 
 
 class OptionalDNSQueryFields(_OptionalElements):
     XPATH = ".//DNSQueryObj:QName"
-    CTX_TYPES = {
-        "DNSQueryObjectType": "http://cybox.mitre.org/objects#DNSQueryObject-2"
-    }
+    # CTX_TYPES = {
+    #     "DNSQueryObjectType": "http://cybox.mitre.org/objects#DNSQueryObject-2"
+    # }
 
 
 class OptionalDiskPartitionFields(_OptionalElements):
     XPATH = ".//DiskPartitionObj:Partition_ID"
-    CTX_TYPES = {
-        "DiskPartitionObjectType": "http://cybox.mitre.org/objects#DiskPartitionObject-2"
-    }
+    # CTX_TYPES = {
+    #     "DiskPartitionObjectType": "http://cybox.mitre.org/objects#DiskPartitionObject-2"
+    # }
 
 
 class OptionalFileFields(_OptionalElements):
     XPATH = ".//FileObj:Depth"
-    CTX_TYPES = {
-        "FileObjectType": "http://cybox.mitre.org/objects#FileObject-2"
-    }
+    # CTX_TYPES = {
+    #     "FileObjectType": "http://cybox.mitre.org/objects#FileObject-2"
+    # }
 
 
 class OptionalHTTPSessionFields(_OptionalElements):
@@ -105,33 +105,101 @@ class OptionalHTTPSessionFields(_OptionalElements):
         ".//HTTPSessionObj:Message_Body | "
         ".//HTTPSessionObj:Domain_Name"
     )
-    CTX_TYPES = {
-        "HTTPSessionObjectType": "http://cybox.mitre.org/objects#HTTPSessionObject-2"
-    }
+    # CTX_TYPES = {
+    #     "HTTPSessionObjectType": "http://cybox.mitre.org/objects#HTTPSessionObject-2"
+    # }
 
 
 class OptionalHTTPSessionAttribs(_OptionalAttributes):
     XPATH = ".//HTTPSessionObj:HTTP_Method"
     ATTRIBUTES = ('datatype')
-    CTX_TYPES = {
-        "HTTPSessionObjectType": "http://cybox.mitre.org/objects#HTTPSessionObject-2"
-    }
+    # CTX_TYPES = {
+    #     "HTTPSessionObjectType": "http://cybox.mitre.org/objects#HTTPSessionObject-2"
+    # }
 
 
 class OptionalLinkPackageFields(_OptionalElements):
     XPATH = ".//LinuxPackageObj:Name"
-    CTX_TYPES = {
-        "LinuxPackageObjectType": "http://cybox.mitre.org/objects#LinuxPackageObject-2"
-    }
+    # CTX_TYPES = {
+    #     "LinuxPackageObjectType": "http://cybox.mitre.org/objects#LinuxPackageObject-2"
+    # }
 
 
 class OptionalNetworkConnectionAttribs(_OptionalAttributes):
     XPATH = ".//NetworkConnectionObj:Layer7_Protcol"
     ATTRIBUTES = ('datatype')
+    # CTX_TYPES = {
+    #     "NetworkConnectionObjectType": "http://cybox.mitre.org/objects#LinuxPackageObject-2",
+    #     "ProcessObj:ProcessObjectType": "http://cybox.mitre.org/objects/ProcessObject-2"
+    # }
+
+
+class OptionalNetworkPacketFields(_OptionalElements):
+    ELEMENTS = (
+        'Error_Msg', 'Info_Msg', 'Traceroute', 'Destination_Unreachable',
+        'Source_Quench', 'Redirect_Message', 'Time_Exceeded', 'Echo_Reply',
+        'Echo_Request', 'Timestamp_Request', 'Timestamp_Reply', 'Address_Mask',
+        'Outbound_Packet_Forward_Success', 'Outbound_Packet_no_Route',
+        'Network_Redirect', 'Host_Redirect', 'ToS_Host_Redirect',
+        'ToS_Network_Redirect', 'TTL_Exceeded_In_Transit',
+        'Frag_Reassembly_Time_Exceeded', 'Timestamp', 'Receive_Timestamp',
+        'Transmit_Timestamp', 'Address_Mask_Request', 'Address_Mask_Reply',
+        'IPv6_Addr', 'IP_Addr_Prefix',
+    )
+
+    XPATH = " | ".join(".//PacketObj:%s" % x for x in ELEMENTS)
+    # CTX_TYPES = {
+    #     "NetworkPacketObjectType": "http://cybox.mitre.org/objects#PacketObject-2"
+    # }
+
+
+class OptionalProductFields(_OptionalElements):
+    XPATH = (
+        ".//ProductObj:Product | "
+        ".//ProductObj:Vendor"
+    )
     CTX_TYPES = {
-        "NetworkConnectionObjectType": "http://cybox.mitre.org/objects#LinuxPackageObject-2",
-        "ProcessObj:ProcessObjectType": "http://cybox.mitre.org/objects/ProcessObject-2"
+        'ProductObjectType': 'http://cybox.mitre.org/objects#ProductObject-2'
     }
+
+
+class OptionalSystemFields(_OptionalElements):
+    XPATH = ".//SystemObj:IP_Address"
+
+
+class OptionalURIFields(_OptionalElements):
+    XPATH = ".//URIObj:Value"
+
+    # URI Object is used in a lot of places...maybe CTX_TYPES isn't really
+    # necessary since elements are namespaced...
+    # CTX_TYPES = {
+    #     "URIObjectType": 'http://cybox.mitre.org/objects#URIObject-2',
+    #
+    # }
+
+
+class OptionalWinComputerAccountFields(_OptionalElements):
+    XPATH = (
+        ".//WinComputerAccountObj:Delegation | "
+        ".//WinComputerAccountObj:Bitmask | "
+        ".//WinComputerAccountObj:Service"
+    )
+
+
+class OptionalWinFileFields(_OptionalElements):
+    XPATH = ".//WinFileObj:Size_In_Bytes"
+
+
+class OptionalWinNetworkShareFields(_OptionalElements):
+    XPATH = ".//WinNetworkShareObj:Netname"
+
+
+class OptionalWinPrefetchFields(_OptionalElements):
+    XPATH =(
+        ".//WinPrefetchObj:VolumeItem | "
+        ".//WinPrefetchObj:DeviceItem"
+    )
+
 
 
 class Cybox_2_0_1_Updater(_CyboxUpdater):
@@ -235,6 +303,14 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         OptionalFileFields,
         OptionalHTTPSessionFields,
         OptionalLinkPackageFields,
+        OptionalNetworkPacketFields,
+        OptionalProductFields,
+        OptionalSystemFields,
+        OptionalURIFields,
+        OptionalWinComputerAccountFields,
+        OptionalWinFileFields,
+        OptionalWinNetworkShareFields,
+        OptionalWinPrefetchFields,
     )
 
     OPTIONAL_ATTRIBUTES = (
