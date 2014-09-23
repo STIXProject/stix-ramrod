@@ -79,12 +79,19 @@ class _TranslatableField(object):
 
     @classmethod
     def _translate_attributes(cls, old, new):
+        xpath, nsmap = cls.XPATH_VALUE, cls.NSMAP
+
+        if xpath:
+            source = old.xpath(xpath, namespaces=nsmap)
+        else:
+            source = old
+
         if cls.COPY_ATTRIBUTES:
-            new.attrib.update(old.attrib)
+            new.attrib.update(source.attrib)
 
         if cls.OVERRIDE_ATTRIBUTES:
             for name, val in cls.OVERRIDE_ATTRIBUTES:
-                if name not in old.attrib:
+                if name not in source.attrib:
                     continue
                 new.attrib[name] = val
 
@@ -113,6 +120,16 @@ class _TranslatableField(object):
         for node in nodes:
             new_node = cls._translate_fields(node)
             _replace_xml_element(node, new_node) # this might cause problems
+
+
+
+class _RenamedField(_TranslatableField):
+    
+    @classmethod
+    def translate(cls, root):
+        nodes = cls._find(root)
+        for node in nodes:
+            node.tag = cls.NEW_TAG
 
 
 class _DisallowedFields(object):

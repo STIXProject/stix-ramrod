@@ -2,7 +2,8 @@ import copy
 import itertools
 from ramrod.utils import ignored
 from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
-    _OptionalElements, _OptionalAttributes, _TranslatableField, _get_typed_nodes)
+    _OptionalElements, _OptionalAttributes, _TranslatableField, _RenamedField,
+    _get_typed_nodes)
 from . import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
     TAG_CYBOX_UPDATE)
 
@@ -223,10 +224,9 @@ class TransHTTPSessionVary(_TranslatableField):
     COPY_ATTRIBUTES = True # TODO: make sure this correct
 
 
-class TransHTTPSessionXRequestedFor(_TranslatableField):
+class TransHTTPSessionXRequestedFor(_RenamedField):
     XPATH_NODE = ".//HTTPSessionObj:X_Requested_For"
     NEW_TAG = "{http://cybox.mitre.org/objects#HTTPSessionObject-2}X_Forwarded_For"
-    COPY_ATTRIBUTES = True # TODO: make sure this correct
 
 
 class TransHTTPSessionXRequestedFor(_TranslatableField):
@@ -235,6 +235,21 @@ class TransHTTPSessionXRequestedFor(_TranslatableField):
     OVERRIDE_ATTRIBUTES = {
         'datatype': 'string'
     }
+
+
+class TransNetPacketProtolAddrSize(_RenamedField):
+    XPATH_NODE = ".//PacketObj:Protol_Addr_Size"
+    NEW_TAG = "{http://cybox.mitre.org/objects#PacketObject-2}Proto_Addr_Size"
+
+
+class TransNetPacketExcapsulatingSecurityPayload(_RenamedField):
+    XPATH_NODE = ".//PacketObj:Excapulating_Security_Payload"
+    NEW_TAG = "{http://cybox.mitre.org/objects#PacketObject-2}Encapsulating_Security_Payload"
+
+
+class TransNetPacketAuthenicationData(_RenamedField):
+    XPATH_NODE = ".//PacketObj:Authenication_Data"
+    NEW_TAG = "{http://cybox.mitre.org/objects#PacketObject-2}Authentication_Data"
 
 
 class Cybox_2_0_1_Updater(_CyboxUpdater):
