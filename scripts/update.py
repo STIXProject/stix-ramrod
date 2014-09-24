@@ -46,8 +46,8 @@ def _write_remapped_ids(remapped):
     print ("\n[!] The following ids were duplicated in the source document and "
            "remapped during the update process:")
 
-    for orig, new_ids in remapped.iteritems():
-        print "'%s': %s" % (orig, new_ids)
+    for old_id, new_ids in remapped.iteritems():
+        print "'%s': %s" % (old_id, new_ids)
 
 
 def _get_arg_parser():
