@@ -119,11 +119,7 @@ class OptionalNetworkPacketFields(_OptionalElements):
         'Transmit_Timestamp', 'Address_Mask_Request', 'Address_Mask_Reply',
         'IPv6_Addr', 'IP_Addr_Prefix',
     )
-
     XPATH = " | ".join(".//PacketObj:%s" % x for x in ELEMENTS)
-    # CTX_TYPES = {
-    #     "NetworkPacketObjectType": "http://cybox.mitre.org/objects#PacketObject-2"
-    # }
 
 
 class OptionalProductFields(_OptionalElements):
@@ -131,9 +127,6 @@ class OptionalProductFields(_OptionalElements):
         ".//ProductObj:Product | "
         ".//ProductObj:Vendor"
     )
-    CTX_TYPES = {
-        'ProductObjectType': 'http://cybox.mitre.org/objects#ProductObject-2'
-    }
 
 
 class OptionalSystemFields(_OptionalElements):
@@ -142,13 +135,6 @@ class OptionalSystemFields(_OptionalElements):
 
 class OptionalURIFields(_OptionalElements):
     XPATH = ".//URIObj:Value"
-
-    # URI Object is used in a lot of places...maybe CTX_TYPES isn't really
-    # necessary since elements are namespaced...
-    # CTX_TYPES = {
-    #     "URIObjectType": 'http://cybox.mitre.org/objects#URIObject-2',
-    #
-    # }
 
 
 class OptionalWinComputerAccountFields(_OptionalElements):
