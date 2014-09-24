@@ -1,5 +1,5 @@
 import copy
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from itertools import izip
 from distutils.version import StrictVersion
 from lxml import etree
@@ -16,6 +16,7 @@ TAG_SCHEMALOCATION ="{%s}schemaLocation" % NS_XSI
 TAG_VOCAB_REFERENCE = "vocab_reference"
 TAG_VOCAB_NAME = 'vocab_name'
 
+UpdateResults = namedtuple("UpdateResults", ('document', 'removed'))
 
 class UnknownVersionError(Exception):
     pass
@@ -234,7 +235,7 @@ class _BaseUpdater(object):
     def __init__(self):
         self.XPATH_VERSIONED_NODES = "."
         self.XPATH_ROOT_NODES = "."
-
+        self.cleaned_fields = ()
 
     def _is_leaf(self, node):
         """Returns ``True`` if the `node` has no children."""
@@ -505,7 +506,7 @@ def _get_version(root):
 def _update_stix(root, from_, to_=None, force=False):
     from ramrod.stix import STIX_UPDATERS, STIX_VERSIONS
 
-    to_ = to_ or STIX_VERSIONS[-1]  # The latest version
+    to_ = to_ or STIX_VERSIONS[-1]  # The latest version if not specified
 
     if from_ not in STIX_VERSIONS:
         raise UpdateError("The `from_` parameter specified an unknown STIX "
@@ -518,6 +519,7 @@ def _update_stix(root, from_, to_=None, force=False):
     if StrictVersion(from_) >= StrictVersion(to_):
         raise UpdateError("Cannot upgrade from %s to %s" % (from_, to_))
 
+    removed = []
     updated = root
     idx_from = STIX_VERSIONS.index(from_)
     idx_to = STIX_VERSIONS.index(to_)
@@ -525,14 +527,16 @@ def _update_stix(root, from_, to_=None, force=False):
         klass   = STIX_UPDATERS[version]
         updater = klass()
         updated = updater.update(updated, force)
+        removed.extend(updated.cleaned_fields)
 
-    return updated
+    updated = etree.ElementTree(updated)
+    return UpdateResults(document=updated, removed=removed)
 
 
 def _update_cybox(root, from_, to_=None, force=False):
     from ramrod.cybox import CYBOX_UPDATERS, CYBOX_VERSIONS
 
-    to_ = to_ or CYBOX_VERSIONS[-1]  # The latest version
+    to_ = to_ or CYBOX_VERSIONS[-1]  # The latest version if not specified
 
     if from_ not in CYBOX_VERSIONS:
         raise UpdateError("The `from_` parameter specified an unknown CybOX "
@@ -545,6 +549,7 @@ def _update_cybox(root, from_, to_=None, force=False):
     if StrictVersion(from_) >= StrictVersion(to_):
         raise UpdateError("Cannot upgrade from %s to %s" % (from_, to_))
 
+    removed = []
     updated = root
     idx_from = CYBOX_VERSIONS.index(from_)
     idx_to = CYBOX_VERSIONS.index(to_)
@@ -552,8 +557,10 @@ def _update_cybox(root, from_, to_=None, force=False):
         klass   = CYBOX_UPDATERS[version]
         updater = klass()
         updated = updater.update(updated, force)
+        removed.extend(updater.cleaned_fields)
 
-    return updated
+    updated = etree.ElementTree(updated)
+    return UpdateResults(document=updated, removed=removed)
 
 
 def update(doc, to_, from_=None, force=False):
@@ -573,4 +580,4 @@ def update(doc, to_, from_=None, force=False):
         raise UpdateError(error)
 
     updated = update(root, from_, to_, force)
-    return etree.ElementTree(updated)
+    return updated

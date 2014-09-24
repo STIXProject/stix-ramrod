@@ -24,6 +24,14 @@ def _print_update_error(err):
         print "[!] Found items with duplicate ids:"
         print "    Lines: %s" %  (", ".join(x.sourceline for x in err.duplicates))
 
+def _write_removed(removed):
+    if not removed:
+        return
+
+    print "The following nodes were removed during the update process:"
+    for node in removed:
+        print "    Line %s: %s" % (node.sourceline, node.tag)
+
 
 def _get_arg_parser():
     parser = argparse.ArgumentParser(description="STIX/CybOX Document Updater v%s"
@@ -62,7 +70,9 @@ def main():
                                 from_=args.from_,
                                 to_=args.to_,
                                 force=args.force)
-        _write_xml(updated, args.outfile)
+        _write_xml(updated.document, args.outfile)
+        _write_removed(updated.removed)
+
     except ramrod.UpdateError as ex:
         _print_update_error(ex)
 
