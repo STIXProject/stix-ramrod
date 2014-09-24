@@ -46,7 +46,10 @@ def main():
 
     try:
         _validate_args()
-        updated = ramrod.update(args.infile, from_=args.from_, to_=args.to_)
+        updated = ramrod.update(args.infile,
+                                from_=args.from_,
+                                to_=args.to_,
+                                force=args.force)
         _write_xml(updated, args.outfile)
     except ramrod.UpdateError as ex:
         print str(ex)
