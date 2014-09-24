@@ -542,9 +542,8 @@ def _update_stix(root, from_, to_=None, force=False):
     remapped = {}
     updated = root
 
-    vlookup = STIX_VERSIONS.index
-    idx_from, idx_to = vlookup(from_), vlookup(to_)
-    for version in STIX_VERSIONS[idx_from:idx_to]:
+    idx = STIX_VERSIONS.index
+    for version in STIX_VERSIONS[idx(from_):idx(to_)]:
         klass   = STIX_UPDATERS[version]
         updater = klass()
 
@@ -579,9 +578,8 @@ def _update_cybox(root, from_, to_=None, force=False):
     remapped = {}
     updated = root
 
-    vlookup = CYBOX_VERSIONS.index
-    idx_from, idx_to = vlookup(from_), vlookup(to_)
-    for version in CYBOX_VERSIONS[idx_from:idx_to]:
+    idx = CYBOX_VERSIONS.index
+    for version in CYBOX_VERSIONS[idx(from_):idx(to_)]:
         klass   = CYBOX_UPDATERS[version]
         updater = klass()
 
