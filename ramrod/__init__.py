@@ -12,11 +12,12 @@ __version__ = "1.0a1"
 NS_XSI = "http://www.w3.org/2001/XMLSchema-instance"
 TAG_XSI_TYPE = "{%s}type" % NS_XSI
 TAG_SCHEMALOCATION ="{%s}schemaLocation" % NS_XSI
-
 TAG_VOCAB_REFERENCE = "vocab_reference"
 TAG_VOCAB_NAME = 'vocab_name'
 
+# Returned from ``update()`` method.
 UpdateResults = namedtuple("UpdateResults", ('document', 'removed'))
+
 
 class UnknownVersionError(Exception):
     pass

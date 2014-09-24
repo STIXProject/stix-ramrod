@@ -28,8 +28,8 @@ def _write_removed(removed):
     if not removed:
         return
 
-    print ("The following nodes were removed from the source document during "
-          "the update process:")
+    print ("\n[!] The following nodes were removed from the source document during "
+           "the update process:")
     
     for node in removed:
         print "    Line %s: %s" % (node.sourceline, node.tag)
