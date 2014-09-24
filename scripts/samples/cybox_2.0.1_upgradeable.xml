@@ -54,7 +54,7 @@
         </cybox:Object>
     </cybox:Observable>
     <cybox:Observable id="example:Observable-1c9af310-0d5a-4c44-bdd7-aea3d99f13b7">
-        <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19cg">
+        <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19d1">
             <cybox:Properties xsi:type="URIObject:URIObjectType" type="URL">
                 <cyboxCommon:Custom_Properties>
                     <cyboxCommon:Property name="Test" condition="Equals">TEST</cyboxCommon:Property>
@@ -64,7 +64,7 @@
         </cybox:Object>
     </cybox:Observable>
     <cybox:Observable id="example:Observable-1c9af310-0d5a-4c44-bdd7-aea3d99f13b8">
-        <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19ch">
+        <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19d0">
             <cybox:Properties xsi:type="WinMailslotObj:WindowsMailslotObjectType">
                 <WinMailslotObj:Handle>
                     <WinHandleObj:Handle>
@@ -72,6 +72,22 @@
                     </WinHandleObj:Handle>
                 </WinMailslotObj:Handle>
                 <WinMailslotObj:Name>TEST NAME</WinMailslotObj:Name>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable id="example:Observable-1c9af310-0d5a-4c44-bdd7-aea3d99f13b9">
+        <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19d3   ">
+            <cybox:Properties xsi:type="HTTPSessionObj:HTTPSessionObjectType">
+                <HTTPSessionObj:HTTP_Request_Response>
+                    <HTTPSessionObj:HTTP_Client_Request>
+                        <HTTPSessionObj:HTTP_Message_Body>
+                            <HTTPSessionObj:Length>1024</HTTPSessionObj:Length>
+                            <!--Message_Body is not optional in CybOX 2.0.1 and will be removed
+                                in the update process-->
+                            <HTTPSessionObj:Message_Body></HTTPSessionObj:Message_Body>
+                        </HTTPSessionObj:HTTP_Message_Body>
+                    </HTTPSessionObj:HTTP_Client_Request>
+                </HTTPSessionObj:HTTP_Request_Response>
             </cybox:Properties>
         </cybox:Object>
     </cybox:Observable>
