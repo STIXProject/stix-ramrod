@@ -65,6 +65,19 @@
             </cybox:Properties>
         </cybox:Object>
     </cybox:Observable>
+    <!--The following Observable contains the same IDs as the OBservable/Object above it.
+        This is schema-valid (though violates suggested practices) in CybOX 2.0.1 but not 
+        CybOX 2.1-->
+    <cybox:Observable id="example:Observable-1c9af310-0d5a-4c44-bdd7-aea3d99f13b7">
+        <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19cg">
+            <cybox:Properties xsi:type="URIObj:URIObjectType" type="URL">
+                <cyboxCommon:Custom_Properties>
+                    <cyboxCommon:Property name="Test" condition="Equals">TEST</cyboxCommon:Property>
+                </cyboxCommon:Custom_Properties>
+                <URIObj:Value></URIObj:Value>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
     <cybox:Observable id="example:Observable-1c9af310-0d5a-4c44-bdd7-aea3d99f13b8">
         <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19ch">
             <cybox:Properties xsi:type="WinMailslotObj:WindowsMailslotObjectType">

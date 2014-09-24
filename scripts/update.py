@@ -15,14 +15,18 @@ def _validate_args():
 def _print_update_error(err):
     print "[!] %s" % (str(err))
 
-    if err.disallowed:
+    disallowed = err.disallowed
+    duplicates = err.duplicates
+
+    if disallowed:
         print "[!] Found the following disallowed items:"
-        for node in err.disallowed:
+        for node in disallowed:
             print "    Line %s: %s" % (node.sourceline, node.tag)
 
-    if err.duplicates:
+    if duplicates:
         print "[!] Found items with duplicate ids:"
-        print "    Lines: %s" %  (", ".join(x.sourceline for x in err.duplicates))
+        for id_, nodes in duplicates.iteritems():
+            print "    '%s' on lines %s" %  (id_, [x.sourceline for x in nodes])
 
 def _write_removed(removed):
     if not removed:
@@ -33,6 +37,17 @@ def _write_removed(removed):
     
     for node in removed:
         print "    Line %s: %s" % (node.sourceline, node.tag)
+
+
+def _write_remapped_ids(remapped):
+    if not remapped:
+        return
+
+    print ("\n[!] The following ids were duplicated in the source document and "
+           "remapped during the update process:")
+
+    for orig, new_ids in remapped.iteritems():
+        print "'%s': %s" % (orig, new_ids)
 
 
 def _get_arg_parser():
@@ -69,10 +84,11 @@ def main():
 
     try:
         _validate_args()
-        update = ramrod.update
-        updated = update(args.infile, from_=args.from_, to_=args.to_, force=args.force)
+        updated = ramrod.update(args.infile, from_=args.from_, to_=args.to_, force=args.force)
+
         _write_xml(updated.document, args.outfile)
         _write_removed(updated.removed)
+        _write_remapped_ids(updated.remapped_ids)
 
     except ramrod.UpdateError as ex:
         _print_update_error(ex)

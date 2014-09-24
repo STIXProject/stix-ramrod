@@ -1,5 +1,6 @@
-from contextlib import contextmanager
 import copy
+from contextlib import contextmanager
+from uuid import uuid4
 
 NS_XSI = "http://www.w3.org/2001/XMLSchema-instance"
 TAG_XSI_TYPE = "{%s}type" % NS_XSI
@@ -91,3 +92,7 @@ def get_ext_namespace(node):
     namespace = node.nsmap[alias]
     return namespace
 
+
+def create_new_id(orig_id):
+    new_id = "%s-cleaned-%s" % (orig_id, uuid4())
+    return new_id

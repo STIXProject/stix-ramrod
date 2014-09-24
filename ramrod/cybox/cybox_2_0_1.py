@@ -1,7 +1,8 @@
 import copy
 import itertools
+from collections import defaultdict
 from ramrod.utils import (ignored, get_typed_nodes, copy_xml_element,
-    remove_xml_element, remove_xml_elements)
+    remove_xml_element, remove_xml_elements, create_new_id)
 from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
     _OptionalElements, _TranslatableField, _RenamedField)
 from . import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
@@ -557,16 +558,24 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         return removed
 
 
-    def _clean_duplicates(self, duplicates):
-        # Not sure what to do here...
-        pass
+    def _clean_duplicates(self, root, duplicates):
+        """CybOX 2.1 introduced schematic enforcement of ID uniqueness, so
+        CybOX 2.0.1 documents which contained duplicate IDs will need to have
+        its IDs remapped to produce a schema-valid document.
 
+        """
+        self.cleaned_ids = defaultdict(list)
+        for id_, nodes in duplicates.iteritems():
+            for dup in nodes:
+                new_id = create_new_id(id_)
+                dup.attrib['id'] = new_id
+                self.cleaned_ids[id_].append(new_id)
 
     def clean(self, root, disallowed=None, duplicates=None):
         disallowed = disallowed or self._get_disallowed(root)
         duplicates = duplicates or self._get_duplicates(root)
 
-        self._clean_duplicates(duplicates)  # TODO: What does this do?
+        self._clean_duplicates(root, duplicates)
         removed = self._clean_disallowed(disallowed)
 
         self.cleaned_fields = tuple(removed)
@@ -574,14 +583,13 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
 
     def _update(self, root):
-        self._update_schemalocs(root)
-        self._update_versions(root)
-        self._update_vocabs(root)
-        self._update_lists(root)
-        self._update_optionals(root)
-        self._translate_fields(root)
-
-        return root
+        updated = self._update_namespaces(root)
+        self._update_schemalocs(updated)
+        self._update_versions(updated)
+        self._update_vocabs(updated)
+        self._update_optionals(updated)
+        self._translate_fields(updated)
+        return updated
 
 
     def update(self, root, force=False):

@@ -16,7 +16,14 @@ TAG_VOCAB_REFERENCE = "vocab_reference"
 TAG_VOCAB_NAME = 'vocab_name'
 
 # Returned from ``update()`` method.
-UpdateResults = namedtuple("UpdateResults", ('document', 'removed'))
+UpdateResults = namedtuple(
+    "UpdateResults",
+    (
+        'document',         # The updated document
+        'removed',          # Nodes that were removed during forced updated
+        'remapped_ids'      # IDs that were remapped during a forced update
+    )
+)
 
 
 class UnknownVersionError(Exception):
@@ -237,6 +244,7 @@ class _BaseUpdater(object):
         self.XPATH_VERSIONED_NODES = "."
         self.XPATH_ROOT_NODES = "."
         self.cleaned_fields = ()
+        self.cleaned_ids = {}
 
     def _is_leaf(self, node):
         """Returns ``True`` if the `node` has no children."""
@@ -268,17 +276,27 @@ class _BaseUpdater(object):
             lxml._Element nodes.
 
         """
-        id_nodes = defaultdict(list)
+        namespaces = self.NSMAP.values()
         roots = self._get_root_nodes(root)
+        id_nodes = defaultdict(list)
+
         for node in roots:
-            for child in node:
-                if 'id' not in node.attrib:
+            for child in node.iterdescendants():
+                try:
+                    ns = QName(child).namespace
+                except ValueError:
+                    continue
+
+                if ns not in namespaces:
+                    continue
+
+                if 'id' not in child.attrib:
                     continue
 
                 id_ = child.attrib['id']
                 id_nodes[id_].append(child)
 
-        return dict((id_, nodes) for id_, nodes in id_nodes if len(nodes) > 1)
+        return dict((id_, nodes) for id_, nodes in id_nodes.iteritems() if len(nodes) > 1)
 
 
     def _get_versioned_nodes(self, root):
@@ -521,17 +539,23 @@ def _update_stix(root, from_, to_=None, force=False):
         raise UpdateError("Cannot upgrade from %s to %s" % (from_, to_))
 
     removed = []
+    remapped = {}
     updated = root
-    idx_from = STIX_VERSIONS.index(from_)
-    idx_to = STIX_VERSIONS.index(to_)
+
+    idx_from, idx_to = STIX_VERSIONS.index(from_), STIX_VERSIONS.index(to_)
     for version in STIX_VERSIONS[idx_from:idx_to]:
         klass   = STIX_UPDATERS[version]
         updater = klass()
+
         updated = updater.update(updated, force)
-        removed.extend(updated.cleaned_fields)
+        removed.extend(updater.cleaned_fields)
+        remapped.update(updater.cleaned_ids)
 
     updated = etree.ElementTree(updated)
-    return UpdateResults(document=updated, removed=removed)
+
+    return UpdateResults(document=updated,
+                         removed=removed,
+                         remapped_ids=remapped)
 
 
 def _update_cybox(root, from_, to_=None, force=False):
@@ -551,17 +575,23 @@ def _update_cybox(root, from_, to_=None, force=False):
         raise UpdateError("Cannot upgrade from %s to %s" % (from_, to_))
 
     removed = []
+    remapped = {}
     updated = root
-    idx_from = CYBOX_VERSIONS.index(from_)
-    idx_to = CYBOX_VERSIONS.index(to_)
+
+    idx_from, idx_to = CYBOX_VERSIONS.index(from_), CYBOX_VERSIONS.index(to_)
     for version in CYBOX_VERSIONS[idx_from:idx_to]:
         klass   = CYBOX_UPDATERS[version]
         updater = klass()
+
         updated = updater.update(updated, force)
         removed.extend(updater.cleaned_fields)
+        remapped.update(updater.cleaned_ids)
 
     updated = etree.ElementTree(updated)
-    return UpdateResults(document=updated, removed=removed)
+
+    return UpdateResults(document=updated,
+                         removed=removed,
+                         remapped_ids=remapped)
 
 
 def update(doc, to_, from_=None, force=False):
@@ -575,10 +605,10 @@ def update(doc, to_, from_=None, force=False):
 
     try:
         from_ = from_ or _get_version(root)  # _get_version raises KeyError
-        update = update_methods[name]
+        func = update_methods[name]
     except KeyError:
         error = "Document root node must be one of %s" % (update_methods.keys(),)
         raise UpdateError(error)
 
-    updated = update(root, from_, to_, force)
+    updated = func(root, from_, to_, force)
     return updated
