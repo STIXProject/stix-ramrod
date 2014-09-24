@@ -46,12 +46,13 @@ def _get_arg_parser():
                         help="Output XML document filename. Prints to stdout "
                              "if no filename is provided.")
 
-    parser.add_argument("--from", default=None, dest="from_", metavar="FROM",
+    parser.add_argument("--from", default=None, dest="from_",
+                        metavar="VERSION FROM",
                         help="The version of the input document. If not "
                              "supplied, RAMROD will try to determine the "
                              "version of the input document.")
 
-    parser.add_argument("--to", default=None, dest="to_", metavar="TO",
+    parser.add_argument("--to", default=None, dest="to_", metavar="VERSION TO",
                         help="Update document to this version. If no version "
                              "is supplied, the document will be updated to "
                              "the latest version.")
@@ -68,10 +69,8 @@ def main():
 
     try:
         _validate_args()
-        updated = ramrod.update(args.infile,
-                                from_=args.from_,
-                                to_=args.to_,
-                                force=args.force)
+        update = ramrod.update
+        updated = update(args.infile, from_=args.from_, to_=args.to_, force=args.force)
         _write_xml(updated.document, args.outfile)
         _write_removed(updated.removed)
 

@@ -34,11 +34,7 @@ class DisallowedTaskTrigger(_DisallowedFields):
 
 
 class DisallowedWindowsMailslotHandle(_DisallowedFields):
-    CTX_TYPES = {
-        'WindowsMailslotObjectType': 'http://cybox.mitre.org/objects#WinMailslotObject-2'
-    }
-    XPATH = "./WinMailslotObj:Handle"
-
+    XPATH = ".//WinMailslotObj:Handle[WinHandleObj:Handle]"
 
     @classmethod
     def _interrogate(cls, nodes):
