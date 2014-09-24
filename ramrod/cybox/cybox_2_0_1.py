@@ -1,7 +1,7 @@
 import copy
 import itertools
 from ramrod.utils import (ignored, get_typed_nodes, copy_xml_element,
-    remove_xml_elements)
+    remove_xml_element, remove_xml_elements)
 from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
     _OptionalElements, _OptionalAttributes, _TranslatableField, _RenamedField)
 from . import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
@@ -214,13 +214,16 @@ class TransNetPacketAuthenticationData(_RenamedField):
 
 
 class TransWinMailslotHandle(_TranslatableField):
-    XPATH_NODE = ".//WinMailslotObj:Handle/WinMailslotObj:Handle"
+    XPATH_NODE = ".//WinMailslotObj:Handle/WinHandleObj:Handle"
+    NEW_TAG = "{http://cybox.mitre.org/objects#WinMailslotObject-2}Handle"
 
     @classmethod
     def _replace(cls, node):
         parent = node.getparent()
         grandparent = parent.getparent()
+
         dup = copy_xml_element(node)
+        dup.tag = cls.NEW_TAG
 
         idx = grandparent.index(parent)
         grandparent.insert(idx, dup)
@@ -548,7 +551,9 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         disallowed = self._get_disallowed(root)
 
         if any((disallowed, duplicates)):
-            raise UpdateError(disallowed=disallowed, duplicates=duplicates)
+            raise UpdateError("Unable to perform update!",
+                              disallowed=disallowed,
+                              duplicates=duplicates)
 
 
     def _clean_disallowed(self, disallowed):
@@ -556,7 +561,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
         for node in disallowed:
             dup = copy.deepcopy(node)
-            remove_xml_node(node)
+            remove_xml_element(node)
             removed.append(dup)
 
         return removed
