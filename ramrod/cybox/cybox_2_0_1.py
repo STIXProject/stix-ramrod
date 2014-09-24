@@ -1,9 +1,9 @@
 import copy
 import itertools
-from ramrod.utils import ignored
+from ramrod.utils import (ignored, get_typed_nodes, copy_xml_element,
+    remove_xml_elements)
 from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
-    _OptionalElements, _OptionalAttributes, _TranslatableField, _RenamedField,
-    _get_typed_nodes)
+    _OptionalElements, _OptionalAttributes, _TranslatableField, _RenamedField)
 from . import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
     TAG_CYBOX_UPDATE)
 
@@ -31,16 +31,13 @@ class ActionNameVocab(Vocab):
 
 class DisallowedTaskTrigger(_DisallowedFields):
     XPATH = ".//WinTaskObj:Task_Trigger"
-    # CTX_TYPES = {
-    #     "WindowsTaskObjectType": "http://cybox.mitre.org/objects#WinTaskObject-2"
-    # }
 
 
 class DisallowedWindowsMailslotHandle(_DisallowedFields):
+    CTX_TYPES = {
+        'WindowsMailslotObjectType': 'http://cybox.mitre.org/objects#WinMailslotObject-2'
+    }
     XPATH = "./WinMailslotObj:Handle"
-    # CTX_TYPES = {
-    #     "WindowsMailslotObjectType": "http://cybox.mitre.org/objects#WinMailslotObject-2"
-    # }
 
 
     @classmethod
@@ -85,30 +82,18 @@ class OptionalCommonFields(_OptionalElements):
 
 class OptionalDNSCacheFields(_OptionalElements):
     XPATH = ".//DNSCacheObj:DNS_Entry"
-    # CTX_TYPES = {
-    #     "DNSCacheObjectType": "http://cybox.mitre.org/objects#DNSCacheObject-2"
-    # }
 
 
 class OptionalDNSQueryFields(_OptionalElements):
     XPATH = ".//DNSQueryObj:QName"
-    # CTX_TYPES = {
-    #     "DNSQueryObjectType": "http://cybox.mitre.org/objects#DNSQueryObject-2"
-    # }
 
 
 class OptionalDiskPartitionFields(_OptionalElements):
     XPATH = ".//DiskPartitionObj:Partition_ID"
-    # CTX_TYPES = {
-    #     "DiskPartitionObjectType": "http://cybox.mitre.org/objects#DiskPartitionObject-2"
-    # }
 
 
 class OptionalFileFields(_OptionalElements):
     XPATH = ".//FileObj:Depth"
-    # CTX_TYPES = {
-    #     "FileObjectType": "http://cybox.mitre.org/objects#FileObject-2"
-    # }
 
 
 class OptionalHTTPSessionFields(_OptionalElements):
@@ -116,33 +101,10 @@ class OptionalHTTPSessionFields(_OptionalElements):
         ".//HTTPSessionObj:Message_Body | "
         ".//HTTPSessionObj:Domain_Name"
     )
-    # CTX_TYPES = {
-    #     "HTTPSessionObjectType": "http://cybox.mitre.org/objects#HTTPSessionObject-2"
-    # }
-
-
-class OptionalHTTPSessionAttribs(_OptionalAttributes):
-    XPATH = ".//HTTPSessionObj:HTTP_Method"
-    ATTRIBUTES = ('datatype')
-    # CTX_TYPES = {
-    #     "HTTPSessionObjectType": "http://cybox.mitre.org/objects#HTTPSessionObject-2"
-    # }
 
 
 class OptionalLinkPackageFields(_OptionalElements):
     XPATH = ".//LinuxPackageObj:Name"
-    # CTX_TYPES = {
-    #     "LinuxPackageObjectType": "http://cybox.mitre.org/objects#LinuxPackageObject-2"
-    # }
-
-
-class OptionalNetworkConnectionAttribs(_OptionalAttributes):
-    XPATH = ".//NetworkConnectionObj:Layer7_Protcol"
-    ATTRIBUTES = ('datatype')
-    # CTX_TYPES = {
-    #     "NetworkConnectionObjectType": "http://cybox.mitre.org/objects#LinuxPackageObject-2",
-    #     "ProcessObj:ProcessObjectType": "http://cybox.mitre.org/objects/ProcessObject-2"
-    # }
 
 
 class OptionalNetworkPacketFields(_OptionalElements):
@@ -236,7 +198,6 @@ class TransHTTPSessionRefresh(_TranslatableField):
         'datatype': 'string'
     }
 
-
 class TransNetPacketProtoAddrSize(_RenamedField):
     XPATH_NODE = ".//PacketObj:Protol_Addr_Size"
     NEW_TAG = "{http://cybox.mitre.org/objects#PacketObject-2}Proto_Addr_Size"
@@ -250,6 +211,27 @@ class TransNetPacketEncapsulatingSecurityPayload(_RenamedField):
 class TransNetPacketAuthenticationData(_RenamedField):
     XPATH_NODE = ".//PacketObj:Authenication_Data"
     NEW_TAG = "{http://cybox.mitre.org/objects#PacketObject-2}Authentication_Data"
+
+
+class TransWinMailslotHandle(_TranslatableField):
+    XPATH_NODE = ".//WinMailslotObj:Handle/WinMailslotObj:Handle"
+
+    @classmethod
+    def _replace(cls, node):
+        parent = node.getparent()
+        grandparent = parent.getparent()
+        dup = copy_xml_element(node)
+
+        idx = grandparent.index(parent)
+        grandparent.insert(idx, dup)
+        grandparent.remove(parent)
+
+
+    @classmethod
+    def translate(cls, root):
+        nodes = cls._find(root)
+        for node in nodes:
+            cls._replace(node)
 
 
 class Cybox_2_0_1_Updater(_CyboxUpdater):
@@ -365,10 +347,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         OptionalWinPrefetchFields,
     )
 
-    OPTIONAL_ATTRIBUTES = (
-        OptionalHTTPSessionAttribs,
-        OptionalNetworkConnectionAttribs,
-    )
+    OPTIONAL_ATTRIBUTES = ()
 
     TRANSLATABLE_FIELDS = (
         TransHTTPSessionDNT,
@@ -378,6 +357,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         TransNetPacketAuthenticationData,
         TransNetPacketEncapsulatingSecurityPayload,
         TransNetPacketProtoAddrSize,
+        TransWinMailslotHandle
     )
 
     UPDATE_NS_MAP = {
@@ -518,17 +498,17 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         optional_elements = self.OPTIONAL_ELEMENTS
         optional_attribs = self.OPTIONAL_ATTRIBUTES
 
-        typed_nodes = _get_typed_nodes(root)
+        typed_nodes = get_typed_nodes(root)
 
         for optional in optional_elements:
             found = optional.find(root, typed=typed_nodes)
-            self._remove_xml_nodes(found)
+            remove_xml_elements(found)
 
 
         for optional in optional_attribs:
             found = optional.find(root, typed=typed_nodes)
             for node in found:
-                self._remove_xml_attributes(node, optional.ATTRIBUTES)
+                remove_xml_elements(node, optional.ATTRIBUTES)
 
 
     def _get_disallowed(self, root):
@@ -576,7 +556,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
         for node in disallowed:
             dup = copy.deepcopy(node)
-            self._remove_xml_node(node)
+            remove_xml_node(node)
             removed.append(dup)
 
         return removed

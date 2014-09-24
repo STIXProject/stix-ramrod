@@ -4,7 +4,8 @@ from itertools import izip
 from distutils.version import StrictVersion
 from lxml import etree
 from lxml.etree import QName
-from ramrod.utils import ignored
+from ramrod.utils import (ignored, get_ext_namespace, get_type_info,
+    get_typed_nodes, replace_xml_element, remove_xml_attribute)
 
 __version__ = "1.0a1"
 
@@ -119,7 +120,7 @@ class _TranslatableField(object):
         nodes = cls._find(root)
         for node in nodes:
             new_node = cls._translate_fields(node)
-            _replace_xml_element(node, new_node) # this might cause problems
+            replace_xml_element(node, new_node) # this might cause problems
 
 
 
@@ -154,12 +155,12 @@ class _DisallowedFields(object):
             return (root,)
 
         if not typed:
-            typed = _get_typed_nodes(root)
+            typed = get_typed_nodes(root)
 
         contexts = []
         for node in typed:
-            alias, type_ = _get_type_info(node)
-            ns = _get_ext_namespace(node)
+            alias, type_ = get_type_info(node)
+            ns = get_ext_namespace(node)
 
             if ctx.get(type_) == ns:
                 contexts.append(node)
@@ -283,40 +284,6 @@ class _BaseUpdater(object):
         return dict((id_, nodes) for id_, nodes in id_nodes if len(nodes) > 1)
 
 
-    def _remove_xml_node(self, node):
-        """Removes `node` from the parent of `node`."""
-        parent = node.getparent()
-        parent.remove(node)
-
-
-    def _remove_xml_nodes(self, nodes):
-        """Removes each node found in `nodes` from the XML document."""
-        for node in nodes:
-            self._remove_xml_node(node)
-
-
-    def _copy_xml_node(self, node):
-        """Returns a copy of `node`."""
-        return copy.deepcopy(node)
-
-
-    def _remove_xml_attribute(self, node, attr):
-        """Removes an attribute from `node`.
-
-        Args:
-            node (lxml.etree._Element): An _Element node.
-            attr: A attribute tag to be removed.
-
-        """
-        with ignored(KeyError):
-            del node.attrib[attr]
-
-
-    def _remove_xml_attributes(self, node, attrs):
-        for attr in attrs:
-            self._remove_xml_attribute(node, attr)
-
-
     def _get_versioned_nodes(self, root):
         xpath = self.XPATH_VERSIONED_NODES
         namespaces = self.NSMAP
@@ -340,11 +307,11 @@ class _BaseUpdater(object):
     def _update_vocabs(self, root):
         default_vocab_ns = self.DEFAULT_VOCAB_NAMESPACE
         vocabs = self.UPDATE_VOCABS
-        typed_nodes = _get_typed_nodes(root)
+        typed_nodes = get_typed_nodes(root)
 
         for node in typed_nodes:
-            alias, type_ = _get_type_info(node)
-            ext_ns = _get_ext_namespace(node)
+            alias, type_ = get_type_info(node)
+            ext_ns = get_ext_namespace(node)
 
             if not all((ext_ns == default_vocab_ns, type_ in vocabs)):
                 continue
@@ -376,7 +343,7 @@ class _BaseUpdater(object):
 
 
     def _remove_schemalocations(self, root):
-        self._remove_xml_attribute(root, TAG_SCHEMALOCATION)
+        remove_xml_attribute(root, TAG_SCHEMALOCATION)
 
 
     def _create_schemaloc_str(self, pairs):
@@ -483,51 +450,6 @@ class _BaseUpdater(object):
         updated[:] = root[:]
 
         return updated
-
-
-def _replace_xml_element(old, new):
-    parent = old.getparent()
-    idx = parent.index(old)
-    parent.insert(idx, new)
-    parent.remove(old)
-
-
-def _get_type_info(node):
-    xsi_type = node.attrib[TAG_XSI_TYPE]
-    alias, type_ = xsi_type.split(':')
-    return (alias, type_)
-
-
-def _get_typed_nodes(root):
-    nsmap = {'xsi': NS_XSI}
-    xpath = ".//*[@xsi:type]"
-    nodes = root.xpath(xpath, namespaces=nsmap)
-    return nodes
-
-
-def _get_ext_namespace(node):
-    """Returns the namespace which contains the type definition for
-    the `node`. The type definition is specified by the ``xsi:type``
-    attribute which is formatted as ``[alias]:[type name]``.
-
-    This method splits the ``xsi:type`` attribute value into an alias
-    and a type name and performs a namespace lookup for the alias.
-
-    Args:
-        node: An instance of lxml.etree._Element which contains an
-            ``xsi:type`` attribute.
-
-    Returns:
-        The namespace for the type defintion of this node.
-
-    Raises:
-        KeyError if the node does not contain an ``xsi:type`` attribute.
-
-    """
-    xsi_type = node.attrib[TAG_XSI_TYPE]
-    alias, type_ = xsi_type.split(":")
-    namespace = node.nsmap[alias]
-    return namespace
 
 
 def _get_xml_parser():

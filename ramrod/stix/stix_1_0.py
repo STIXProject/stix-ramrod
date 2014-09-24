@@ -1,8 +1,9 @@
 import copy
 from lxml import etree
 
-from ramrod import (Vocab, _DisallowedFields, UpdateError,
-                    UnknownVersionError, TAG_XSI_TYPE)
+from ramrod import (Vocab, _DisallowedFields, UpdateError, UnknownVersionError,
+                    TAG_XSI_TYPE)
+from ramrod.utils import remove_xml_element
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_Updater
 
@@ -222,7 +223,7 @@ class STIX_1_0_Updater(_STIXUpdater):
 
         for node in disallowed:
             dup = copy.deepcopy(node)
-            self._remove_xml_node(node)
+            remove_xml_element(node)
             removed.append(dup)
 
         self.cleaned_fields = tuple(removed)
