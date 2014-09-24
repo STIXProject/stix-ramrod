@@ -3,7 +3,7 @@ import itertools
 from ramrod.utils import (ignored, get_typed_nodes, copy_xml_element,
     remove_xml_element, remove_xml_elements)
 from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
-    _OptionalElements, _OptionalAttributes, _TranslatableField, _RenamedField)
+    _OptionalElements, _TranslatableField, _RenamedField)
 from . import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
     TAG_CYBOX_UPDATE)
 
@@ -67,6 +67,13 @@ class DisallowedWindowsMailslotHandle(_DisallowedFields):
 
 
 class DisallowedWinExecutableFile(_DisallowedFields):
+    """Removes the ``Type`` element from instances of PESectionType, defined
+    in the WindowsExecutableFileObject schema.
+
+    The ``Type`` field does not exist in ``PESectionType`` of the
+    ``WindowsExecutableFileObject`` v2.1.
+
+    """
     # This could potentially become something that is translated into
     # another field rather than a disallowed field.
     XPATH = ".//{0}:Section/{0}:Type".format('WinExecutableFileObj')
