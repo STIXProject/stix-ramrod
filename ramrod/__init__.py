@@ -28,12 +28,7 @@ class UpdateError(Exception):
         self.duplicates = duplicates
 
     def __str__(self):
-        if self.disallowed:
-            s = "Update Error: %s\n%s" % (self.message, self.disallowed)
-        else:
-            s = "Update Error: %s" % (self.message)
-
-        return s
+        return "Update Error: %s" % (self.message)
 
 
 class InvalidVersionError(Exception):

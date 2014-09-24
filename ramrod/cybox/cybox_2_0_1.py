@@ -544,7 +544,8 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         disallowed = self._get_disallowed(root)
 
         if any((disallowed, duplicates)):
-            raise UpdateError("Unable to perform update!",
+            raise UpdateError("Found duplicate or untranslatable fields in "
+                              "source document.",
                               disallowed=disallowed,
                               duplicates=duplicates)
 

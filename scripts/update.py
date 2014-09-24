@@ -12,6 +12,18 @@ def _write_xml(tree, outfn=None):
 def _validate_args():
     pass
 
+def _print_update_error(err):
+    print "[!] %s" % (str(err))
+
+    if err.disallowed:
+        print "[!] Found the following disallowed items:"
+        for node in err.disallowed:
+            print "    Line %s: %s" % (node.sourceline, node.tag)
+
+    if err.duplicates:
+        print "[!] Found items with duplicate ids:"
+        print "    Lines: %s" %  (", ".join(x.sourceline for x in err.duplicates))
+
 
 def _get_arg_parser():
     parser = argparse.ArgumentParser(description="STIX/CybOX Document Updater v%s"
@@ -52,7 +64,8 @@ def main():
                                 force=args.force)
         _write_xml(updated, args.outfile)
     except ramrod.UpdateError as ex:
-        print str(ex)
+        _print_update_error(ex)
+
 
 if __name__ == "__main__":
     main()
