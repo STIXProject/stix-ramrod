@@ -3,13 +3,12 @@ import itertools
 from collections import defaultdict
 from lxml import etree
 
-from ramrod import (UpdateError, UnknownVersionError, TAG_XSI_TYPE)
+from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
+    _OptionalElements, _TranslatableField)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_1_Updater
-from ramrod.utils import (ignored, get_typed_nodes, copy_xml_element,
+from ramrod.utils import (get_typed_nodes, copy_xml_element,
     remove_xml_element, remove_xml_elements, create_new_id, replace_xml_element)
-from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
-    _OptionalElements, _TranslatableField, _RenamedField,)
 
 
 class MotivationVocab(Vocab):
@@ -32,6 +31,19 @@ class OptionalDataMarkingFields(_OptionalElements):
         ".//marking:Controlled_Structure | "
         ".//marking:Marking_Structures"
     )
+
+
+class DisallowedMAEC(_DisallowedFields):
+    CTX_TYPES = {
+        "MAEC4.0InstanceType": "http://stix.mitre.org/extensions/Malware#MAEC4.0-1"
+    }
+
+
+class DisallowedCAPEC(_DisallowedFields):
+    CTX_TYPES = {
+        "CAPEC2.6InstanceType": "http://stix.mitre.org/extensions/AP#CAPEC2.6-1"
+    }
+
 
 class DisallowedDateTime(_DisallowedFields):
     XPATH = ".//stixCommon:Date_Time"
@@ -251,6 +263,8 @@ class STIX_1_0_1_Updater(_STIXUpdater):
     }
 
     DISALLOWED = (
+        DisallowedMAEC,
+        DisallowedCAPEC,
         DisallowedDateTime,
     )
 
@@ -453,7 +467,6 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         self._update_vocabs(updated)
         self._update_optionals(updated)
         self._translate_fields(updated)
-
 
         return updated
 
