@@ -27,7 +27,6 @@ Incident
 
 Common
 ------
-
 * InformationSourceType/Contributors => Contributing_Sources
   (ContributorsType=>ContributingSourcesType)
     - instance change:  Contributors/(Contributor) => Contributing_Sources/(Source/Indentity)

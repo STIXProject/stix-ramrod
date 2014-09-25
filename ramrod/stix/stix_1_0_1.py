@@ -33,6 +33,32 @@ class OptionalDataMarkingFields(_OptionalElements):
         ".//marking:Marking_Structure | "
     )
 
+class DisallowedDateTime(_DisallowedFields):
+    XPATH = ".//stixCommon:Date_Time"
+
+    # Ugh. This could probably be solved with a regex but I can't find an
+    # authoritative source on a xs:dateTime regex. The libxml2 2.9.1 source
+    # code for dateTime validation is nuts.
+    XSD = \
+    """
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:element name="test" type="xs:dateTime"/>
+    </xs:schema>
+    """
+
+    XML_SCHEMA = etree.XMLSchema(etree.fromstring(XSD))
+
+    @classmethod
+    def _validate(cls, node):
+        val = node.text
+        xml = etree.Element("test")
+        xml.text = val
+        return cls.XML_SCHEMA.validate(xml)
+
+
+    @classmethod
+    def _interrogate(cls, nodes):
+        return [x for x in nodes if not cls._validate(x)]
 
 
 class STIX_1_0_1_Updater(_STIXUpdater):
