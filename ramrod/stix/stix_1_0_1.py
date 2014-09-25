@@ -13,7 +13,7 @@ from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
 
 
 class MotivationVocab(Vocab):
-    TYPE = 'MotivationEnum-1.1'
+    TYPE = 'MotivationVocab-1.1'
     VOCAB_REFERENCE = 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.0/stix_default_vocabularies.xsd#MotivationVocab-1.1'
     VOCAB_NAME = 'STIX Default Motivation Vocabulary'
     TERMS = {
@@ -22,7 +22,7 @@ class MotivationVocab(Vocab):
 
 
 class IndicatorTypeVocab(Vocab):
-    TYPE = "IndicatorTypeEnum-1.1"
+    TYPE = "IndicatorTypeVocab-1.1"
     VOCAB_NAME = "STIX Default Indicator Type Vocabulary"
     VOCAB_REFERENCE = "http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.0/stix_default_vocabularies.xsd#IndicatorTypeVocab-1.1"
 
@@ -30,7 +30,7 @@ class IndicatorTypeVocab(Vocab):
 class OptionalDataMarkingFields(_OptionalElements):
     XPATH = (
         ".//marking:Controlled_Structure | "
-        ".//marking:Marking_Structure | "
+        ".//marking:Marking_Structures"
     )
 
 class DisallowedDateTime(_DisallowedFields):
@@ -290,19 +290,11 @@ class STIX_1_0_1_Updater(_STIXUpdater):
 
     def _update_optionals(self, root):
         optional_elements = self.OPTIONAL_ELEMENTS
-        optional_attribs = self.OPTIONAL_ATTRIBUTES
-
         typed_nodes = get_typed_nodes(root)
 
         for optional in optional_elements:
             found = optional.find(root, typed=typed_nodes)
             remove_xml_elements(found)
-
-
-        for optional in optional_attribs:
-            found = optional.find(root, typed=typed_nodes)
-            for node in found:
-                remove_xml_elements(node, optional.ATTRIBUTES)
 
 
     def _get_disallowed(self, root):
@@ -454,12 +446,15 @@ class STIX_1_0_1_Updater(_STIXUpdater):
 
 
     def _update(self, root):
-        updated = self._update_namespaces(root)
+        updated = self._update_cybox(root)
+        updated = self._update_namespaces(updated)
         self._update_schemalocs(updated)
         self._update_versions(updated)
         self._update_vocabs(updated)
         self._update_optionals(updated)
         self._translate_fields(updated)
+
+
         return updated
 
 
@@ -481,7 +476,6 @@ class STIX_1_0_1_Updater(_STIXUpdater):
 nsmapped = itertools.chain(
     STIX_1_0_1_Updater.DISALLOWED,
     STIX_1_0_1_Updater.OPTIONAL_ELEMENTS,
-    STIX_1_0_1_Updater.OPTIONAL_ATTRIBUTES,
     STIX_1_0_1_Updater.TRANSLATABLE_FIELDS,
 )
 for klass in nsmapped:
