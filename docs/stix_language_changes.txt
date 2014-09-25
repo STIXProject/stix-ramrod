@@ -17,6 +17,57 @@ Core
 * Campaign/@version 1.0.1 => 1.1
 * Exploit Target@version 1.0.1 => 1.1
 
+! Check that SNORT TM can be updated (I *think* it's 100% backwards compatible FTR)
+
+Incident
+--------
+* Non_Public_Data_Compromised: stixCommon:ControlledVocabularyStringType => incident:NonPublicDataCompromisedType
+  (extends ControlledVocabularyStringType..no change!)
+
+
+Common
+------
+
+* InformationSourceType/Contributors => Contributing_Sources
+  (ContributorsType=>ContributingSourcesType)
+    - instance change:  Contributors/(Contributor) => Contributing_Sources/(Source/Indentity)
+      for each `Contributor` make a new `Source/Identity` instance (both are IdentityType
+    - Look for all instances of `ContributorsType` that may have become
+      `ContributingSourcesType`
+
+! ActivityType/Date_Time cannot be translated if value is not valid xs:dateTime value
+  !! ActivityType is abstract. Look for impls.
+
+! ToolInformationType was added to stixCommon. Look for instances that replaced cyboxCommon:ToolInformationType
+  STIX extends CybOX here, so everything should be cool.
+
+TTP
+---
+! Look into Exploit_Targets field changes (was stixCommon:ExploitTargetsType now
+  ttp:ExploitTargetsType which could cause namespace/tag issues).
+
+    ```
+    <ttp:Exploit_Targets>
+        <stixCommon:Exploit_Target idref="example:et-9554f515-c4c9-4746-9209-7b9b22393507" xsi:type='et:ExploitTargetType'/>
+        <stixCommon:Exploit_Target idref="example:et-9554f515-c4c9-4746-9209-7b9b22393507" xsi:type='et:ExploitTargetType'/>
+    </ttp:Exploit_Targets>
+    ```
+
+    Needs to become...
+    ```
+    <ttp:Exploit_Targets>
+        <ttp:Exploit_Target>
+            <stixCommon:Exploit_Target idref="example:et-9554f515-c4c9-4746-9209-7b9b22393507" xsi:type='et:ExploitTargetType'/>
+        </ttp:Exploit_Target>
+        <ttp:Exploit_Target>
+            <stixCommon:Exploit_Target idref="example:et-9554f515-c4c9-4746-9209-7b9b22393507" xsi:type='et:ExploitTargetType'/>
+        </ttp:Exploit_Target>
+    </ttp:Exploit_Targets>
+    ```
+
+! ToolsType/Tools cyboxCommon:ToolInformationType => stixCommon:ToolInformationType.
+  This might cause some problems. Nope. Nevermind. Should translate A-OK.
+
 
 
 STIX v1.0 to STIX v1.0.1

@@ -54,7 +54,7 @@ FileObjectType
 
 HTTPSessionObjectType
 ~~~~~~~~~~~~~~~~~~~~~
-* HTTPRequestHeaderFieldsType/DNT URIObjectType => StringObjectPropertyType
+* HTTPRequestHeaderFieldsType/DNT URIObjecType => StringObjectPropertyType
 * HTTPRequestHeaderFieldsType/X_Requested_For => X_Forwarded_For
 * HTTPResponseHeaderFieldsType/Refresh IntegerObjectPropertyType => StringObjectPropertyType
 * HTTPResponseHeaderFieldsType/Vary URIObjectType => StringObjectPropertyType
@@ -69,7 +69,7 @@ LinuxPackageObjectType
 
 NetworkConnectionObjectType
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-* Layer7ProtocolType/@datatype now optional !! How to handle attributes??
+* Layer7ProtocolType/@datatype now optional 
 
 NetworkPacketObjectType
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -141,9 +141,6 @@ WindowsExecutableFileObject
 ~~~~~~~~~~~~~~~~~~~~~~~
 * PEResourceType/Type PEPEResourceTypeEnum => PEResourceContentType (no instance document change)
 * PESectionType/Type removed (move to ^ ?)
-
-WindowsFileObject
-~~~~~~~~~~~~~~~~~
 * StreamObjectType/Size_In_Bytes now optional
 
 WindowsMailslotObjectType
