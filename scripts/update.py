@@ -12,6 +12,7 @@ def _write_xml(tree, outfn=None):
 def _validate_args():
     pass
 
+
 def _print_update_error(err):
     print "[!] %s" % (str(err))
 
@@ -27,6 +28,7 @@ def _print_update_error(err):
         print "[!] Found items with duplicate ids:"
         for id_, nodes in duplicates.iteritems():
             print "    '%s' on lines %s" %  (id_, [x.sourceline for x in nodes])
+
 
 def _write_removed(removed):
     if not removed:
