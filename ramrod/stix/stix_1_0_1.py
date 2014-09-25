@@ -27,6 +27,14 @@ class IndicatorTypeVocab(Vocab):
     VOCAB_REFERENCE = "http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.0/stix_default_vocabularies.xsd#IndicatorTypeVocab-1.1"
 
 
+class OptionalDataMarkingFields(_OptionalElements):
+    XPATH = (
+        ".//marking:Controlled_Structure | "
+        ".//marking:Marking_Structure | "
+    )
+
+
+
 class STIX_1_0_1_Updater(_STIXUpdater):
     VERSION = '1.0.1'
 
@@ -58,8 +66,8 @@ class STIX_1_0_1_Updater(_STIXUpdater):
     }
 
     DISALLOWED_NAMESPACES = (
-        'http://stix.mitre.org/extensions/AP#CAPEC2.7-1',
-        'http://stix.mitre.org/extensions/Malware#MAEC4.1-1'
+        'http://stix.mitre.org/extensions/AP#CAPEC2.6-1',
+        'http://stix.mitre.org/extensions/Malware#MAEC4.0-1'
     )
 
     # STIX v1.1 NS => STIX v1.1.1 SCHEMALOC
