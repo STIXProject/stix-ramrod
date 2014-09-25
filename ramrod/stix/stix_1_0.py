@@ -218,7 +218,7 @@ class STIX_1_0_Updater(_STIXUpdater):
 
     def _update(self, root):
         updated = self._update_cybox(root)
-
+        updated = self._update_namespaces(updated)
         self._update_schemalocs(updated)
         self._update_versions(updated)
         self._update_vocabs(updated)
@@ -285,6 +285,6 @@ class STIX_1_0_Updater(_STIXUpdater):
 
         return updated
 
-# Wiring
-DisallowedMAEC.NSMAP = STIX_1_0_Updater.NSMAP
-DisallowedCAPEC.NSMAP = STIX_1_0_Updater.NSMAP
+# Wiring namespace dictionaries
+for klass in STIX_1_0_Updater.DISALLOWED:
+    klass.NSMAP = STIX_1_0_Updater.NSMAP

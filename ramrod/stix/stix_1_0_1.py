@@ -12,6 +12,21 @@ from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
     _OptionalElements, _TranslatableField, _RenamedField)
 
 
+class MotivationVocab(Vocab):
+    TYPE = 'MotivationEnum-1.1'
+    VOCAB_REFERENCE = 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.0/stix_default_vocabularies.xsd#MotivationVocab-1.1'
+    VOCAB_NAME = 'STIX Default Motivation Vocabulary'
+    TERMS = {
+        'Policital': 'Political'
+    }
+
+
+class IndicatorTypeVocab(Vocab):
+    TYPE = "IndicatorTypeEnum-1.1"
+    VOCAB_NAME = "STIX Default Indicator Type Vocabulary"
+    VOCAB_REFERENCE = "http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.0/stix_default_vocabularies.xsd#IndicatorTypeVocab-1.1"
+
+
 class STIX_1_0_1_Updater(_STIXUpdater):
     VERSION = '1.0.1'
 
@@ -74,6 +89,11 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         'http://stix.mitre.org/extensions/TestMechanism#YARA-1': 'http://stix.mitre.org/XMLSchema/extensions/test_mechanism/yara/1.1/yara_test_mechanism.xsd',
         'http://stix.mitre.org/extensions/Vulnerability#CVRF-1': 'http://stix.mitre.org/XMLSchema/extensions/vulnerability/cvrf_1.1/1.1/cvrf_1.1_vulnerability.xsd',
         'http://stix.mitre.org/stix-1': 'http://stix.mitre.org/XMLSchema/core/1.1/stix_core.xsd',
+    }
+
+    UPDATE_VOCABS = {
+        'MotivationVocab-1.0.1': MotivationVocab,
+        'IndicatorTypeVocab-1.0': IndicatorTypeVocab,
     }
 
     DISALLOWED = ()
@@ -311,7 +331,7 @@ nsmapped = itertools.chain(
     STIX_1_0_1_Updater.DISALLOWED,
     STIX_1_0_1_Updater.OPTIONAL_ELEMENTS,
     STIX_1_0_1_Updater.OPTIONAL_ATTRIBUTES,
-    STIX_1_0_1_Updater.TRANSLATABLE_FIELDS
+    STIX_1_0_1_Updater.TRANSLATABLE_FIELDS,
 )
 for klass in nsmapped:
     klass.NSMAP = STIX_1_0_1_Updater.NSMAP
