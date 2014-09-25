@@ -42,8 +42,6 @@ class DisallowedCAPEC(_DisallowedFields):
 class STIX_1_0_Updater(_STIXUpdater):
     VERSION = '1.0'
 
-    DEFAULT_VOCAB_NAMESPACE = 'http://stix.mitre.org/default_vocabularies-1'
-
     NSMAP = {
         'campaign': 'http://stix.mitre.org/Campaign-1',
         'stix-capec': 'http://stix.mitre.org/extensions/AP#CAPEC2.5-1',
@@ -113,34 +111,6 @@ class STIX_1_0_Updater(_STIXUpdater):
         'MotivationVocab-1.0': MotivationVocab,
         'PlanningAndOperationalSupportVocab-1.0': PlanningAndOperationalSupportVocab
     }
-
-    XPATH_VERSIONED_NODES = (
-        ".//stix:STIX_Package | "
-        ".//indicator:Indicator[@version] | "
-        ".//stix:Indicator[@version] | "
-        ".//stixCommon:Indicator[@version] | "
-        ".//incident:Incident[@version] | "
-        ".//stix:Incident[@version] | "
-        ".//stixCommon:Incident[@version] | "
-        ".//ttp:TTP[@version] | "
-        ".//stix:TTP[@version] | "
-        ".//stixCommon:TTP[@version] | "
-        ".//coa:Course_Of_Action[@version] | "
-        ".//stix:Course_Of_Action[@version] | "
-        ".//stixCommon:Course_Of_Action[@version] |"
-        ".//ta:Threat_Actor[@version]| "
-        ".//stix:Threat_Actor[@version] | "
-        ".//stixCommon:Threat_Actor[@version] | "
-        ".//campaign:Campaign[@version] | "
-        ".//stix:Campaign[@version] | "
-        ".//stixCommon:Campaign[@version] | "
-        ".//et:Exploit_Target[@version] | "
-        ".//stix:Exploit_Target[@version] | "
-        ".//stixCommon:Exploit_Target[@version]"
-    )
-
-    XPATH_ROOT_NODES = ".//stix:STIX_Package"
-
 
     def __init__(self):
         super(STIX_1_0_Updater, self).__init__()

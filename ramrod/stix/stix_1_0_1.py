@@ -1,9 +1,16 @@
 import copy
+import itertools
+from collections import defaultdict
 from lxml import etree
 
 from ramrod import (UpdateError, UnknownVersionError, TAG_XSI_TYPE)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_1_Updater
+from ramrod.utils import (ignored, get_typed_nodes, copy_xml_element,
+    remove_xml_element, remove_xml_elements, create_new_id)
+from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
+    _OptionalElements, _TranslatableField, _RenamedField)
+
 
 class STIX_1_0_1_Updater(_STIXUpdater):
     VERSION = '1.0.1'
@@ -69,32 +76,242 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         'http://stix.mitre.org/stix-1': 'http://stix.mitre.org/XMLSchema/core/1.1/stix_core.xsd',
     }
 
+    DISALLOWED = ()
+
+    OPTIONAL_ELEMENTS = ()
+
+    OPTIONAL_ATTRIBUTES = ()
+
+    TRANSLATABLE_FIELDS = ()
+
 
     def __init__(self):
         super(STIX_1_0_1_Updater, self).__init__()
+        self._init_cybox_updater()
 
 
-    def check_update(self, root):
-        """Determines if the input document can be upgraded from STIX v1.0.1
-        to STIX v1.1.
+    def _init_cybox_updater(self):
+        updater_klass = Cybox_2_0_1_Updater
+        updater = updater_klass()
+        updater.NSMAP = dict(self.NSMAP.items() + updater_klass.NSMAP.items())
+        updater.XPATH_ROOT_NODES = (
+            ".//stix:Observables | "
+            ".//incident:Structured_Description | "
+            ".//ttp:Observable_Characterization | "
+            ".//ttp:Targeted_Technical_Details | "
+            ".//coa:Parameter_Observables "
+        )
+        updater.XPATH_VERSIONED_NODES = updater.XPATH_ROOT_NODES
+        self._cybox_updater = updater
+
+
+    def _translate_fields(self, root):
+        for field in self.TRANSLATABLE_FIELDS:
+            field.translate(root)
+
+
+    def _update_optionals(self, root):
+        optional_elements = self.OPTIONAL_ELEMENTS
+        optional_attribs = self.OPTIONAL_ATTRIBUTES
+
+        typed_nodes = get_typed_nodes(root)
+
+        for optional in optional_elements:
+            found = optional.find(root, typed=typed_nodes)
+            remove_xml_elements(found)
+
+
+        for optional in optional_attribs:
+            found = optional.find(root, typed=typed_nodes)
+            for node in found:
+                remove_xml_elements(node, optional.ATTRIBUTES)
+
+
+    def _get_disallowed(self, root):
+        disallowed = []
+
+        for klass in self.DISALLOWED:
+            found = klass.find(root)
+            disallowed.extend(found)
+
+        cybox = self._cybox_updater._get_disallowed(root)
+        disallowed.extend(cybox)
+
+        return disallowed
+
+
+    def check_update(self, root, check_version=True):
+        """Determines if the input document can be upgraded from STIX v1.0 to
+        STIX v1.0.1.
 
         A STIX document cannot be upgraded if any of the following constructs
         are found in the document:
 
-         * TODO: Add constructs
+        * STIX_Package/@version != '1.0'
+        * MAEC 4.0 Malware extension
+        * CAPEC 2.5 Attack Pattern extension
+
+        Args:
+            root (lxml.etree._Element): The top-level node of the STIX
+                document.
+
+        Raises:
+            UnknownVersionError: If the input document does not have a version.
+            InvalidVersionError: If the version of the input document
+                is not ``1.0``.
+            UpdateError: If the input document contains fields which cannot
+                be updated.
+
+        """
+        if check_version:
+            self._check_version(root)
+            self._cybox_updater._check_version(root)
+
+        disallowed  = self._get_disallowed(root)
+
+        if disallowed:
+            raise UpdateError(disallowed=disallowed)
+
+
+    def clean(self, root):
+        """Attempts to remove untranslatable fields from the input document.
 
         Args:
             root (lxml.etree._Element): The top-level node of the STIX
                 document.
 
         Returns:
-            bool: True if the document can be updated, False otherwise.
+            list: A list of lxml.etree._Element instances of objects removed
+            from the input document.
 
         """
+        removed = []
+        disallowed = self._get_disallowed(root)
 
-    def clean(self, root):
-        pass
+        for node in disallowed:
+            dup = copy.deepcopy(node)
+            remove_xml_element(node)
+            removed.append(dup)
+
+        self.cleaned_fields = tuple(removed)
+
+
+    def _update_versions(self, root):
+        nodes = self._get_versioned_nodes(root)
+        for node in nodes:
+            tag = etree.QName(node)
+            name = tag.localname
+
+            if name == "Indicator":
+                node.attrib['version'] = '2.1'
+            else:
+                node.attrib['version'] = '1.1'
+
+
+    def _update_cybox(self, root):
+        updated = self._cybox_updater.update(root)
+        return updated
+
+
+    def check_update(self, root, check_versions=True):
+        """Determines if the input document can be updated from CybOX 2.0.1
+        to CybOX 2.1.
+
+        A CybOX document cannot be upgraded if any of the following constructs
+        are found in the document:
+
+        * TODO: Add constructs
+
+        CybOX 2.1 also introduces schematic enforcement of ID uniqueness. Any
+        nodes with duplicate IDs are reported.
+
+        Args:
+            root (lxml.etree._Element): The top-level node of the STIX
+                document.
+
+        Raises:
+            TODO fill out.
+
+        """
+        if check_versions:
+            self._check_version(root)
+
+        duplicates = self._get_duplicates(root)
+        disallowed = self._get_disallowed(root)
+
+        if any((disallowed, duplicates)):
+            raise UpdateError("Found duplicate or untranslatable fields in "
+                              "source document.",
+                              disallowed=disallowed,
+                              duplicates=duplicates)
+
+
+    def _clean_disallowed(self, disallowed):
+        removed = []
+
+        for node in disallowed:
+            dup = copy.deepcopy(node)
+            remove_xml_element(node)
+            removed.append(dup)
+
+        return removed
+
+
+    def _clean_duplicates(self, root, duplicates):
+        """CybOX 2.1 introduced schematic enforcement of ID uniqueness, so
+        CybOX 2.0.1 documents which contained duplicate IDs will need to have
+        its IDs remapped to produce a schema-valid document.
+
+        """
+        self.cleaned_ids = defaultdict(list)
+        for id_, nodes in duplicates.iteritems():
+            for dup in nodes:
+                new_id = create_new_id(id_)
+                dup.attrib['id'] = new_id
+                self.cleaned_ids[id_].append(new_id)
+
+
+    def clean(self, root, disallowed=None, duplicates=None):
+        disallowed = disallowed or self._get_disallowed(root)
+        duplicates = duplicates or self._get_duplicates(root)
+
+        self._clean_duplicates(root, duplicates)
+        removed = self._clean_disallowed(disallowed)
+
+        self.cleaned_fields = tuple(removed)
+        return root
+
+
+    def _update(self, root):
+        updated = self._update_namespaces(root)
+        self._update_schemalocs(updated)
+        self._update_versions(updated)
+        self._update_vocabs(updated)
+        self._update_optionals(updated)
+        self._translate_fields(updated)
+        return updated
 
 
     def update(self, root, force=False):
-        pass
+        try:
+            self.check_update(root)
+            updated = self._update(root)
+        except (UpdateError, UnknownVersionError):
+            if force:
+                self.clean(root)
+                updated = self._update(root)
+            else:
+                raise
+
+        return updated
+
+
+# Wiring namespace dictionaries
+nsmapped = itertools.chain(
+    STIX_1_0_1_Updater.DISALLOWED,
+    STIX_1_0_1_Updater.OPTIONAL_ELEMENTS,
+    STIX_1_0_1_Updater.OPTIONAL_ATTRIBUTES,
+    STIX_1_0_1_Updater.TRANSLATABLE_FIELDS
+)
+for klass in nsmapped:
+    klass.NSMAP = STIX_1_0_1_Updater.NSMAP
