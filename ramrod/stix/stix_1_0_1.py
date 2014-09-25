@@ -7,9 +7,9 @@ from ramrod import (UpdateError, UnknownVersionError, TAG_XSI_TYPE)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_1_Updater
 from ramrod.utils import (ignored, get_typed_nodes, copy_xml_element,
-    remove_xml_element, remove_xml_elements, create_new_id)
+    remove_xml_element, remove_xml_elements, create_new_id, replace_xml_element)
 from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
-    _OptionalElements, _TranslatableField, _RenamedField)
+    _OptionalElements, _TranslatableField, _RenamedField,)
 
 
 class MotivationVocab(Vocab):
@@ -37,28 +37,148 @@ class DisallowedDateTime(_DisallowedFields):
     XPATH = ".//stixCommon:Date_Time"
 
     # Ugh. This could probably be solved with a regex but I can't find an
-    # authoritative source on a xs:dateTime regex. The libxml2 2.9.1 source
-    # code for dateTime validation is nuts.
+    # authoritative source on a xs:dateTime/ISO8601 regex. The libxml2 2.9.1
+    # source code for dateTime validation is nuts.
+
     XSD = \
     """
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
         <xs:element name="test" type="xs:dateTime"/>
     </xs:schema>
     """
-
     XML_SCHEMA = etree.XMLSchema(etree.fromstring(XSD))
 
     @classmethod
     def _validate(cls, node):
-        val = node.text
+        if not node.text:
+            return False
+
         xml = etree.Element("test")
-        xml.text = val
+        xml.text = node.text
         return cls.XML_SCHEMA.validate(xml)
 
 
     @classmethod
     def _interrogate(cls, nodes):
         return [x for x in nodes if not cls._validate(x)]
+
+
+class TransTTPExploitTargets(_TranslatableField):
+    XPATH_NODE = ".//ttp:Exploit_Targets"
+
+    @classmethod
+    def _replace(cls, node):
+        """The TTP.Exploit_Targets field became a GenericRelationshipListType
+        in STIX 1.1.
+
+        <ttp:Exploit_Targets>
+           <stixCommon:Exploit_Target idref='example:et-1'/>
+           <stixCommon:Exploit_Target idref='example:et-2'/>
+        </ttp:Exploit_Targets>
+
+        Becomes...
+
+        <ttp:Exploit_Targets>
+            <ttp:Exploit_Target>
+                <stixCommon:Exploit_Target idref='example:et-1'/>
+            </ttp:Exploit_Target>
+            <ttp:Exploit_Target>
+                <stixCommon:Exploit_Target idref='example:et-2'/>
+            </ttp:Exploit_Target>
+        </ttp:Exploit_Targets>
+
+        Args:
+            node: The outer ttp:Exploit_Targets node.
+
+        """
+        tag = "{http://stix.mitre.org/ExploitTarget-1}Exploit_Target"
+
+        for exploit_target in node:
+            dup = copy.deepcopy(exploit_target)
+            wrapper = etree.Element(tag)
+            wrapper.append(dup)
+            replace_xml_element(exploit_target, wrapper)
+
+
+    @classmethod
+    def translate(cls, root):
+        nodes = cls._find(root)
+        for node in nodes:
+            cls._replace(node)
+
+
+class TransCommonContributors(_TranslatableField):
+    XPATH_NODE = ".//stixCommon:Contributors"
+
+    @classmethod
+    def _replace(cls, node):
+        """This changes instances of stixCommon:ContributorsType to instances
+        of stixCommon:ContributingSourcesType.
+
+        The STIX v1.0.1 ContributorsType contains a list of `Contributor`
+        elements under it which were IdentityType instances.
+
+        The STIX v1.1 ContributingSourcesType contains a list of `Source`
+        elements under it which are instances of InformationSourceType.
+
+        Because InformationSourceType has an `Identity` child element which is
+        an instance of `IdentityType`, we can perform the following
+        transformation:
+
+
+        <stix:Information_Source>
+            <stixCommon:Contributors>
+                <stixCommon:Contributor>
+                    <stixCommon:Name>Example</stixCommon:Name>
+                </stixCommon:Contributor>
+                <stixCommon:Contributor>
+                    <stixCommon:Name>Another</stixCommon:Name>
+                </stixCommon:Contributor>
+            </stixCommon:Contributors>
+        </stix:Information_Source>
+
+        Becomes...
+
+        <stix:Information_Source>
+            <stixCommon:Contributing_Sources>
+                <stixCommon:Source>
+                    <stixCommon:Identity>
+                        <stixCommon:Name>Example</stixCommon:Name>
+                    </stixCommon:Identity>
+                </stixCommon:Source>
+                <stixCommon:Source>
+                    <stixCommon:Identity>
+                        <stixCommon:Name>Another</stixCommon:Name>
+                    </stixCommon:Identity>
+                </stixCommon:Source>
+            </stixCommon:Contributing_Sources>
+        </stix:Information_Source>
+
+        Args:
+            node: A ``stixCommon:Contributors`` node
+
+        """
+        ns_common = "http://stix.mitre.org/common-1"
+        contributing_sources_tag = "{%s}Contributing_Sources" % ns_common
+        source_tag = "{%s}Source" % ns_common
+        identity_tag = "{%s}Identity" % ns_common
+
+        contributing_sources = etree.Element(contributing_sources_tag)
+        for contributor in node:
+            dup = copy_xml_element(contributor)
+            dup.tag = identity_tag
+            source = etree.Element(source_tag)
+            source.append(dup)
+            contributing_sources.append(source)
+
+        replace_xml_element(node, contributing_sources)
+
+
+    @classmethod
+    def translate(cls, root):
+        nodes = cls._find(root)
+        for node in nodes:
+            cls._replace(node)
 
 
 class STIX_1_0_1_Updater(_STIXUpdater):
@@ -130,14 +250,18 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         'IndicatorTypeVocab-1.0': IndicatorTypeVocab,
     }
 
-    DISALLOWED = ()
+    DISALLOWED = (
+        DisallowedDateTime,
+    )
 
-    OPTIONAL_ELEMENTS = ()
+    OPTIONAL_ELEMENTS = (
+        OptionalDataMarkingFields,
+    )
 
-    OPTIONAL_ATTRIBUTES = ()
-
-    TRANSLATABLE_FIELDS = ()
-
+    TRANSLATABLE_FIELDS = (
+        TransCommonContributors,
+        TransTTPExploitTargets,
+    )
 
     def __init__(self):
         super(STIX_1_0_1_Updater, self).__init__()
@@ -195,15 +319,8 @@ class STIX_1_0_1_Updater(_STIXUpdater):
 
 
     def check_update(self, root, check_version=True):
-        """Determines if the input document can be upgraded from STIX v1.0 to
-        STIX v1.0.1.
-
-        A STIX document cannot be upgraded if any of the following constructs
-        are found in the document:
-
-        * STIX_Package/@version != '1.0'
-        * MAEC 4.0 Malware extension
-        * CAPEC 2.5 Attack Pattern extension
+        """Determines if the input document can be upgraded from STIX v1.0.1 to
+        STIX v1.1.
 
         Args:
             root (lxml.etree._Element): The top-level node of the STIX
@@ -212,7 +329,7 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         Raises:
             UnknownVersionError: If the input document does not have a version.
             InvalidVersionError: If the version of the input document
-                is not ``1.0``.
+                is not ``1.0.1``.
             UpdateError: If the input document contains fields which cannot
                 be updated.
 

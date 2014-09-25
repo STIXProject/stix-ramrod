@@ -483,10 +483,6 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
             field.translate(root)
 
 
-    def _update_lists(self, root):
-        pass
-
-
     def _update_optionals(self, root):
         optional_elements = self.OPTIONAL_ELEMENTS
         optional_attribs = self.OPTIONAL_ATTRIBUTES

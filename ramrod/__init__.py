@@ -529,14 +529,14 @@ def _update_stix(root, from_, to_=None, force=False):
 
     if from_ not in STIX_VERSIONS:
         raise UpdateError("The `from_` parameter specified an unknown STIX "
-                          "version: %s" % from_)
+                          "version: '%s'" % from_)
 
     if to_ not in STIX_VERSIONS:
         raise UpdateError("The `to_` parameter specified an unknown STIX "
-                          "version: %s" % to_)
+                          "version: '%s'" % to_)
 
     if StrictVersion(from_) >= StrictVersion(to_):
-        raise UpdateError("Cannot upgrade from %s to %s" % (from_, to_))
+        raise UpdateError("Cannot upgrade from '%s' to '%s'" % (from_, to_))
 
     removed = []
     remapped = {}
@@ -565,14 +565,14 @@ def _update_cybox(root, from_, to_=None, force=False):
 
     if from_ not in CYBOX_VERSIONS:
         raise UpdateError("The `from_` parameter specified an unknown CybOX "
-                          "version: %s" % from_)
+                          "version: '%s'" % from_)
 
     if to_ not in CYBOX_VERSIONS:
         raise UpdateError("The `to_` parameter specified an unknown CybOX "
-                          "version: %s" % to_)
+                          "version: '%s'" % to_)
 
     if StrictVersion(from_) >= StrictVersion(to_):
-        raise UpdateError("Cannot upgrade from %s to %s" % (from_, to_))
+        raise UpdateError("Cannot upgrade from '%s' to '%s'" % (from_, to_))
 
     removed = []
     remapped = {}
