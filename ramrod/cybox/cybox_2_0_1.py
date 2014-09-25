@@ -5,7 +5,7 @@ from ramrod.utils import (ignored, get_typed_nodes, copy_xml_element,
     remove_xml_element, remove_xml_elements, create_new_id)
 from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
     _OptionalElements, _TranslatableField, _RenamedField)
-from . import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
+from ramrod.cybox import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
     TAG_CYBOX_UPDATE)
 
 
