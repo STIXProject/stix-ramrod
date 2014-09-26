@@ -20,6 +20,8 @@ class AvailabilityLossVocab(Vocab):
 
 
 class DisallowedConfidenceSource(_DisallowedFields):
+    # It might be possible to translate the Source field to the new
+    # Identity/Name field. I'm not sure if that's the best way to go about this.
     FIELD = "stixCommon:Source"
     XPATH = (
         ".//campaign:Confidence/{0} | "
@@ -33,6 +35,8 @@ class DisallowedConfidenceSource(_DisallowedFields):
 
 
 class DisallowedStatementSource(_DisallowedFields):
+    # It might be possible to translate the Source field to the new
+    # Identity/Name field. I'm not sure if that's the best way to go about this.
     FIELD = "stixCommon:Source"
     XPATH = (
         ".//campaign:Intended_Effect/{0} | "
@@ -48,6 +52,168 @@ class DisallowedStatementSource(_DisallowedFields):
         ".//ta:Planning_And_Operational_Support/{0} | "
         ".//ttp:Intended_Effect/{0}"
     ).format(FIELD)
+
+
+class TransCommonSource(_TranslatableField):
+    FIELD = "stixCommon:Source"
+    XPATH_NODE = (
+        ".//campaign:Confidence/{0} | "
+        ".//coa:Applicability_Confidence/{0} | "
+        ".//incident:Confidence/{0} | "
+        ".//indicator:Confidence/{0} | "  # SightingsType and/or IndicatorType
+        ".//stixCommon:Confidence_Assertion/{0} | "
+        ".//stixCommon:Confidence/{0} | "  # StatementType and/or GenericRelationshipType
+        ".//ta:Confidence/{0} | "
+        ".//campaign:Intended_Effect/{0} | "
+        ".//coa:Cost/{0} | "
+        ".//coa:Efficacy/{0}| "
+        ".//incident:Intended_Effect/{0} | "
+        ".//indicator:Likely_Impact/{0} | "
+        ".//indicator:Efficacy/{0} | "
+        ".//ta:Type/{0} | "
+        ".//ta:Motivation/{0} | "
+        ".//ta:Sophistication/{0} | "
+        ".//ta:Intended_Effect/{0} | "
+        ".//ta:Planning_And_Operational_Support/{0} | "
+        ".//ttp:Intended_Effect/{0}"
+    ).format(FIELD)
+
+
+    @classmethod
+    def _translate_fields(cls, node):
+        """Translates StatementType/Source and ConfidenceType/Source fields
+        from ControlledVocabularyStringType instances to InformationSourceType
+        instances.
+
+        This inserts the value under Identity/Name of the
+        InformationSourceType instance.
+
+        <ttp:Confidence>
+            <stixCommon:Source>Foobar</stixCommon:Source>
+        </ttp:Confidence>
+
+        <ttp:Confidence>
+            <stixCommon:Source>
+                <stixCommon:Identity>
+                    <stixCommon:Name>Example</stixCommon:Name>
+                </stixCommon:Identity>
+            </stixCommon:Source>
+        </ttp:Confidence>
+
+        Args:
+            node: A ``Source`` xml element.
+
+        Returns:
+            A new ``Source`` xml element with an embedded ``Identity``
+            structure.
+
+        """
+
+        xml = \
+        """
+        <stixCommon:Source xmlns:stixCommon="http://stix.mitre.org/common-1">
+            <stixCommon:Identity>
+                <stixCommon:Name>{0}</stixCommon:Name>
+            </stixCommon:Identity>
+        </stixCommon:Source>
+        """.format(node.text)
+
+        source = etree.fromstring(xml)
+        return source
+
+
+class TransSightingsSource(_TranslatableField):
+    XPATH_NODE = (
+        ".//indicator:Sighting/indicator:Source"
+    )
+
+    @classmethod
+    def _translate_fields(cls, node):
+        """Translates SightingType/Source fields from StructuredTextType
+        instances to InformationSourceType instances.
+
+        This inserts the value under Identity/Name of the
+        InformationSourceType instance.
+
+        <indicator:Sighting>
+            <stixCommon:Source>Foobar</stixCommon:Source>
+        </indicator:Sighting>
+
+         <indicator:Sighting>
+            <indicator:Source>
+                <stixCommon:Identity>
+                    <stixCommon:Name>Foobar</stixCommon:Name>
+                </stixCommon:Identity>
+            </indicator:Source>
+         </indicator:Sighting>
+
+        Args:
+            node: A ``Source`` xml element.
+
+        Returns:
+            A new ``Source`` xml element with an embedded ``Identity``
+            structure.
+
+        """
+
+        xml = \
+        """
+        <indicator:Source xmlns:indicator="http://stix.mitre.org/Indicator-2">
+            <stixCommon:Identity xmlns:stixCommon="http://stix.mitre.org/common-1">
+                <stixCommon:Name>{0}</stixCommon:Name>
+            </stixCommon:Identity>
+        </indicator:Source>
+        """.format(node.text)
+
+        source = etree.fromstring(xml)
+        return source
+
+
+
+class TransIndicatorRelatedCampaign(_TranslatableField):
+    XPATH_NODE = ".//indicator:Related_Campaigns/indicator:Related_Campaign"
+    NEW_TAG =  "{http://stix.mitre.org/Campaign-1}Campaign"
+
+    def _translate_fields(cls, node):
+        """Translates Indicator Related_Campaigns/Related_Campaign instances
+        to STIX v1.1.1.
+
+        <indicator:Related_Campaigns>
+            <indicator:Related_Campaign>
+                <stixCommon:Names>
+                    <stixCommon:Name>Foo</stixCommon:Name>
+                </stixCommon:Names>
+            </indicator:Related_Campaign>
+            <indicator:Related_Campaign idref='campaign-foo-1'/>
+        </indicator:Related_Campaigns>
+
+        Becomes
+
+         <indicator:Related_Campaigns>
+            <indicator:Related_Campaign>
+                <stixCommon:Campaign>
+                    <stixCommon:Names>
+                        <stixCommon:Name>Foo</stixCommon:Name>
+                    </stixCommon:Names>
+                </stixCommon:Campaign>
+            </indicator:Related_Campaign>
+            <indicator:Related_Campaign>
+                <stixCommon:Campaign idref="campaign-foo-1>
+            </indicator:Related_Campaign>
+        </indicator:Related_Campaigns>
+
+        """
+        dup = copy_xml_element(node, tag=cls.NEW_TAG)
+        wrapper = etree.Element("{http://stix.mitre.org/Campaign-1}Related_Campaign")
+        wrapper.append(dup)
+        return wrapper
+
+
+class OptionalGenericTestMechanismFields(_OptionalElements):
+    XPATH = "./*"
+    CTX_TYPES = {
+        'GenericTestMechanismType': 'http://stix.mitre.org/extensions/TestMechanism#Generic-1'
+    }
 
 
 class STIX_1_1_Updater(_STIXUpdater):
@@ -116,12 +282,18 @@ class STIX_1_1_Updater(_STIXUpdater):
     }
 
     DISALLOWED = (
+        #DisallowedConfidenceSource,
+        #DisallowedStatementSource
     )
 
     OPTIONAL_ELEMENTS = (
+        OptionalGenericTestMechanismFields,
     )
 
     TRANSLATABLE_FIELDS = (
+        TransCommonSource,
+        TransSightingsSource,
+        TransIndicatorRelatedCampaign,
     )
 
     def __init__(self):

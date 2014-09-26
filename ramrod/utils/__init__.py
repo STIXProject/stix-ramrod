@@ -33,10 +33,11 @@ def remove_xml_elements(nodes):
         remove_xml_element(node)
 
 
-def copy_xml_element(node):
+def copy_xml_element(node, tag=None):
     """Returns a copy of `node`."""
-    return copy.deepcopy(node)
-
+    dup = copy.deepcopy(node)
+    dup.tag = tag if tag else dup.tag
+    return dup
 
 def remove_xml_attribute(node, attr):
     """Removes an attribute from `node`.

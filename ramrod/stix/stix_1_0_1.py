@@ -76,10 +76,10 @@ class DisallowedDateTime(_DisallowedFields):
 
 
 class TransTTPExploitTargets(_TranslatableField):
-    XPATH_NODE = ".//ttp:Exploit_Targets"
+    XPATH_NODE = ".//ttp:Exploit_Targets/stixCommon:Exploit_Target"
 
     @classmethod
-    def _replace(cls, node):
+    def _translate_fields(cls, node):
         """The TTP.Exploit_Targets field became a GenericRelationshipListType
         in STIX 1.1.
 
@@ -103,27 +103,19 @@ class TransTTPExploitTargets(_TranslatableField):
             node: The outer ttp:Exploit_Targets node.
 
         """
-        tag = "{http://stix.mitre.org/ExploitTarget-1}Exploit_Target"
+        tag = "{http://stix.mitre.org/TTP-1}Exploit_Target"
+        dup = copy.deepcopy(node)
+        wrapper = etree.Element(tag)
+        wrapper.append(dup)
 
-        for exploit_target in node:
-            dup = copy.deepcopy(exploit_target)
-            wrapper = etree.Element(tag)
-            wrapper.append(dup)
-            replace_xml_element(exploit_target, wrapper)
-
-
-    @classmethod
-    def translate(cls, root):
-        nodes = cls._find(root)
-        for node in nodes:
-            cls._replace(node)
+        return wrapper
 
 
 class TransCommonContributors(_TranslatableField):
     XPATH_NODE = ".//stixCommon:Contributors"
 
     @classmethod
-    def _replace(cls, node):
+    def _translate_fields(cls, node):
         """This changes instances of stixCommon:ContributorsType to instances
         of stixCommon:ContributingSourcesType.
 
@@ -183,14 +175,8 @@ class TransCommonContributors(_TranslatableField):
             source.append(dup)
             contributing_sources.append(source)
 
-        replace_xml_element(node, contributing_sources)
+        return contributing_sources
 
-
-    @classmethod
-    def translate(cls, root):
-        nodes = cls._find(root)
-        for node in nodes:
-            cls._replace(node)
 
 
 class STIX_1_0_1_Updater(_STIXUpdater):
@@ -243,7 +229,7 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         'http://stix.mitre.org/ThreatActor-1': 'http://stix.mitre.org/XMLSchema/threat_actor/1.1/threat_actor.xsd',
         'http://stix.mitre.org/common-1': 'http://stix.mitre.org/XMLSchema/common/1.1/stix_common.xsd',
         'http://stix.mitre.org/default_vocabularies-1': 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.0/stix_default_vocabularies.xsd',
-        'http://stix.mitre.org/extensions/AP#CAPEC2.7-1': 'http://stix.mitre.org/XMLSchema/extensions/attack_pattern/capec_2.7/1.0/capec_2.7_attack_pattern.xsd',
+        'http://stix.mitre.org/extensions/AP#CAPECa2.7-1': 'http://stix.mitre.org/XMLSchema/extensions/attack_pattern/capec_2.7/1.0/capec_2.7_attack_pattern.xsd',
         'http://stix.mitre.org/extensions/Address#CIQAddress3.0-1': 'http://stix.mitre.org/XMLSchema/extensions/address/ciq_3.0/1.1/ciq_3.0_address.xsd',
         'http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1': 'http://stix.mitre.org/XMLSchema/extensions/identity/ciq_3.0/1.1/ciq_3.0_identity.xsd',
         'http://stix.mitre.org/extensions/Malware#MAEC4.1-1': 'http://stix.mitre.org/XMLSchema/extensions/malware/maec_4.1/1.0/maec_4.1_malware.xsd',
