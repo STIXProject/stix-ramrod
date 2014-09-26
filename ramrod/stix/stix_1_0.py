@@ -218,7 +218,7 @@ class STIX_1_0_Updater(_STIXUpdater):
 
     def _update(self, root):
         updated = self._update_cybox(root)
-        updated = self._update_namespaces(updated)
+        #updated = self._update_namespaces(updated)
         self._update_schemalocs(updated)
         self._update_versions(updated)
         self._update_vocabs(updated)

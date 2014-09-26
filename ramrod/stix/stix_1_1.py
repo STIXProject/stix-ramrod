@@ -6,8 +6,9 @@ from lxml import etree
 from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
     _OptionalElements, _TranslatableField)
 from ramrod.stix import _STIXUpdater
+from ramrod.cybox import Cybox_2_0_1_Updater
 from ramrod.utils import (get_typed_nodes, copy_xml_element,
-    remove_xml_element, remove_xml_elements, create_new_id, replace_xml_element)
+    remove_xml_element, remove_xml_elements, create_new_id)
 
 
 class AvailabilityLossVocab(Vocab):
@@ -300,6 +301,11 @@ class STIX_1_1_Updater(_STIXUpdater):
         super(STIX_1_1_Updater, self).__init__()
 
 
+    def _init_cybox_updater(self):
+        # This is used for updating schemalocations only
+        self._cybox_updater = Cybox_2_0_1_Updater()
+        pass
+
     def _translate_fields(self, root):
         for field in self.TRANSLATABLE_FIELDS:
             field.translate(root)
@@ -385,8 +391,7 @@ class STIX_1_1_Updater(_STIXUpdater):
 
 
     def _update_cybox(self, root):
-        updated = self._cybox_updater.update(root)
-        return updated
+        self._cybox_updater._update_schemalocs(root)
 
 
     def check_update(self, root, check_versions=True):
@@ -459,14 +464,14 @@ class STIX_1_1_Updater(_STIXUpdater):
 
 
     def _update(self, root):
-        updated = self._update_namespaces(root)
-        self._update_schemalocs(updated)
-        self._update_versions(updated)
-        self._update_vocabs(updated)
-        self._update_optionals(updated)
-        self._translate_fields(updated)
+        self._update_cybox(root)
+        self._update_schemalocs(root)
+        self._update_versions(root)
+        self._update_vocabs(root)
+        self._update_optionals(root)
+        self._translate_fields(root)
 
-        return updated
+        return root
 
 
     def update(self, root, force=False):

@@ -240,9 +240,10 @@ class _BaseUpdater(object):
     DEFAULT_VOCAB_NAMESPACE = None
     UPDATE_VOCABS = {}
 
+    XPATH_VERSIONED_NODES = "."
+    XPATH_ROOT_NODES = "."
+
     def __init__(self):
-        self.XPATH_VERSIONED_NODES = "."
-        self.XPATH_ROOT_NODES = "."
         self.cleaned_fields = ()
         self.cleaned_ids = {}
 

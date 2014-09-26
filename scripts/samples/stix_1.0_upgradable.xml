@@ -38,7 +38,7 @@
         </cybox:Observable>
     </stix:Observables>
     <stix:Indicators>
-        <stix:Indicator xsi:type="indicator:IndicatorType" id="example:Indicator-33fe3b22-0201-47cf-85d0-97c02164528d">
+        <stix:Indicator xsi:type="indicator:IndicatorType" id="example:Indicator-33fe3b22-0201-47cf-85d0-97c02164528d" version='2.0'>
             <indicator:Type xsi:type="stixVocabs:MotivationVocab-1.0">Ideological - Anti-Establisment</indicator:Type>
             <indicator:Description>Sample IP Address Indicator for this watchlist. This contains one indicator with a set of three IP addresses in the watchlist.</indicator:Description>
             <indicator:Observable  id="example:Observable-1c798262-a4cd-434d-a958-884d6980c459">
