@@ -1,6 +1,15 @@
 STIX v1.1 to STIX v1.1.1
 ========================
 
+Common
+------
+!! StatementType/Source: ControlledVocabularyStringType => InformationSourceType. Don't think I can translate this. Might need to look for all instances of InformationSourceType to correctly identify it.
+
+!! ConfidenceType/Source : Same as above
+
+
+
+
 
 STIX v1.0.1 to STIX v1.1
 ========================

@@ -19,6 +19,36 @@ class AvailabilityLossVocab(Vocab):
     }
 
 
+class DisallowedConfidenceSource(_DisallowedFields):
+    FIELD = "stixCommon:Source"
+    XPATH = (
+        ".//campaign:Confidence/{0} | "
+        ".//coa:Applicability_Confidence/{0} | "
+        ".//incident:Confidence/{0} | "
+        ".//indicator:Confidence/{0} | "  # SightingsType and/or IndicatorType
+        ".//stixCommon:Confidence_Assertion/{0} | "
+        ".//stixCommon:Confidence/{0} | "  # StatementType and/or GenericRelationshipType
+        ".//ta:Confidence/{0}"
+    ).format(FIELD)
+
+
+class DisallowedStatementSource(_DisallowedFields):
+    FIELD = "stixCommon:Source"
+    XPATH = (
+        ".//campaign:Intended_Effect/{0} | "
+        ".//coa:Cost/{0} | "
+        ".//coa:Efficacy/{0}| "
+        ".//incident:Intended_Effect/{0} | "
+        ".//indicator:Likely_Impact/{0} | "
+        ".//indicator:Efficacy/{0} | "
+        ".//ta:Type/{0} | "
+        ".//ta:Motivation/{0} | "
+        ".//ta:Sophistication/{0} | "
+        ".//ta:Intended_Effect/{0} | "
+        ".//ta:Planning_And_Operational_Support/{0} | "
+        ".//ttp:Intended_Effect/{0}"
+    ).format(FIELD)
+
 
 class STIX_1_1_Updater(_STIXUpdater):
     VERSION = '1.1'
