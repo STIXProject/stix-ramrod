@@ -32,8 +32,8 @@ class _CyboxUpdater(_BaseUpdater):
 
         Raises:
             UnknownVersionError: If `observables` does not contain a
-                ``cybox_major``, ``cybox_minor``, or ``cybox_update``
-                version.
+                ``cybox_major_version``, ``cybox_minor_version``, or
+                 ``cybox_update_version`` attribute..
         """
         cybox_major  = observables.attrib.get(TAG_CYBOX_MAJOR)
         cybox_minor  = observables.attrib.get(TAG_CYBOX_MINOR)
