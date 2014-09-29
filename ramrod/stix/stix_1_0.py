@@ -39,6 +39,18 @@ class DisallowedCAPEC(_DisallowedFields):
 
 
 class STIX_1_0_Updater(_STIXUpdater):
+    """Updates STIX v1.0 content to STIX v1.0.1.
+
+    The following fields and types are translated:
+    * MotivationVocab-1.0 upgraded to MotivationVocab-1.0.1
+    * PlanningAndOperationalSupportVocab-1.0 updated to
+      PlanningAndOperationalSupportVocab 1.0.1
+
+    The following fields and types cannot be translated:
+    * MAEC 4.0 Malware extension instances
+    * CAPEC 2.5 Attack Pattern extension instances
+
+    """
     VERSION = '1.0'
 
     NSMAP = {
@@ -195,6 +207,10 @@ class STIX_1_0_Updater(_STIXUpdater):
 
 
     def _update_versions(self, root):
+        """Updates the versions of versioned nodes under `root` to align with
+        STIX v1.0.1 versions.
+
+        """
         nodes = self._get_versioned_nodes(root)
         for node in nodes:
             tag = etree.QName(node)

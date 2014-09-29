@@ -400,6 +400,10 @@ class STIX_1_1_Updater(_STIXUpdater):
 
 
     def _update_versions(self, root):
+        """Updates the versions of versioned nodes under `root` to align with
+        STIX v1.1.1 versions.
+
+        """
         nodes = self._get_versioned_nodes(root)
         for node in nodes:
             tag = etree.QName(node)

@@ -179,6 +179,23 @@ class TransCommonContributors(_TranslatableField):
 
 
 class STIX_1_0_1_Updater(_STIXUpdater):
+    """Updates STIX v1.0.1 content to STIX v1.1.
+
+    The following fields and types are translated:
+    * MotivationVocab-1.0.1 updated to MotivaionVocab-1.1
+    * IndicatorTypeVocab-1.0 updated to IndicatorTypeVocab-1.1
+    * Empty data marking fields are stripped
+    * TTP/Exploit_Targets instances are updated to align with
+      GenericRelationshipListType datatype.
+    * Instances of stixCommon:ContributorsType are converted to instances of
+      stixCommon:ContributingSourcesType
+
+    The following fields and types cannot be translated:
+    * MAEC 4.0.1 Malware extension
+    * CAPEC 2.6 Attack Pattern extension
+    * stixCommon:Date_Time fields that do not contain xs:dateTime values
+
+    """
     VERSION = '1.0.1'
 
     NSMAP = {
@@ -338,6 +355,10 @@ class STIX_1_0_1_Updater(_STIXUpdater):
 
 
     def _update_versions(self, root):
+        """Updates the versions of versioned nodes under `root` to align with
+        STIX v1.1 versions.
+
+        """
         nodes = self._get_versioned_nodes(root)
         for node in nodes:
             tag = etree.QName(node)

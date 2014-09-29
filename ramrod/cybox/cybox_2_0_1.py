@@ -5,7 +5,7 @@ from ramrod import (_Vocab, UpdateError, UnknownVersionError,
     _TranslatableField, _RenamedField)
 from ramrod.utils import (ignored, get_typed_nodes, copy_xml_element,
     remove_xml_element, remove_xml_elements, remove_xml_attributes,
-    create_new_id)
+    create_new_id, replace_xml_element)
 from ramrod.cybox import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
     TAG_CYBOX_UPDATE)
 
@@ -82,7 +82,7 @@ class DisallowedHTTPSession(_DisallowedFields):
 
 
 class OptionalCommonFields(_OptionalElements):
-    XPATH = "//cyboxCommon:Tool_Configuration"
+    XPATH = ".//cyboxCommon:Tool_Configuration"
 
 
 class OptionalDNSCacheFields(_OptionalElements):
@@ -213,12 +213,11 @@ class TransWinMailslotHandle(_TranslatableField):
         parent = node.getparent()
         grandparent = parent.getparent()
 
-        dup = copy_xml_element(node)
-        dup.tag = cls.NEW_TAG
-
+        dup = copy_xml_element(node, tag=cls.NEW_TAG)
         idx = grandparent.index(parent)
         grandparent.insert(idx, dup)
         grandparent.remove(parent)
+
 
 
     @classmethod
@@ -229,6 +228,45 @@ class TransWinMailslotHandle(_TranslatableField):
 
 
 class Cybox_2_0_1_Updater(_CyboxUpdater):
+    """Updates CybOX v2.0.1 content to CybOX v2.1.
+
+    The following fields are translated:
+    * ToolTypeVocab-1.0 updated to ToolTypeVocab-1.1
+    * ObjectRelationshipVocab-1.0 updated to ObjectRelationshipVocab-1.1
+    * ActionNameVocab-1.0 updated to ActionNameVocab-1.1
+    * Empty instances of cyboxCommon:Tool_Configuration are removed
+    * Empty instances of DNSCacheObj:DNS_Entry are removed
+    * Empty instances of DNSQueryObj:QName are removed
+    * Empty instances of DiskPartitionObj:Partition_ID are removed
+    * Empty instances of FileObj:Depth are removed
+    * Empty instances of HTTPSessionObj:Message_Body and Domain_Name are removed
+    * Many empty instance od elements under PacketeObj (see
+      `OptionalNetworkPacketFields` class)
+    * Empty instances of SystemObj:IP_Address are removed
+    * Empty instances of URIObj:Value are removed
+    * Empty instances of WinComputerAccountObj:Delegation, Bitmask, and Service
+      are removed.
+    * Empty instances of WinNetworkShareObj:Netname are removed
+    * Empty instances of WinFileObj:Size_In_Bytes are removed
+    * Empty instances of WinPrefetchObj:VolumeItem and DeviceItem are removed
+    * HTTPSessionObj:DNT updated from URIObjectType to StringObjectPropertyType
+    * HTTPSessionObj:Vary updated from URIObjectType to StringObjectPropertyType
+    * HTTPSessionObj:Refresh updated from IntegerObjectPropertyType
+      to StringObjectPropertyType
+    * PacketObj:Protol_Addr_Size renamed to Proto_Addr_Size
+    * PacketObj:Excapsulating_Security_Payload renamed to
+      Encapsulating_Security_Payload
+    * PacketObj:Authenication_Data renamed to Authentication_Data
+    * WinMailslotObj:Handle container element removed and child bubbled up when
+      only one child is defined.
+
+    The following fields cannot be translated:
+    * WinTaskObj:Task_Trigger instances.
+    * WinMailslotObj:Handle when more than one child is defined.
+    * WinExecutableFileObj:PESectionType/Type instances.
+    * HTTPSession:X_Forwarded_Proto instances.
+
+    """
     VERSION = '2.0.1'
 
     NSMAP = {
@@ -468,6 +506,10 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
 
     def _update_versions(self, root):
+        """Updates the version of Observables instances under `root` to
+        ``2.1``.
+
+        """
         nodes = self._get_versioned_nodes(root)
 
         for node in nodes:

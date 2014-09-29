@@ -13,6 +13,16 @@ class EventTypeVocab(_Vocab):
 
 
 class Cybox_2_0_Updater(_CyboxUpdater):
+    """Updates CybOX v2.0 content to CybOX v2.0.1.
+
+    The following fields are translated:
+    * EventTypeVocab-1.0 updated to EventTypeVocab-1.0.1
+
+    Note:
+        There are no fields which cannot be translated from CybOX v2.0 to
+        CybOX v2.0.1
+
+    """
     VERSION = '2.0'
 
     NSMAP = {
@@ -197,6 +207,10 @@ class Cybox_2_0_Updater(_CyboxUpdater):
 
 
     def _update_versions(self, root):
+        """Updates the version of Observables instances under `root` to
+        ``2.0.1``.
+
+        """
         nodes = self._get_versioned_nodes(root)
 
         for node in nodes:
