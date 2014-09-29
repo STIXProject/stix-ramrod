@@ -3,7 +3,7 @@ import itertools
 from collections import defaultdict
 from lxml import etree
 
-from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
+from ramrod import (_Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
     _OptionalElements, _TranslatableField)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_1_Updater
@@ -11,7 +11,7 @@ from ramrod.utils import (get_typed_nodes, copy_xml_element,
     remove_xml_element, remove_xml_elements, create_new_id)
 
 
-class AvailabilityLossVocab(Vocab):
+class AvailabilityLossVocab(_Vocab):
     TYPE = "AvailabilityLossTypeVocab-1.1.1"
     VOCAB_NAME = "STIX Default Availability Loss Type Vocabulary"
     VOCAB_REFERENCE = "http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.1/stix_default_vocabularies.xsd#AvailabilityLossTypeVocab-1.1.1"

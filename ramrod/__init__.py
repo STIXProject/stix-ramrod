@@ -55,7 +55,7 @@ class InvalidVersionError(Exception):
                    "version attribute value")
 
 
-class Vocab(object):
+class _Vocab(object):
     TYPE = None
     VOCAB_REFERENCE = None
     VOCAB_NAME = None

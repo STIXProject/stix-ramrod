@@ -3,7 +3,7 @@ import itertools
 from collections import defaultdict
 from lxml import etree
 
-from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
+from ramrod import (_Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
     _OptionalElements, _TranslatableField)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_1_Updater
@@ -11,7 +11,7 @@ from ramrod.utils import (get_typed_nodes, copy_xml_element,
     remove_xml_element, remove_xml_elements, create_new_id, replace_xml_element)
 
 
-class MotivationVocab(Vocab):
+class MotivationVocab(_Vocab):
     TYPE = 'MotivationVocab-1.1'
     VOCAB_REFERENCE = 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.0/stix_default_vocabularies.xsd#MotivationVocab-1.1'
     VOCAB_NAME = 'STIX Default Motivation Vocabulary'
@@ -20,7 +20,7 @@ class MotivationVocab(Vocab):
     }
 
 
-class IndicatorTypeVocab(Vocab):
+class IndicatorTypeVocab(_Vocab):
     TYPE = "IndicatorTypeVocab-1.1"
     VOCAB_NAME = "STIX Default Indicator Type Vocabulary"
     VOCAB_REFERENCE = "http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.0/stix_default_vocabularies.xsd#IndicatorTypeVocab-1.1"

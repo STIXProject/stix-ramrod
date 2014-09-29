@@ -3,19 +3,19 @@ import itertools
 from collections import defaultdict
 from ramrod.utils import (ignored, get_typed_nodes, copy_xml_element,
     remove_xml_element, remove_xml_elements, create_new_id)
-from ramrod import (Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
+from ramrod import (_Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
     _OptionalElements, _TranslatableField, _RenamedField)
 from ramrod.cybox import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
     TAG_CYBOX_UPDATE)
 
 
-class ObjectRelationshipVocab(Vocab):
+class ObjectRelationshipVocab(_Vocab):
     TYPE = 'ObjectRelationshipVocab-1.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#ObjectRelationshipVocab-1.1',
     VOCAB_NAME = 'CybOX Default Object-Object Relationships'
 
 
-class ToolTypeVocab(Vocab):
+class ToolTypeVocab(_Vocab):
     TYPE = 'ToolTypeVocab-1.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#ToolTypeVocab-1.1'
     VOCAB_NAME = 'CybOX Default Tool Types'
@@ -24,7 +24,7 @@ class ToolTypeVocab(Vocab):
     }
 
 
-class ActionNameVocab(Vocab):
+class ActionNameVocab(_Vocab):
     TYPE = 'ActionNameVocab-1.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#DefinedActionNameVocab-1.1'
     VOCAB_NAME = 'CybOX Default Action Names'

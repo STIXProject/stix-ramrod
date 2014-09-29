@@ -1,14 +1,14 @@
 import copy
 from lxml import etree
 
-from ramrod import (Vocab, _DisallowedFields, UpdateError, UnknownVersionError,
+from ramrod import (_Vocab, _DisallowedFields, UpdateError, UnknownVersionError,
                     TAG_XSI_TYPE)
 from ramrod.utils import remove_xml_element
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_Updater
 
 
-class MotivationVocab(Vocab):
+class MotivationVocab(_Vocab):
     TYPE = 'MotivationVocab-1.0.1'
     VOCAB_REFERENCE = 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd#MotivationVocab-1.0.1'
     VOCAB_NAME = 'STIX Default Motivation Vocabulary'
@@ -17,7 +17,7 @@ class MotivationVocab(Vocab):
     }
 
 
-class PlanningAndOperationalSupportVocab(Vocab):
+class PlanningAndOperationalSupportVocab(_Vocab):
     TYPE = 'PlanningAndOperationalSupportVocab-1.0.1'
     VOCAB_REFERENCE = 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd#PlanningAndOperationalSupportVocab-1.0.1',
     VOCAB_NAME = 'STIX Default Planning and Operational Support Vocabulary'
