@@ -1,10 +1,10 @@
-import copy
 import itertools
 from collections import defaultdict
+from ramrod import (_Vocab, UpdateError, UnknownVersionError,
+    InvalidVersionError, _DisallowedFields, _OptionalElements,
+    _TranslatableField, _RenamedField)
 from ramrod.utils import (ignored, get_typed_nodes, copy_xml_element,
     remove_xml_element, remove_xml_elements, create_new_id)
-from ramrod import (_Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
-    _OptionalElements, _TranslatableField, _RenamedField)
 from ramrod.cybox import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
     TAG_CYBOX_UPDATE)
 
@@ -510,7 +510,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         return disallowed
 
 
-    def check_update(self, root, check_versions=True):
+    def check_update(self, root, check_version=True):
         """Determines if the input document can be updated from CybOX 2.0.1
         to CybOX 2.1.
 
@@ -530,7 +530,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
             TODO fill out.
 
         """
-        if check_versions:
+        if check_version:
             self._check_version(root)
 
         duplicates = self._get_duplicates(root)
@@ -547,7 +547,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         removed = []
 
         for node in disallowed:
-            dup = copy.deepcopy(node)
+            dup = copy_xml_element(node)
             remove_xml_element(node)
             removed.append(dup)
 
@@ -592,7 +592,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         try:
             self.check_update(root)
             updated = self._update(root)
-        except (UpdateError, UnknownVersionError):
+        except (UpdateError, UnknownVersionError, InvalidVersionError):
             if force:
                 self.clean(root)
                 updated = self._update(root)

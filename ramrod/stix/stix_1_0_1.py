@@ -1,14 +1,14 @@
-import copy
 import itertools
 from collections import defaultdict
 from lxml import etree
 
-from ramrod import (_Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
-    _OptionalElements, _TranslatableField)
+from ramrod import (_Vocab, UpdateError, UnknownVersionError,
+    InvalidVersionError, _DisallowedFields, _OptionalElements,
+    _TranslatableField)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_1_Updater
 from ramrod.utils import (get_typed_nodes, copy_xml_element,
-    remove_xml_element, remove_xml_elements, create_new_id, replace_xml_element)
+    remove_xml_element, remove_xml_elements, create_new_id)
 
 
 class MotivationVocab(_Vocab):
@@ -104,7 +104,7 @@ class TransTTPExploitTargets(_TranslatableField):
 
         """
         tag = "{http://stix.mitre.org/TTP-1}Exploit_Target"
-        dup = copy.deepcopy(node)
+        dup = copy_xml_element(node)
         wrapper = etree.Element(tag)
         wrapper.append(dup)
 
@@ -169,8 +169,7 @@ class TransCommonContributors(_TranslatableField):
 
         contributing_sources = etree.Element(contributing_sources_tag)
         for contributor in node:
-            dup = copy_xml_element(contributor)
-            dup.tag = identity_tag
+            dup = copy_xml_element(contributor, tag=identity_tag)
             source = etree.Element(source_tag)
             source.append(dup)
             contributing_sources.append(source)
@@ -352,7 +351,7 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         disallowed = self._get_disallowed(root)
 
         for node in disallowed:
-            dup = copy.deepcopy(node)
+            dup = copy_xml_element(node)
             remove_xml_element(node)
             removed.append(dup)
 
@@ -376,7 +375,7 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         return updated
 
 
-    def check_update(self, root, check_versions=True):
+    def check_update(self, root, check_version=True):
         """Determines if the input document can be updated from CybOX 2.0.1
         to CybOX 2.1.
 
@@ -396,8 +395,9 @@ class STIX_1_0_1_Updater(_STIXUpdater):
             TODO fill out.
 
         """
-        if check_versions:
+        if check_version:
             self._check_version(root)
+            self._cybox_updater._check_version(root)
 
         duplicates = self._get_duplicates(root)
         disallowed = self._get_disallowed(root)
@@ -413,7 +413,7 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         removed = []
 
         for node in disallowed:
-            dup = copy.deepcopy(node)
+            dup = copy_xml_element(node)
             remove_xml_element(node)
             removed.append(dup)
 
@@ -461,7 +461,7 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         try:
             self.check_update(root)
             updated = self._update(root)
-        except (UpdateError, UnknownVersionError):
+        except (UpdateError, UnknownVersionError, InvalidVersionError):
             if force:
                 self.clean(root)
                 updated = self._update(root)

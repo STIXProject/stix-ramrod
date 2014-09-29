@@ -1,14 +1,13 @@
-import copy
 import itertools
-from collections import defaultdict
 from lxml import etree
 
-from ramrod import (_Vocab, UpdateError, UnknownVersionError, _DisallowedFields,
-    _OptionalElements, _TranslatableField)
+from ramrod import (_Vocab, UpdateError, UnknownVersionError,
+    InvalidVersionError, _DisallowedFields,  _OptionalElements,
+    _TranslatableField)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_1_Updater
 from ramrod.utils import (get_typed_nodes, copy_xml_element,
-    remove_xml_element, remove_xml_elements, create_new_id)
+    remove_xml_element, remove_xml_elements)
 
 
 class AvailabilityLossVocab(_Vocab):
@@ -371,7 +370,7 @@ class STIX_1_1_Updater(_STIXUpdater):
         disallowed = self._get_disallowed(root)
 
         for node in disallowed:
-            dup = copy.deepcopy(node)
+            dup = copy_xml_element(node)
             remove_xml_element(node)
             removed.append(dup)
 
@@ -394,7 +393,7 @@ class STIX_1_1_Updater(_STIXUpdater):
         self._cybox_updater._update_schemalocs(root)
 
 
-    def check_update(self, root, check_versions=True):
+    def check_update(self, root, check_version=True):
         """Determines if the input document can be updated from CybOX 2.0.1
         to CybOX 2.1.
 
@@ -414,8 +413,9 @@ class STIX_1_1_Updater(_STIXUpdater):
             TODO fill out.
 
         """
-        if check_versions:
+        if check_version:
             self._check_version(root)
+            self._cybox_updater._check_version(root)
 
         disallowed = self._get_disallowed(root)
 
@@ -429,7 +429,7 @@ class STIX_1_1_Updater(_STIXUpdater):
         removed = []
 
         for node in disallowed:
-            dup = copy.deepcopy(node)
+            dup = copy_xml_element(node)
             remove_xml_element(node)
             removed.append(dup)
 
@@ -457,7 +457,7 @@ class STIX_1_1_Updater(_STIXUpdater):
         try:
             self.check_update(root)
             updated = self._update(root)
-        except (UpdateError, UnknownVersionError):
+        except (UpdateError, UnknownVersionError, InvalidVersionError):
             if force:
                 self.clean(root)
                 updated = self._update(root)

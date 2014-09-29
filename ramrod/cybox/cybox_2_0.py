@@ -1,7 +1,7 @@
-from ramrod import (_Vocab, UpdateError, UnknownVersionError)
-
-from . import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
-               TAG_CYBOX_UPDATE)
+from ramrod import (_Vocab, UpdateError, UnknownVersionError,
+    InvalidVersionError)
+from ramrod.cybox import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
+    TAG_CYBOX_UPDATE)
 
 class EventTypeVocab(_Vocab):
     TYPE = 'EventTypeVocab-1.0.1'
@@ -238,7 +238,7 @@ class Cybox_2_0_Updater(_CyboxUpdater):
         return []
 
 
-    def check_update(self, root, check_versions=True):
+    def check_update(self, root, check_version=True):
         """Determines if the input document can be updated from CybOX 2.0
         to CybOX 2.0.1.
 
@@ -255,7 +255,7 @@ class Cybox_2_0_Updater(_CyboxUpdater):
             TODO fill out.
 
         """
-        if check_versions:
+        if check_version:
             self._check_version(root)
 
         disallowed = self._get_disallowed(root)
@@ -284,7 +284,7 @@ class Cybox_2_0_Updater(_CyboxUpdater):
         try:
             self.check_update(root)
             updated = self._update(root)
-        except (UpdateError, UnknownVersionError):
+        except (UpdateError, UnknownVersionError, InvalidVersionError):
             if force:
                 self.clean(root)
                 updated = self._update(root)

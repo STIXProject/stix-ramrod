@@ -19,6 +19,7 @@ class _CyboxUpdater(_BaseUpdater):
         super(_CyboxUpdater, self).__init__()
         self.cleaned_fields = ()
 
+
     @classmethod
     def get_version(cls, observables):
         cybox_major  = observables.attrib.get(TAG_CYBOX_MAJOR)
