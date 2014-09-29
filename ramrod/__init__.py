@@ -27,10 +27,23 @@ UpdateResults = namedtuple(
 
 
 class UnknownVersionError(Exception):
+    """Raised when an input document does not contain a ``version`` attribute
+    and the user has not specified a document version.
+
+    """
     pass
 
 
 class UpdateError(Exception):
+    """Raised when non-translatable fields are encountered during the update
+    process..
+
+    Attributes:
+        disallowed(list): A list of nodes found in the input document that
+            cannot be translated during the update process.
+        duplicates(dict): A dictionary of nodes found in the input document
+            that contain the same `id`.
+    """
     def __init__(self, message=None, disallowed=None, duplicates=None):
         super(UpdateError, self).__init__(message)
         self.disallowed = disallowed
@@ -41,6 +54,16 @@ class UpdateError(Exception):
 
 
 class InvalidVersionError(Exception):
+    """Raised when an input document's ``version`` attribute does not align
+    with the expected version number for a given ``_BaseUpdater``
+    implementation.
+
+    Attributes:
+        node: The node containing an incompatible version number.
+        expected: The version that was expected.
+        found: The version that was found on the `node`.
+
+    """
     def __init__(self, node=None, expected=None, found=None):
         self.node = node
         self.expected = expected
@@ -56,6 +79,18 @@ class InvalidVersionError(Exception):
 
 
 class _Vocab(object):
+    """Controlled Vocabulary update class. This is used on conjunction with a
+    dictionary which maps found controlled vocabulary instance names to _Vocab
+    implementation classes.
+
+    Attributes:
+        TYPE: The XSD type name for the updated controlled vocabulary
+        VOCAB_REFERENCE: The ``vocab_reference`` xml attribute text.
+        VOCAB_NAME: The ``vocab_name`` xml attribute text.
+        TERMS(dict): A dictionary of vocabulary term mappings. This is useful
+            for typo corrections between controlled vocabulary revisions.
+
+    """
     TYPE = None
     VOCAB_REFERENCE = None
     VOCAB_NAME = None
@@ -63,9 +98,32 @@ class _Vocab(object):
 
 
 class _TranslatableField(object):
+    """Helper class for translating field instances between versions of a
+    language specifications.
+
+    Note:
+        The methods defined here may not (likely will not) apply to every
+        translation scenario. As such, it is encouraged to override any/all
+        of these methods for specific translation requirements.
+
+    Attributes:
+        NSMAP: A dictionary of namespace aliases => namespaces used in xpaths
+            and type lookups.
+        XPATH_NODE: An xpath which locates instances of the field to be
+            translated.
+        XPATH_VALUE: An xpath to be applied to the nodes discovered via
+            `XPATH_NODE` which extracts the value.
+        NEW_TAG: The etree tag for the translated field.
+        COPY_ATTRIBUTES(boolean): If true, attributes are copied from the node
+            discovered by `XPATH_VALUE` to the translated field.
+        OVERRIDE_ATTRIBUTES(dict): A dictionary of attribute names => value to
+            override during the translation. This will only update existing
+            attributes--not add them.
+
+    """
     NSMAP = None
     XPATH_NODE = None
-    XPATH_VALUE = None
+    XPATH_VALUE = '.'
     NEW_TAG = None
     COPY_ATTRIBUTES = False
     OVERRIDE_ATTRIBUTES = None
@@ -84,6 +142,15 @@ class _TranslatableField(object):
 
     @classmethod
     def _translate_attributes(cls, old, new):
+        """Copies attributes from `old` to `new` (discovered by `XPATH_VALUE`
+        or the `old` node ``text`` value).
+
+        If `COPY_ATTRIBUTES` is set to ``True``, attributes from the `old` node
+        value are copied to `new`. If an attribute is found that matches a key
+        in `OVERRIDE_ATTRIBUTES`, its value is overriden by the value found in
+        `OVERRIDE_ATTRIBUTES`.
+
+        """
         xpath, nsmap = cls.XPATH_VALUE, cls.NSMAP
 
         if xpath:
@@ -103,6 +170,12 @@ class _TranslatableField(object):
 
     @classmethod
     def _translate_fields(cls, node):
+        """Translates values and attributes from `node` to a new XML
+        element.
+
+        Returns:
+            A translated etree Element.
+        """
         tag = cls.NEW_TAG or node.tag
         new = etree.Element(tag)
 
@@ -114,6 +187,12 @@ class _TranslatableField(object):
 
     @classmethod
     def _find(cls, root):
+        """Discovers translatable fields in the `root` document.
+
+        Returns:
+            A list of nodes discovered via the `XPATH_NODE` xpath.
+
+        """
         xpath, nsmap = cls.XPATH_NODE, cls.NSMAP
         found = root.xpath(xpath, namespaces=nsmap)
         return found
@@ -121,6 +200,7 @@ class _TranslatableField(object):
 
     @classmethod
     def translate(cls, root):
+        """Translates and replaces nodes found in `root` with new nodes."""
         nodes = cls._find(root)
         for node in nodes:
             new_node = cls._translate_fields(node)
@@ -129,7 +209,13 @@ class _TranslatableField(object):
 
 
 class _RenamedField(_TranslatableField):
-    
+    """Extension to ``_TranslatableField`` that only performs a renaming
+    operation on discovered nodes.
+
+    Note:
+        The name of the node is defined by the `NEW_TAG` class-level attribute.
+
+    """
     @classmethod
     def translate(cls, root):
         nodes = cls._find(root)
@@ -138,8 +224,22 @@ class _RenamedField(_TranslatableField):
 
 
 class _DisallowedFields(object):
-    XPATH = "."
+    """Helper class used to discover untranslatable fields within an XML
+    instance document.
+
+    Attributes:
+        CTX_TYPES: A dictionary of xsi:type contexts to look for or within. If
+            CTX_TYPES is ``None`` or empty, the root node is used as the
+            context for xpaths.
+        XPATH: An xpath used to discover nodes under the contexts determined
+            by `CTX_TYPES`. By default, `XPATH` is ``'.'``, meaning the
+            context nodes are returned by the `XPATH` by default.
+        NSMAP: A dictionary of namespace aliases => namespaces. Used for xpath
+            evaluation.
+
+    """
     CTX_TYPES = {}
+    XPATH = "."
     NSMAP = None
 
     def __init__(self,):
@@ -148,11 +248,43 @@ class _DisallowedFields(object):
 
     @classmethod
     def _interrogate(cls, nodes):
+        """Overriden by implemmentation classes if a set of requirments must
+        be evaluated before a node is considered untranslatable.
+
+        For example, the `_interrogate()` method could only consider a node
+        untranslatable if it has more than one child node.
+
+        Args:
+            nodes: A list of nodes to interrogate for untranslatable
+                properties.
+
+        Returns:
+            A list of untranslatable nodes. By default, this method does not
+            perform any inspection of `nodes` and only returns `nodes`.
+
+        """
         return nodes
 
 
     @classmethod
     def _get_contexts(cls, root, typed=None):
+        """Returns context nodes under `root` discovered by `CTX_TYPES`.
+
+        If `CTX_TYPES` is ``None`` or empty, The entire `root` node is
+        considered to be the context for the class-level `XPATH`.
+
+        Args:
+            root: The root node for an XML instance document.
+            typed: xsi:typed nodes to search through when looking for
+                context nodes. If ``None``, the entire `root` document will be
+                searched for xsi:typed nodes that match the names and namespaces
+                declared by `CTX_TYPES`. This is provided to speed up
+                context node discovery.
+
+        Returns:
+            A list of context nodes for `XPATH` to be evaluated against.
+
+        """
         ctx = cls.CTX_TYPES
 
         if not ctx:
@@ -173,6 +305,12 @@ class _DisallowedFields(object):
 
     @classmethod
     def find(cls, root, typed=None):
+        """Finds disallowed (untranslatable) fields under the `root` node.
+
+        Returns:
+            A list of disallowed or untranslatable nodes.
+
+        """
         contexts = cls._get_contexts(root, typed)
         xpath, nsmap = cls.XPATH, cls.NSMAP
 
@@ -186,6 +324,17 @@ class _DisallowedFields(object):
 
 
 class _OptionalAttributes(_DisallowedFields):
+    """Helper class for discovering empty, optional attributes.
+
+    There are cases where one revision of STIX/CybOX required the presence
+    of an attribute which became optional in later revisions. This enables the
+    discovery of these attributes which may be present in the input document
+    only for schema-validation reasons.
+
+    Attributes:
+        ATTRIBUTES: A tuple of attribute tags to look for.
+
+    """
     ATTRIBUTES = ()
 
     def __init__(self):
@@ -193,6 +342,17 @@ class _OptionalAttributes(_DisallowedFields):
 
     @classmethod
     def _interrogate(cls, nodes):
+        """Inspects each node in `nodes` for the presence of empty attributes
+        defined in `ATTRIBUTES`.
+
+        Note:
+            This overrides the `_interrogate()` method implemented in
+            ``_DisallowedFields``.
+
+        Returns:
+            A list of nodes containing empty attributes defined in `ATTRIBUTES`.
+
+        """
         contraband = []
 
         attrs = cls.ATTRIBUTES
@@ -207,6 +367,14 @@ class _OptionalAttributes(_DisallowedFields):
 
 
 class _OptionalElements(_DisallowedFields):
+    """Helper class for discovering empty, optional elements.
+
+    There are cases where one revision of STIX/CybOX required the presence
+    of an element which became optional in later revisions. This enables the
+    discovery of elements which may be present in the input document only for
+    the sake of schema-validation.
+
+    """
     def __init__(self):
         super(_OptionalElements, self).__init__()
 
@@ -214,6 +382,11 @@ class _OptionalElements(_DisallowedFields):
     @classmethod
     def _interrogate(cls, nodes):
         """Checks if any of the nodes in `nodes` are empty.
+
+        Note:
+            A node is considered to be emtpy if it has no attributes, no text
+            value, and no children. These criterion may be overridden by
+            implementations of this class.
 
         Returns:
             A list of nodes that are empty.
@@ -228,7 +401,41 @@ class _OptionalElements(_DisallowedFields):
 
 
 class _BaseUpdater(object):
+    """The base class for all STIX and CybOX updater code.
 
+    Attributes:
+        VERSION: Specifies the base langauge version for an updater
+            implementation. For example, a STIX v1.0 updater would use '1.0'.
+        NSMAP: A dictionary of namespace aliases => namespaces for a given
+            language version. This is used for xpath evaluation and xsi:type
+            lookup.
+        DISALLOWED_NAMESPACES: A tuple of namespaces which cannot be translated
+            during the update process. These namespaces will be stripped and
+            not appear in the export document.
+        UPDATE_NS_MAP: A dictionary of namespaces that are updated between
+            language revisions. For example, CybOX 2.1 defines a new namespace
+            for the Windows Driver Object. This dictionary would contain the old
+            namespace as a key, and the new namespace as a value.
+        UPDATE_SCHEMALOC_MAP: A dictionary of language namespaces to their
+            updated schemalocations. If a namespace has been updated between
+            langauge revisions, the new namespace will be used as the key (as
+            is in the case of the CybOX 2.0.1 updater and the Windows Driver
+            Object namespace).
+        DEFAULT_VOCAB_NAMESPACE: The namespace for the default vocabulary
+            schema.
+        UPDATE_VOCABS: A map of ``_Vocab`` derivations
+        XPATH_VERSIONED_NODES: An xpath which discovers all versioned nodes
+            that need to be updated within the source document.
+        XPATH_ROOT_NODES: An xpath which discovers all "root" nodes
+            (implementations of ``STIXType and ObservablesType``) which may
+            contain document-level version information.
+        cleaned_fields: A tuple of untranslatable nodes which were removed
+            during a forced `update` or `clean` process.
+        cleaned_ids: A dictionary of id => [nodes] which contains a list of
+            nodes that had their ids remapped as they were not unique. This
+            is only populated in a forced `update` or `clean` process.
+
+    """
     # OVERRIDE THESE IN IMPLEMENTATIONS
     VERSION = None
     DISALLOWED_NAMESPACES = ()
@@ -301,12 +508,35 @@ class _BaseUpdater(object):
 
 
     def _get_versioned_nodes(self, root):
+        """Discovers all versioned nodes under `root` defined by the class-level
+        `XPATH_VERSIONED_NODES` xpath.
+
+        Args:
+            root: The root node to search under.
+
+        Returns:
+            A list of nodes discovered by evaluating the class-level
+            `XPATH_VERSIONED_NODES` xpath.
+
+        """
         xpath = self.XPATH_VERSIONED_NODES
         namespaces = self.NSMAP
         return root.xpath(xpath, namespaces=namespaces)
 
 
     def _get_root_nodes(self, root):
+        """Discovers all versioned nodes under `root` defined by the class-level
+        `XPATH_ROOT_NODES` xpath. This is used primarily when trying to
+        determine the language version of the input document.
+
+        Args:
+            root: The root node to search under.
+
+        Returns:
+            A list of nodes discovered by evaluating the class-level
+            `XPATH_ROOT_NODES` xpath.
+
+        """
         xpath = self.XPATH_ROOT_NODES
         namespaces = self.NSMAP
         return root.xpath(xpath, namespaces=namespaces)
@@ -316,11 +546,30 @@ class _BaseUpdater(object):
         """Checks that the version of the document matches the expected
         version. Derived classes need to implement this method.
 
+        Note:
+            This must be implemented by derived classes.
+
+        Raises:
+            NotImplementedError: If a derived class does not implement this
+                method.
+
         """
         raise NotImplementedError()
 
 
     def _update_vocabs(self, root):
+        """Updates controlled vocabularies found under the `root` document.
+
+        This performs the following updates:
+        * Updates ``xsi:type`` attribute to refer to the new type name.
+        * Updates terms to align with new vocabulary in the case of typo fixes.
+        * Updates ``vocab_name`` attribute value if present.
+        * Updates ``vocab_reference`` attribute value if present.
+
+        Vocabulary updates are dictated by the `UPDATE_VOCABS` class-level
+        attribute.
+
+        """
         default_vocab_ns = self.DEFAULT_VOCAB_NAMESPACE
         vocabs = self.UPDATE_VOCABS
         typed_nodes = get_typed_nodes(root)
@@ -359,11 +608,13 @@ class _BaseUpdater(object):
 
 
     def _remove_schemalocations(self, root):
+        """Removes the ``xsi:schemaLocation`` attribute from `root`."""
         remove_xml_attribute(root, TAG_SCHEMALOCATION)
 
 
     def _create_schemaloc_str(self, pairs):
-        """Creates a valid ``xsi:schemaLocation`` string.
+        """Creates a valid ``xsi:schemaLocation`` string from the `pairs`
+        list of ``(namespace, schemalocation)`` tuples.
 
         Args:
             pairs: list of tuples containing (ns, schemaloc).
@@ -377,14 +628,31 @@ class _BaseUpdater(object):
 
 
     def _clean_schemalocs(self, pairs):
-        """Returns a list of ``(ns, schemaloc)`` tuples that are allowed
-        for the updated document.
+        """Returns a list of ``(namespace, schemalocation)`` tuples that are
+        allowed for the updated document.
+
+        Args:
+            pairs: a list of (namespace, schemalocation) tuples.
+
+        Note:
+            If a namespaces that exist in `DISALLOWED_NAMESPACES` will not be
+            found in the return value.
 
         """
         return [(ns, loc) for ns, loc in pairs if ns not in self.DISALLOWED_NAMESPACES]
 
 
     def _remap_schemalocs(self, pairs):
+        """Updates the ``xsi:schemaLocation`` value to use namespaces and
+        schemalocations for the next langauge revision.
+
+        Args:
+            pairs: A list of (namespace, schemalocation) tuples.
+
+        Returns:
+            A list of updated (namespace, schemalocation) tuples.
+
+        """
         remapped = []
 
         for ns, loc in pairs:
@@ -524,6 +792,32 @@ def _get_version(root):
 
 
 def _update_stix(root, from_, to_=None, force=False):
+    """Updates a STIX document to align with a given version of the STIX
+    Language schemas.
+
+    Args:
+        root: The top-level node of the input document.
+        from_(string): The base version for the update process.
+        to_(string): The version to update to. If ``None``, the latest version
+            of STIX is assumed.
+        force(boolean): Forces the update process. This may result in content
+            being removed during the update process and could result in
+            schema-invalid content. **Use at your own risk!**
+
+    Returns:
+        An instance of ``UpdateResults`` named tuple.
+
+    Raises:
+        UpdateError: If any of the following conditions are encountered:
+            * The `from_` or `to_` versions are invalid.
+            * An untranslatable field is ecnountered and `force` is ``False``.
+            * A non-unique ID is encountered and `force` is ``False``.
+        InvalidVersionError: If the source document version and the `from_`
+            value do not match and `force` is ``False``.
+        UnknownVersionError: If the source document does not contain version
+            information and `force` is ``False``.
+
+    """
     from ramrod.stix import STIX_UPDATERS, STIX_VERSIONS
 
     to_ = to_ or STIX_VERSIONS[-1]  # The latest version if not specified
@@ -560,6 +854,32 @@ def _update_stix(root, from_, to_=None, force=False):
 
 
 def _update_cybox(root, from_, to_=None, force=False):
+    """Updates a CybOX document to align with a given version of the STIX
+    Language schemas.
+
+    Args:
+        root: The top-level node of the input document.
+        from_(string): The base version for the update process.
+        to_(string): The version to update to. If ``None``, the latest version
+            of CybOX is assumed.
+        force(boolean): Forces the update process. This may result in content
+            being removed during the update process and could result in
+            schema-invalid content. **Use at your own risk!**
+
+    Returns:
+        An instance of ``UpdateResults`` named tuple.
+
+    Raises:
+        UpdateError: If any of the following conditions are encountered:
+            * The `from_` or `to_` versions are invalid.
+            * An untranslatable field is ecnountered and `force` is ``False``.
+            * A non-unique ID is encountered and `force` is ``False``.
+        InvalidVersionError: If the source document version and the `from_`
+            value do not match and `force` is ``False``.
+        UnknownVersionError: If the source document does not contain version
+            information and `force` is ``False``.
+
+    """
     from ramrod.cybox import CYBOX_UPDATERS, CYBOX_VERSIONS
 
     to_ = to_ or CYBOX_VERSIONS[-1]  # The latest version if not specified
@@ -596,6 +916,41 @@ def _update_cybox(root, from_, to_=None, force=False):
 
 
 def update(doc, to_, from_=None, force=False):
+    """Updates an input STIX or CybOX document to align with a newer version
+    of the STIX/CybOX schemas.
+
+    This will perform the following updates:
+    * Update namespaces
+    * Update schemalocations
+    * Update construct versions (``STIX_Package``, ``Observables``, etc.)
+    * Update controlled vocabularies and fix typos
+    * Translate structures to new XSD datatype instances where possible.
+    * Remove empty instances of attributes and elements which were required
+      in one version of the language and declared optional in another.
+
+    Args:
+        doc: A STIX or CybOX document filename, file-like object, or etree
+            Element/ElementTree object instance.
+        to_(string): The expected output version of the update process.
+        from_(optional, string): The version to update from. If not specified,
+            the `from_` version will be retrieved from the input document.
+        force(boolean): Attempt to force the update process if the document
+            contains untranslatable fields.
+
+    Returns:
+        An instance of ``UpdateResults`` named tuple.
+
+    Raises:
+        UpdateError: If the input `doc` does not contain a ``STIX_Package``
+            or ``Observables`` root-level node. An `UpdateError` may also be
+            raised it `force` is ``False`` and an untranslatable field or
+            non-unique ID is found in the input `doc`.
+        InvalidVersionError: If the input document contains a version attribute
+            that is incompatible with a STIX/CybOX Updater class instance.
+        UnknownVersionError: If `from_` was not specified and the input
+            document does not contain a version attribute.
+
+    """
     root = _get_etree_root(doc)
     name = QName(root).localname
 
