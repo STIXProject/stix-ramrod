@@ -9,8 +9,11 @@ CYBOX_VERSIONS = ('2.0', '2.0.1', '2.1')
 
 
 class _CyboxUpdater(_BaseUpdater):
-    DEFAULT_VOCAB_NAMESPACE = 'http://cybox.mitre.org/default_vocabularies-1'
+    """Base class for CybOX updating code. Sets default values for
+    CybOX-specific xpaths and namespaces.
 
+    """
+    DEFAULT_VOCAB_NAMESPACE = 'http://cybox.mitre.org/default_vocabularies-1'
     XPATH_VERSIONED_NODES = "//cybox:Observables"
     XPATH_ROOT_NODES = "//cybox:Observables"
     XPATH_OBJECT_PROPS = "//cybox:Object/cybox:Properties"
@@ -22,6 +25,16 @@ class _CyboxUpdater(_BaseUpdater):
 
     @classmethod
     def get_version(cls, observables):
+        """Returns the version of the `observables` Observables node.
+
+        This generates a version string from the ``cybox_major``,
+        ``cybox_minor`` and ``cybox_update`` attribute values.
+
+        Raises:
+            UnknownVersionError: If `observables` does not contain a
+                ``cybox_major``, ``cybox_minor``, or ``cybox_update``
+                version.
+        """
         cybox_major  = observables.attrib.get(TAG_CYBOX_MAJOR)
         cybox_minor  = observables.attrib.get(TAG_CYBOX_MINOR)
         cybox_update = observables.attrib.get(TAG_CYBOX_UPDATE)

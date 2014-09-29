@@ -3,9 +3,11 @@ from distutils.version import StrictVersion
 from ramrod import (_BaseUpdater, UnknownVersionError, InvalidVersionError)
 
 class _STIXUpdater(_BaseUpdater):
+    """Base class for STIX updating code. Sets default values for
+    STIX-specific xpaths and namespaces.
 
+    """
     DEFAULT_VOCAB_NAMESPACE = 'http://stix.mitre.org/default_vocabularies-1'
-
     XPATH_VERSIONED_NODES = (
         "//stix:STIX_Package | "
         "//indicator:Indicator[@version] | "
@@ -30,7 +32,6 @@ class _STIXUpdater(_BaseUpdater):
         "//stix:Exploit_Target[@version] | "
         "//stixCommon:Exploit_Target[@version]"
     )
-
     XPATH_ROOT_NODES = "//stix:STIX_Package"
 
     def __init__(self):
@@ -50,6 +51,10 @@ class _STIXUpdater(_BaseUpdater):
 
     @classmethod
     def get_version(cls, package):
+        """Returns the version of the `package` STIX_Package element by
+        inspecting the ``version`` attribute.
+
+        """
         return package.attrib.get('version')
 
 
