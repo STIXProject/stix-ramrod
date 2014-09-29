@@ -211,14 +211,8 @@ class TransWinMailslotHandle(_TranslatableField):
     @classmethod
     def _replace(cls, node):
         parent = node.getparent()
-        grandparent = parent.getparent()
-
         dup = copy_xml_element(node, tag=cls.NEW_TAG)
-        idx = grandparent.index(parent)
-        grandparent.insert(idx, dup)
-        grandparent.remove(parent)
-
-
+        replace_xml_element(parent, dup)
 
     @classmethod
     def translate(cls, root):
