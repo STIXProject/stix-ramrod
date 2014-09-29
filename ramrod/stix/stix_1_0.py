@@ -143,24 +143,17 @@ class STIX_1_0_Updater(_STIXUpdater):
 
 
     def check_update(self, root, check_version=True):
-        """Determines if the input document can be upgraded from STIX v1.0 to
-        STIX v1.0.1.
-
-        A STIX document cannot be upgraded if any of the following constructs
-        are found in the document:
-
-        * STIX_Package/@version != '1.0'
-        * MAEC 4.0 Malware extension
-        * CAPEC 2.5 Attack Pattern extension
+        """Determines if the input document can be upgraded.
 
         Args:
-            root (lxml.etree._Element): The top-level node of the STIX
-                document.
+            root (lxml.etree._Element): The top-level node of the document
+                being upgraded.
+            check_version(boolean): If True, the version of `root` is checked.
 
         Raises:
             UnknownVersionError: If the input document does not have a version.
             InvalidVersionError: If the version of the input document
-                is not ``1.0``.
+                does not match the `VERSION` class-level attribute value.
             UpdateError: If the input document contains fields which cannot
                 be updated.
 
@@ -175,20 +168,23 @@ class STIX_1_0_Updater(_STIXUpdater):
             raise UpdateError(disallowed=disallowed)
 
 
-    def clean(self, root):
-        """Attempts to remove untranslatable fields from the input document.
+    def clean(self, root, disallowed=None, duplicates=None):
+        """Removes disallowed elements from `root`.
 
-        Args:
-            root (lxml.etree._Element): The top-level node of the STIX
-                document.
+        A copy of the removed nodes are stored on the instance-level
+        `cleaned_fields` attribute. This will overwrite the `cleaned_fields`
+        value with each invocation.
+
+        Note:
+            The `duplicates` parameter isn't handled. It is just kept for
+            the sake of consistency across `clean()` method signatures.
 
         Returns:
-            list: A list of lxml.etree._Element instances of objects removed
-            from the input document.
+            The source `root` node.
 
         """
         removed = []
-        disallowed = self._get_disallowed(root)
+        disallowed = disallowed or self._get_disallowed(root)
 
         for node in disallowed:
             dup = copy_xml_element(node)
@@ -211,6 +207,13 @@ class STIX_1_0_Updater(_STIXUpdater):
 
 
     def _update_cybox(self, root):
+        """Updates the CybOX content found under the `root` node.
+
+        Returns:
+            An updated `root` node. This may be a new ``etree._Element``
+            instance.
+
+        """
         updated = self._cybox_updater.update(root)
         return updated
 

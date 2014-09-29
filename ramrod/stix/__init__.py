@@ -1,6 +1,7 @@
 
 from distutils.version import StrictVersion
-from ramrod import (_BaseUpdater, UnknownVersionError, InvalidVersionError)
+from ramrod import (_BaseUpdater, UnknownVersionError, InvalidVersionError,
+    UpdateError)
 
 class _STIXUpdater(_BaseUpdater):
     """Base class for STIX updating code. Sets default values for
@@ -85,6 +86,35 @@ class _STIXUpdater(_BaseUpdater):
             if StrictVersion(found) != StrictVersion(expected):
                 raise InvalidVersionError(node, expected, found)
 
+
+    def update(self, root, force=False):
+        """Attempts to update the `root` node. The update logic is defined
+        by implementations of this class.
+
+        Returns:
+            An updated ``etree._Element`` version of `root`.
+
+        Raises:
+            UpdateError: If untranslatable fields or non-unique IDs are
+                discovered in `root` and `force` is ``False``.
+            UnknownVersionError: If the `root` node contains no version
+                information.
+            InvalidVersionError: If the `root` node contains invalid version
+                information (e.g., the class expects v1.0 content and the
+                `root` node contains v1.1 content).
+
+        """
+        try:
+            self.check_update(root)
+            updated = self._update(root)
+        except (UpdateError, UnknownVersionError, InvalidVersionError):
+            if force:
+                self.clean(root)
+                updated = self._update(root)
+            else:
+                raise
+
+        return updated
 
 from .stix_1_0 import STIX_1_0_Updater
 from .stix_1_0_1 import  STIX_1_0_1_Updater

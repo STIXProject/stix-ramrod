@@ -2,6 +2,7 @@
 
 import sys
 import argparse
+from lxml import etree
 import ramrod
 
 def _write_xml(tree, outfn=None):
@@ -20,7 +21,7 @@ def _print_update_error(err):
     duplicates = err.duplicates
 
     if disallowed:
-        print "[!] Found the following disallowed items:"
+        print "[!] Found the following untranslatable items:"
         for node in disallowed:
             print "    Line %s: %s" % (node.sourceline, node.tag)
 
@@ -49,7 +50,7 @@ def _write_remapped_ids(remapped):
            "remapped during the update process:")
 
     for old_id, new_ids in remapped.iteritems():
-        print "'%s': %s" % (old_id, new_ids)
+        print "'%s': %s" % (old_id, [x.attrib['id'] for x in new_ids])
 
 
 def _get_arg_parser():

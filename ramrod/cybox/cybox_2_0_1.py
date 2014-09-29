@@ -4,7 +4,8 @@ from ramrod import (_Vocab, UpdateError, UnknownVersionError,
     InvalidVersionError, _DisallowedFields, _OptionalElements,
     _TranslatableField, _RenamedField)
 from ramrod.utils import (ignored, get_typed_nodes, copy_xml_element,
-    remove_xml_element, remove_xml_elements, create_new_id)
+    remove_xml_element, remove_xml_elements, remove_xml_attributes,
+    create_new_id)
 from ramrod.cybox import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
     TAG_CYBOX_UPDATE)
 
@@ -497,7 +498,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         for optional in optional_attribs:
             found = optional.find(root, typed=typed_nodes)
             for node in found:
-                remove_xml_elements(node, optional.ATTRIBUTES)
+                remove_xml_attributes(node, optional.ATTRIBUTES)
 
 
     def _get_disallowed(self, root):
@@ -511,23 +512,19 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
 
     def check_update(self, root, check_version=True):
-        """Determines if the input document can be updated from CybOX 2.0.1
-        to CybOX 2.1.
-
-        A CybOX document cannot be upgraded if any of the following constructs
-        are found in the document:
-
-        * TODO: Add constructs
-
-        CybOX 2.1 also introduces schematic enforcement of ID uniqueness. Any
-        nodes with duplicate IDs are reported.
+        """Determines if the input document can be upgraded.
 
         Args:
-            root (lxml.etree._Element): The top-level node of the STIX
-                document.
+            root (lxml.etree._Element): The top-level node of the document
+                being upgraded.
+            check_version(boolean): If True, the version of `root` is checked.
 
         Raises:
-            TODO fill out.
+            UnknownVersionError: If the input document does not have a version.
+            InvalidVersionError: If the version of the input document
+                does not match the `VERSION` class-level attribute value.
+            UpdateError: If the input document contains fields which cannot
+                be updated or constructs with non-unique IDs are discovered.
 
         """
         if check_version:
@@ -544,8 +541,16 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
 
     def _clean_disallowed(self, disallowed):
-        removed = []
+        """Removes the `disallowed` nodes from the source document.
 
+        Args:
+            disallowed: A list of nodes to remove from the source document.
+
+        Returns:
+            A list of `disallowed` node copies.
+
+        """
+        removed = []
         for node in disallowed:
             dup = copy_xml_element(node)
             remove_xml_element(node)
@@ -560,21 +565,53 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         its IDs remapped to produce a schema-valid document.
 
         """
-        self.cleaned_ids = defaultdict(list)
         for id_, nodes in duplicates.iteritems():
-            for dup in nodes:
+            for node in nodes:
                 new_id = create_new_id(id_)
-                dup.attrib['id'] = new_id
-                self.cleaned_ids[id_].append(new_id)
+                node.attrib['id'] = new_id
+
+        return duplicates
 
     def clean(self, root, disallowed=None, duplicates=None):
+        """Removes disallowed elements from `root` and remaps non-unique
+        IDs to unique IDs for the sake of schema-validation.
+
+        Note:
+            This does not remap ``idref`` attributes to new ID values because
+            it is impossible to determine which entity the ``idref`` was
+            pointing to.
+
+        A copy of the removed nodes are stored on the instance-level
+        `cleaned_fields` attribute.
+
+        The `cleaned_ids` instance-level dictionary will be populated with
+        ids and nodes which had their ids remapped.
+
+        Note:
+            The `cleaned_fields` and `cleanded_ids` attributes will be
+            overwritten with each method invocation.
+
+        Args:
+            disallowed: A list of disallowed nodes to remove from the `root`
+                document. If ``None``, an attempt will be made to discover
+                all untranslatable elements under the `root` node.
+            duplicates: A dictionary of id => [nodes] where the key represents
+                the non-unique IDs and the ``[nodes]`` value is a list of nodes
+                with that ID value.
+
+        Returns:
+            The source `root` node.
+
+        """
         disallowed = disallowed or self._get_disallowed(root)
         duplicates = duplicates or self._get_duplicates(root)
 
-        self._clean_duplicates(root, duplicates)
+        remapped = self._clean_duplicates(root, duplicates)
         removed = self._clean_disallowed(disallowed)
 
+        self.cleaned_ids = remapped
         self.cleaned_fields = tuple(removed)
+
         return root
 
 
@@ -587,19 +624,6 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         self._translate_fields(updated)
         return updated
 
-
-    def update(self, root, force=False):
-        try:
-            self.check_update(root)
-            updated = self._update(root)
-        except (UpdateError, UnknownVersionError, InvalidVersionError):
-            if force:
-                self.clean(root)
-                updated = self._update(root)
-            else:
-                raise
-
-        return updated
 
 
 # Wiring namespace dictionaries

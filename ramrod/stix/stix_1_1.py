@@ -217,8 +217,30 @@ class OptionalGenericTestMechanismFields(_OptionalElements):
 
 
 class STIX_1_1_Updater(_STIXUpdater):
-    VERSION = '1.1'
+    """Updates STIX v1.1 content to STIX v1.1.1.
 
+    The following update operations are performed:
+    * The ``Source`` field under instances of ``StatementType`` and
+      ``ConfidenceType`` are translated from ``ControlledVocabularyStringType``
+      instances to ``IdentityType`` instances. The original value becomes the
+      ``Name`` field of the ``IdentityType`` instance.
+    * The ``Source`` field under ``IndicatorType/Sightings/Sighting`` is
+      converted into an instance of ``IdentityType`` where the original value
+      becomes the value of the ``Name`` field.
+    * The ``Related_Campaigns`` field under ``IndicatorType`` is converted from
+      a flat list of ``RelatedCampaignType`` instances into an instance of
+      ``GenericRelationshipListType``.
+    * Instances of the ``GeneralTestMechanismType`` extension have empty,
+      optional fields removed.
+    * Instances of ``AvailabilityLossVocab-1.0`` are upgraded to
+      ``AvailabilityLossVocab-1.1``
+
+    Note:
+        There are no STIX fields which cannot be translated between STIX v1.1
+        and STIX v1.1.1.
+
+    """
+    VERSION = '1.1'
     NSMAP = {
         'TOUMarking': 'http://data-marking.mitre.org/extensions/MarkingStructure#Terms_Of_Use-1',
         'campaign': 'http://stix.mitre.org/Campaign-1',
@@ -282,8 +304,8 @@ class STIX_1_1_Updater(_STIXUpdater):
     }
 
     DISALLOWED = (
-        #DisallowedConfidenceSource,
-        #DisallowedStatementSource
+        # DisallowedConfidenceSource,
+        # DisallowedStatementSource
     )
 
     OPTIONAL_ELEMENTS = (
@@ -330,17 +352,17 @@ class STIX_1_1_Updater(_STIXUpdater):
 
 
     def check_update(self, root, check_version=True):
-        """Determines if the input document can be upgraded from STIX v1.0.1 to
-        STIX v1.1.
+        """Determines if the input document can be upgraded.
 
         Args:
-            root (lxml.etree._Element): The top-level node of the STIX
-                document.
+            root (lxml.etree._Element): The top-level node of the document
+                being upgraded.
+            check_version(boolean): If True, the version of `root` is checked.
 
         Raises:
             UnknownVersionError: If the input document does not have a version.
             InvalidVersionError: If the version of the input document
-                is not ``1.0.1``.
+                does not match the `VERSION` class-level attribute value.
             UpdateError: If the input document contains fields which cannot
                 be updated.
 
@@ -390,6 +412,18 @@ class STIX_1_1_Updater(_STIXUpdater):
 
 
     def _update_cybox(self, root):
+        """Updates the CybOX content found under the `root` node.
+
+        Note:
+            STIX v1.1 and STIX v1.1.1 import CybOX 2.1, so this just updates
+            schemalocation attributes to point to the schemas hosted on
+            http://cybox.mitre.org.
+
+        Returns:
+            An updated `root` node. This may be a new ``etree._Element``
+            instance.
+
+        """
         self._cybox_updater._update_schemalocs(root)
 
 
@@ -426,8 +460,16 @@ class STIX_1_1_Updater(_STIXUpdater):
 
 
     def _clean_disallowed(self, disallowed):
-        removed = []
+        """Removes the `disallowed` nodes from the source document.
 
+        Args:
+            disallowed: A list of nodes to remove from the source document.
+
+        Returns:
+            A list of `disallowed` node copies.
+
+        """
+        removed = []
         for node in disallowed:
             dup = copy_xml_element(node)
             remove_xml_element(node)
@@ -437,8 +479,23 @@ class STIX_1_1_Updater(_STIXUpdater):
 
 
     def clean(self, root, disallowed=None, duplicates=None):
+        """Removes disallowed elements from `root`.
+
+        A copy of the removed nodes are stored on the instance-level
+        `cleaned_fields` attribute. This will overwrite the `cleaned_fields`
+        value with each invocation.
+
+        Note:
+            The `duplicates` parameter isn't handled. It is just kept for
+            the sake of consistency across `clean()` method signatures.
+
+        Returns:
+            The source `root` node.
+
+        """
         disallowed = disallowed or self._get_disallowed(root)
         removed = self._clean_disallowed(disallowed)
+
         self.cleaned_fields = tuple(removed)
         return root
 
@@ -451,20 +508,6 @@ class STIX_1_1_Updater(_STIXUpdater):
         self._update_optionals(root)
         self._translate_fields(root)
         return root
-
-
-    def update(self, root, force=False):
-        try:
-            self.check_update(root)
-            updated = self._update(root)
-        except (UpdateError, UnknownVersionError, InvalidVersionError):
-            if force:
-                self.clean(root)
-                updated = self._update(root)
-            else:
-                raise
-
-        return updated
 
 
 # Wiring namespace dictionaries

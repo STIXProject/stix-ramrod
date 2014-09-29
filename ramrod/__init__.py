@@ -432,8 +432,9 @@ class _BaseUpdater(object):
         cleaned_fields: A tuple of untranslatable nodes which were removed
             during a forced `update` or `clean` process.
         cleaned_ids: A dictionary of id => [nodes] which contains a list of
-            nodes that had their ids remapped as they were not unique. This
-            is only populated in a forced `update` or `clean` process.
+            nodes which have had their originally non-unique ids remapped to
+            unique ids. This is only populated in a forced `update` or
+            `clean` process.
 
     """
     # OVERRIDE THESE IN IMPLEMENTATIONS

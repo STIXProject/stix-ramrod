@@ -235,24 +235,27 @@ class Cybox_2_0_Updater(_CyboxUpdater):
 
 
     def _get_disallowed(self, root):
+        """There are no untranslatable fields between CybOX 2.0 and
+        CybOX v2.0.1 so this just returns an empty list.
+
+        """
         return []
 
 
     def check_update(self, root, check_version=True):
-        """Determines if the input document can be updated from CybOX 2.0
-        to CybOX 2.0.1.
-
-        A CybOX document cannot be upgraded if any of the following constructs
-        are found in the document:
-
-        * TODO: Add constructs
+        """Determines if the input document can be upgraded.
 
         Args:
-            root (lxml.etree._Element): The top-level node of the STIX
-                document.
+            root (lxml.etree._Element): The top-level node of the document
+                being upgraded.
+            check_version(boolean): If True, the version of `root` is checked.
 
         Raises:
-            TODO fill out.
+            UnknownVersionError: If the input document does not have a version.
+            InvalidVersionError: If the version of the input document
+                does not match the `VERSION` class-level attribute value.
+            UpdateError: If the input document contains fields which cannot
+                be updated.
 
         """
         if check_version:
@@ -264,8 +267,8 @@ class Cybox_2_0_Updater(_CyboxUpdater):
 
 
     def clean(self, root):
-        """There are no disallowed items so no cleaning necessary when going
-        between CybOX 2.0 and CybOX 2.0.1. This returns immediately.
+        """There are no untranslatable fields between CybOX 2.0 and
+        CybOX v2.0.1 so this method just returns immediately.
 
         """
         pass
@@ -278,17 +281,3 @@ class Cybox_2_0_Updater(_CyboxUpdater):
         self._update_lists(root)
 
         return root
-
-
-    def update(self, root, force=False):
-        try:
-            self.check_update(root)
-            updated = self._update(root)
-        except (UpdateError, UnknownVersionError, InvalidVersionError):
-            if force:
-                self.clean(root)
-                updated = self._update(root)
-            else:
-                raise
-
-        return updated
