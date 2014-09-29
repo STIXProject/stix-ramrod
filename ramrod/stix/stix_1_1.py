@@ -304,7 +304,7 @@ class STIX_1_1_Updater(_STIXUpdater):
     def _init_cybox_updater(self):
         # This is used for updating schemalocations only
         self._cybox_updater = Cybox_2_0_1_Updater()
-        pass
+
 
     def _translate_fields(self, root):
         for field in self.TRANSLATABLE_FIELDS:
@@ -417,14 +417,12 @@ class STIX_1_1_Updater(_STIXUpdater):
         if check_versions:
             self._check_version(root)
 
-        duplicates = self._get_duplicates(root)
         disallowed = self._get_disallowed(root)
 
-        if any((disallowed, duplicates)):
+        if disallowed:
             raise UpdateError("Found duplicate or untranslatable fields in "
                               "source document.",
-                              disallowed=disallowed,
-                              duplicates=duplicates)
+                              disallowed=disallowed)
 
 
     def _clean_disallowed(self, disallowed):
@@ -438,27 +436,9 @@ class STIX_1_1_Updater(_STIXUpdater):
         return removed
 
 
-    def _clean_duplicates(self, root, duplicates):
-        """CybOX 2.1 introduced schematic enforcement of ID uniqueness, so
-        CybOX 2.0.1 documents which contained duplicate IDs will need to have
-        its IDs remapped to produce a schema-valid document.
-
-        """
-        self.cleaned_ids = defaultdict(list)
-        for id_, nodes in duplicates.iteritems():
-            for dup in nodes:
-                new_id = create_new_id(id_)
-                dup.attrib['id'] = new_id
-                self.cleaned_ids[id_].append(new_id)
-
-
     def clean(self, root, disallowed=None, duplicates=None):
         disallowed = disallowed or self._get_disallowed(root)
-        duplicates = duplicates or self._get_duplicates(root)
-
-        self._clean_duplicates(root, duplicates)
         removed = self._clean_disallowed(disallowed)
-
         self.cleaned_fields = tuple(removed)
         return root
 
@@ -470,7 +450,6 @@ class STIX_1_1_Updater(_STIXUpdater):
         self._update_vocabs(root)
         self._update_optionals(root)
         self._translate_fields(root)
-
         return root
 
 

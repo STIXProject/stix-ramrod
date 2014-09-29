@@ -3,7 +3,7 @@ from ramrod import (_Vocab, UpdateError, UnknownVersionError)
 from . import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
                TAG_CYBOX_UPDATE)
 
-class EventType_Vocab(_Vocab):
+class EventTypeVocab(_Vocab):
     TYPE = 'EventTypeVocab-1.0.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.0.1/cybox_default_vocabularies.xsd#EventTypeVocab-1.0.1'
     VOCAB_NAME = 'CybOX Default Event Types'

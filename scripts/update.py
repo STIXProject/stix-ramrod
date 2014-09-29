@@ -64,12 +64,13 @@ def _get_arg_parser():
                              "if no filename is provided.")
 
     parser.add_argument("--from", default=None, dest="from_",
-                        metavar="VERSION FROM",
+                        metavar="VERSION IN",
                         help="The version of the input document. If not "
                              "supplied, RAMROD will try to determine the "
                              "version of the input document.")
 
-    parser.add_argument("--to", default=None, dest="to_", metavar="VERSION TO",
+    parser.add_argument("--to", default=None, dest="to_",
+                        metavar="VERSION OUT",
                         help="Update document to this version. If no version "
                              "is supplied, the document will be updated to "
                              "the latest version.")

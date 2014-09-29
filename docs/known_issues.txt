@@ -3,3 +3,5 @@
 + xsi:schemaLocation attributes are only changed on the root node
 + CybOX Object fields that were updated to be BaseObjectPropertyType types
   do not have a `condition` attribute added if within an Indicator
++ Remapping non-unique IDs does not result in idref updates since we don't know
+  which entity the idref is actually pointing to.
