@@ -1,6 +1,7 @@
 from lxml import etree
-from ramrod import (_Vocab, UpdateError, _DisallowedFields)
-from ramrod.utils import (remove_xml_element, copy_xml_element)
+from ramrod import (_Vocab, UpdateError, _DisallowedFields, TAG_XSI_TYPE)
+from ramrod.utils import (remove_xml_element, copy_xml_element, get_type_info,
+    get_ext_namespace)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_Updater
 
@@ -28,6 +29,29 @@ class DisallowedMAEC(_DisallowedFields):
     CTX_TYPES = {
         "MAEC4.0InstanceType": "http://stix.mitre.org/extensions/Malware#MAEC4.0-1"
     }
+
+
+class DisallowedMalware(_DisallowedFields):
+    XPATH = ".//ttp:Malware"
+    NS_MAEC_EXT = "http://stix.mitre.org/extensions/Malware#MAEC4.0-1"
+
+    @classmethod
+    def _check_maec(cls, node):
+        for child in node.iterchildren():
+            if TAG_XSI_TYPE not in child.attrib:
+                return False
+
+            ns = get_ext_namespace(child)
+            if ns != cls.NS_MAEC_EXT:
+                return False
+
+        return True
+
+
+    @classmethod
+    def _interrogate(cls, nodes):
+        check = cls._check_maec
+        return [x for x in nodes if check(x)]
 
 
 class DisallowedCAPEC(_DisallowedFields):
@@ -85,7 +109,8 @@ class STIX_1_0_Updater(_STIXUpdater):
 
     DISALLOWED = (
         DisallowedCAPEC,
-        DisallowedMAEC
+        DisallowedMAEC,
+        DisallowedMalware
     )
 
     # STIX v1.0.1 NS => STIX v1.0.1 SCHEMALOC
