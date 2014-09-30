@@ -1,1 +1,0 @@
-The default type for representing identities is CIQIdentity3.0InstanceType in ciq_3.0_identity.xsd.
