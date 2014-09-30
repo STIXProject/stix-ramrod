@@ -135,8 +135,7 @@ def update(doc, from_=None, to_=None, force=False):
     if StrictVersion(from_) >= StrictVersion(to_):
         raise UpdateError("Cannot upgrade from '%s' to '%s'" % (from_, to_))
 
-    removed = []
-    remapped = {}
+    removed, remapped = [], {}
     updated = root
 
     idx = CYBOX_VERSIONS.index
