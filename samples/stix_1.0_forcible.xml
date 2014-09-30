@@ -45,6 +45,14 @@
         <stix:TTP xsi:type="ttp:TTPType">
             <ttp:Title>This TTP should require a forced update because of the use of the MAEC extension</ttp:Title>
             <ttp:Behavior>
+                <ttp:Attack_Patterns>
+                    <ttp:Attack_Pattern xsi:type="stix-capec:CAPEC2.5InstanceType">
+                        <stix-capec:CAPEC Name="This cannot be translated" Status="Draft"/>
+                    </ttp:Attack_Pattern>
+                    <ttp:Attack_Pattern>
+                        <ttp:Description>This should make it through the update process</ttp:Description>
+                    </ttp:Attack_Pattern>
+                </ttp:Attack_Patterns>
                 <ttp:Malware>
                     <ttp:Malware_Instance>
                         <ttp:Name>This Malware_Instance should make it through the update process.</ttp:Name>

@@ -91,6 +91,11 @@ class DisallowedAttackPatterns(_DisallowedFields):
         return True
 
 
+    @classmethod
+    def _interrogate(cls, nodes):
+        return [x for x in nodes if cls._check_capec(x)]
+
+
 class DisallowedDateTime(_DisallowedFields):
     XPATH = ".//campaign:Activity/stixCommon:Date_Time"
 
@@ -246,6 +251,9 @@ class STIX_1_0_1_Updater(_STIXUpdater):
     The following fields and types cannot be translated:
     * MAEC 4.0.1 Malware extension
     * CAPEC 2.6 Attack Pattern extension
+    * TTP:Malware nodes that contain only MAEC Malware_Instance children
+    * TTP:Attack_Patterns nodes that contain only CAPEC Attack Pattern
+      instance children
     * stixCommon:Date_Time fields that do not contain xs:dateTime values
 
     """
