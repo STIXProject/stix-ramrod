@@ -65,7 +65,8 @@ Versioning
 ----------
 
 Releases of stix-ramrod are given ``major.minor.patch`` version numbers and
-follow `semantic versioning<http://semver.org>`_ guidelines.
+follow `semantic versioning
+<http://semver.org/>`_ guidelines.
 
 
 Feedback
