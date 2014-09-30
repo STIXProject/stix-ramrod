@@ -1,4 +1,5 @@
 import copy
+from lxml import etree
 from contextlib import contextmanager
 from uuid import uuid4
 
@@ -12,6 +13,38 @@ def ignored(*exceptions):
         yield
     except exceptions:
         pass
+
+
+def get_xml_parser():
+    parser = etree.ETCompatXMLParser(huge_tree=True,
+                                     remove_comments=False,
+                                     strip_cdata=False)
+
+    return parser
+
+
+def get_etree_root(doc):
+    """Returns an instance of lxml.etree._Element for the given input.
+
+    Args:
+        doc: The input XML document. Can be an instance of
+            ``lxml.etree._Element``, ``lxml.etree._ElementTree``, a file-like
+            object, or a string filename.
+
+    Returns:
+        An ``lxml.etree._Element`` instance for `doc`.
+
+    """
+    if isinstance(doc, etree._Element):
+        root = doc
+    elif isinstance(doc, etree._ElementTree):
+        root = doc.getroot()
+    else:
+        parser = get_xml_parser()
+        tree = etree.parse(doc, parser=parser)
+        root = tree.getroot()
+
+    return root
 
 
 def replace_xml_element(old, new):

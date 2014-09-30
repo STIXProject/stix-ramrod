@@ -5,7 +5,8 @@ from distutils.version import StrictVersion
 from lxml import etree
 from lxml.etree import QName
 from ramrod.utils import (ignored, get_ext_namespace, get_type_info,
-    get_typed_nodes, replace_xml_element, remove_xml_attribute)
+    get_typed_nodes, replace_xml_element, remove_xml_attribute,
+    get_etree_root)
 
 __version__ = "1.0a1"
 
@@ -809,35 +810,6 @@ class _BaseUpdater(object):
         return updated
 
 
-def _get_xml_parser():
-    parser = etree.ETCompatXMLParser(huge_tree=True,
-                                     remove_comments=False,
-                                     strip_cdata=False)
-
-def _get_etree_root(doc):
-    """Returns an instance of lxml.etree._Element for the given input.
-
-    Args:
-        doc: The input XML document. Can be an instance of
-            ``lxml.etree._Element``, ``lxml.etree._ElementTree``, a file-like
-            object, or a string filename.
-
-    Returns:
-        An ``lxml.etree._Element`` instance for `doc`.
-
-    """
-    if isinstance(doc, etree._Element):
-        root = doc
-    elif isinstance(doc, etree._ElementTree):
-        root = doc.getroot()
-    else:
-        parser = _get_xml_parser()
-        tree = etree.parse(doc, parser=parser)
-        root = tree.getroot()
-
-    return root
-
-
 def _get_version(root):
     """Returns the ``version`` attribute of the input document `root`.
 
@@ -906,7 +878,7 @@ def update(doc, to_=None, from_=None, force=False):
     import ramrod.stix as stix
     import ramrod.cybox as cybox
 
-    root = _get_etree_root(doc)
+    root = get_etree_root(doc)
     name = QName(root).localname
 
     update_methods = {
