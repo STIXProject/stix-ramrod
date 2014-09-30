@@ -4,9 +4,11 @@
     xmlns:stix="http://stix.mitre.org/stix-1"
     xmlns:stixCommon="http://stix.mitre.org/common-1"
     xmlns:indicator="http://stix.mitre.org/Indicator-2"
+    xmlns:ta="http://stix.mitre.org/ThreatActor-1"
     xmlns:ttp="http://stix.mitre.org/TTP-1"
     xmlns:cybox="http://cybox.mitre.org/cybox-2"
     xmlns:AddressObject="http://cybox.mitre.org/objects#AddressObject-2"
+    xmlns:EmailMessageObj="http://cybox.mitre.org/objects#EmailMessageObject-2" 
     xmlns:cyboxVocabs="http://cybox.mitre.org/default_vocabularies-2"
     xmlns:stixVocabs="http://stix.mitre.org/default_vocabularies-1"
     xmlns:stix-capec="http://stix.mitre.org/extensions/AP#CAPEC2.5-1"
@@ -15,21 +17,38 @@
     xsi:schemaLocation="
     http://stix.mitre.org/stix-1 http://stix.mitre.org/XMLSchema/core/1.0/stix_core.xsd
     http://stix.mitre.org/common-1 http://stix.mitre.org/XMLSchema/common/1.0/stix_common.xsd
-    http://stix.mitre.org/TTP-1 http://stix.mitre.org/XMLSchema/ttp/1.0/ttp.xsd
     http://stix.mitre.org/Indicator-2 http://stix.mitre.org/XMLSchema/indicator/2.0/indicator.xsd
+    http://stix.mitre.org/TTP-1 http://stix.mitre.org/XMLSchema/ttp/1.0/ttp.xsd
+    http://stix.mitre.org/ThreatActor-1 http://stix.mitre.org/XMLSchema/threat_actor/1.0/threat_actor.xsd
+    http://cybox.mitre.org/cybox-2 http://cybox.mitre.org/XMLSchema/core/2.0/cybox_core.xsd
     http://cybox.mitre.org/default_vocabularies-2 http://cybox.mitre.org/XMLSchema/default_vocabularies/2.0.0/cybox_default_vocabularies.xsd
     http://stix.mitre.org/default_vocabularies-1 http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.0/stix_default_vocabularies.xsd
-    http://cybox.mitre.org/objects#AddressObject-2 http://cybox.mitre.org/XMLSchema/objects/Address/2.0/Address_Object.xsd
     http://stix.mitre.org/extensions/Malware#MAEC4.0-1 http://stix.mitre.org/XMLSchema/extensions/malware/maec_4.0/1.0/maec_4.0.xsd
-    http://stix.mitre.org/extensions/AP#CAPEC2.5-1 http://stix.mitre.org/XMLSchema/extensions/attack_pattern/capec_2.5/1.0/capec_2.5.xsd"
+    http://stix.mitre.org/extensions/AP#CAPEC2.5-1 http://stix.mitre.org/XMLSchema/extensions/attack_pattern/capec_2.5/1.0/capec_2.5.xsd
+    http://cybox.mitre.org/objects#AddressObject-2 http://cybox.mitre.org/XMLSchema/objects/Address/2.0/Address_Object.xsd
+    http://cybox.mitre.org/objects#EmailMessageObject-2 http://cybox.mitre.org/XMLSchema/objects/Email_Message/2.0/Email_Message_Object.xsd"
     id="example:STIXPackage-33fe3b22-0201-47cf-85d0-97c02164528d"
     version="1.0">
     <stix:STIX_Header>
         <stix:Title>Example watchlist that contains IP information.</stix:Title>
         <stix:Package_Intent xsi:type="stixVocabs:PackageIntentVocab-1.0">Indicators - Watchlist</stix:Package_Intent>
     </stix:STIX_Header>
+    <stix:Observables cybox_major_version="2" cybox_minor_version="0">
+        <cybox:Observable id="example:Obervable-298376a2-cf65-4778-9894-ed9a95b5441d">
+            <cybox:Object id="example:Object-f9769431-db6b-448f-b34e-72eb3c3e07d1">
+                <cybox:Properties xsi:type="EmailMessageObj:EmailMessageObjectType">
+                    <EmailMessageObj:Header>
+                        <EmailMessageObj:From category="e-mail">
+                            <AddressObject:Address_Value condition="Equals" apply_condition="ANY">attacker@example.com,attacker1@example.com,attacker@bad.example.com</AddressObject:Address_Value>
+                        </EmailMessageObj:From>
+                        <EmailMessageObj:Subject condition="Equals" apply_condition="ANY">New modifications to the specification<![CDATA[&comma;]]>Brad,Free Face Enlargement Pills!</EmailMessageObj:Subject>
+                    </EmailMessageObj:Header>
+                </cybox:Properties>
+            </cybox:Object>
+        </cybox:Observable>
+    </stix:Observables>
     <stix:Indicators>
-        <stix:Indicator xsi:type="indicator:IndicatorType" id="example:Indicator-33fe3b22-0201-47cf-85d0-97c02164528d">
+        <stix:Indicator xsi:type="indicator:IndicatorType" id="example:Indicator-33fe3b22-0201-47cf-85d0-97c02164528d" version='2.0'>
             <indicator:Type xsi:type="stixVocabs:MotivationVocab-1.0">Ideological - Anti-Establisment</indicator:Type>
             <indicator:Description>Sample IP Address Indicator for this watchlist. This contains one indicator with a set of three IP addresses in the watchlist.</indicator:Description>
             <indicator:Observable  id="example:Observable-1c798262-a4cd-434d-a958-884d6980c459">
@@ -43,16 +62,8 @@
     </stix:Indicators>
     <stix:TTPs>
         <stix:TTP xsi:type="ttp:TTPType">
-            <ttp:Title>This TTP should require a forced update because of the use of the MAEC extension</ttp:Title>
+            <ttp:Title>This TTP should require a forced update because of the use of the MAEC Malware extension</ttp:Title>
             <ttp:Behavior>
-                <ttp:Attack_Patterns>
-                    <ttp:Attack_Pattern xsi:type="stix-capec:CAPEC2.5InstanceType">
-                        <stix-capec:CAPEC Name="This cannot be translated" Status="Draft"/>
-                    </ttp:Attack_Pattern>
-                    <ttp:Attack_Pattern>
-                        <ttp:Description>This should make it through the update process</ttp:Description>
-                    </ttp:Attack_Pattern>
-                </ttp:Attack_Patterns>
                 <ttp:Malware>
                     <ttp:Malware_Instance>
                         <ttp:Name>This Malware_Instance should make it through the update process.</ttp:Name>
@@ -70,5 +81,35 @@
                 </ttp:Malware>
             </ttp:Behavior>
         </stix:TTP>
+        <stix:TTP xsi:type="ttp:TTPType">
+            <ttp:Title>This TTP should require a forced update because of the use of the CAPEC Attack Pattern extension</ttp:Title>
+            <ttp:Behavior>
+                <ttp:Attack_Patterns>
+                    <ttp:Attack_Pattern xsi:type="stix-capec:CAPEC2.5InstanceType">
+                        <stix-capec:CAPEC Name="This cannot be translated" Status="Draft"/>
+                    </ttp:Attack_Pattern>
+                    <ttp:Attack_Pattern>
+                        <ttp:Description>This should make it through the update process</ttp:Description>
+                    </ttp:Attack_Pattern>
+                </ttp:Attack_Patterns>
+            </ttp:Behavior>
+        </stix:TTP>
     </stix:TTPs>
+    <stix:Threat_Actors>
+        <stix:Threat_Actor xsi:type="ta:ThreatActorType">
+            <ta:Title>Demonstrating MotivationVocab translations</ta:Title>
+            <ta:Motivation>
+                <stixCommon:Value xsi:type="stixVocabs:MotivationVocab-1.0">Ideological - Anti-Establisment</stixCommon:Value>
+            </ta:Motivation>
+        </stix:Threat_Actor>
+        <stix:Threat_Actor xsi:type="ta:ThreatActorType">
+            <ta:Title>Demonstrating PlanningAndOperationalSupportVocab translations</ta:Title>
+            <ta:Planning_And_Operational_Support>
+                <stixCommon:Value xsi:type="stixVocabs:PlanningAndOperationalSupportVocab-1.0">Planning </stixCommon:Value>
+            </ta:Planning_And_Operational_Support>
+            <ta:Planning_And_Operational_Support>
+                <stixCommon:Value xsi:type="stixVocabs:PlanningAndOperationalSupportVocab-1.0">Planning - Open-Source Intelligence (OSINT) Gethering</stixCommon:Value>
+            </ta:Planning_And_Operational_Support>
+        </stix:Threat_Actor>
+    </stix:Threat_Actors>
 </stix:STIX_Package>

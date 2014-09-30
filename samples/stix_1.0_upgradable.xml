@@ -2,7 +2,9 @@
 <stix:STIX_Package
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:stix="http://stix.mitre.org/stix-1"
+    xmlns:stixCommon="http://stix.mitre.org/common-1"
     xmlns:indicator="http://stix.mitre.org/Indicator-2"
+    xmlns:ta="http://stix.mitre.org/ThreatActor-1"
     xmlns:cybox="http://cybox.mitre.org/cybox-2"
     xmlns:AddressObject="http://cybox.mitre.org/objects#AddressObject-2"
     xmlns:EmailMessageObj="http://cybox.mitre.org/objects#EmailMessageObject-2" 
@@ -11,7 +13,9 @@
     xmlns:example="http://example.com/"
     xsi:schemaLocation="
     http://stix.mitre.org/stix-1 http://stix.mitre.org/XMLSchema/core/1.0/stix_core.xsd
+    http://stix.mitre.org/common-1 http://stix.mitre.org/XMLSchema/common/1.0/stix_common.xsd
     http://stix.mitre.org/Indicator-2 http://stix.mitre.org/XMLSchema/indicator/2.0/indicator.xsd
+    http://stix.mitre.org/ThreatActor-1 http://stix.mitre.org/XMLSchema/threat_actor/1.0/threat_actor.xsd
     http://cybox.mitre.org/cybox-2 http://cybox.mitre.org/XMLSchema/core/2.0/cybox_core.xsd
     http://cybox.mitre.org/default_vocabularies-2 http://cybox.mitre.org/XMLSchema/default_vocabularies/2.0.0/cybox_default_vocabularies.xsd
     http://stix.mitre.org/default_vocabularies-1 http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.0/stix_default_vocabularies.xsd
@@ -50,4 +54,21 @@
             </indicator:Observable>
         </stix:Indicator>
     </stix:Indicators>
+    <stix:Threat_Actors>
+        <stix:Threat_Actor xsi:type="ta:ThreatActorType">
+            <ta:Title>Demonstrating MotivationVocab translations</ta:Title>
+            <ta:Motivation>
+                <stixCommon:Value xsi:type="stixVocabs:MotivationVocab-1.0">Ideological - Anti-Establisment</stixCommon:Value>
+            </ta:Motivation>
+        </stix:Threat_Actor>
+        <stix:Threat_Actor xsi:type="ta:ThreatActorType">
+            <ta:Title>Demonstrating PlanningAndOperationalSupportVocab translations</ta:Title>
+            <ta:Planning_And_Operational_Support>
+                <stixCommon:Value xsi:type="stixVocabs:PlanningAndOperationalSupportVocab-1.0">Planning </stixCommon:Value>
+            </ta:Planning_And_Operational_Support>
+            <ta:Planning_And_Operational_Support>
+                <stixCommon:Value xsi:type="stixVocabs:PlanningAndOperationalSupportVocab-1.0">Planning - Open-Source Intelligence (OSINT) Gethering</stixCommon:Value>
+            </ta:Planning_And_Operational_Support>
+        </stix:Threat_Actor>
+    </stix:Threat_Actors>
 </stix:STIX_Package>
