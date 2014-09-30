@@ -86,17 +86,17 @@ class TransCommonSource(_TranslatableField):
         This inserts the value under Identity/Name of the
         InformationSourceType instance.
 
-        <ttp:Confidence>
+        <stixCommon:Confidence>
             <stixCommon:Source>Foobar</stixCommon:Source>
-        </ttp:Confidence>
+        </stixCommon:Confidence>
 
-        <ttp:Confidence>
+        <stixCommon:Confidence>
             <stixCommon:Source>
                 <stixCommon:Identity>
                     <stixCommon:Name>Example</stixCommon:Name>
                 </stixCommon:Identity>
             </stixCommon:Source>
-        </ttp:Confidence>
+        </stixCommon:Confidence>
 
         Args:
             node: A ``Source`` xml element.
@@ -134,7 +134,7 @@ class TransSightingsSource(_TranslatableField):
         InformationSourceType instance.
 
         <indicator:Sighting>
-            <stixCommon:Source>Foobar</stixCommon:Source>
+            <indicator:Source>Foobar</indicator:Source>
         </indicator:Sighting>
 
          <indicator:Sighting>
