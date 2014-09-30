@@ -1,7 +1,7 @@
-
+from lxml import etree
 from distutils.version import StrictVersion
 from ramrod import (_BaseUpdater, UnknownVersionError, InvalidVersionError,
-    UpdateError)
+    UpdateError, UpdateResults)
 
 class _STIXUpdater(_BaseUpdater):
     """Base class for STIX updating code. Sets default values for
@@ -98,3 +98,62 @@ STIX_UPDATERS = {
     '1.0.1': STIX_1_0_1_Updater,
     '1.1': STIX_1_1_Updater
 }
+
+def update(root, from_, to_=None, force=False):
+    """Updates a STIX document to align with a given version of the STIX
+    Language schemas.
+
+    Args:
+        root: The top-level node of the input document.
+        from_(string): The base version for the update process.
+        to_(string): The version to update to. If ``None``, the latest version
+            of STIX is assumed.
+        force(boolean): Forces the update process. This may result in content
+            being removed during the update process and could result in
+            schema-invalid content. **Use at your own risk!**
+
+    Returns:
+        An instance of ``UpdateResults`` named tuple.
+
+    Raises:
+        UpdateError: If any of the following conditions are encountered:
+            * The `from_` or `to_` versions are invalid.
+            * An untranslatable field is encountered and `force` is ``False``.
+            * A non-unique ID is encountered and `force` is ``False``.
+        InvalidVersionError: If the source document version and the `from_`
+            value do not match and `force` is ``False``.
+        UnknownVersionError: If the source document does not contain version
+            information and `force` is ``False``.
+
+    """
+    to_ = to_ or STIX_VERSIONS[-1]  # The latest version if not specified
+
+    if from_ not in STIX_VERSIONS:
+        raise UpdateError("The `from_` parameter specified an unknown STIX "
+                          "version: '%s'" % from_)
+
+    if to_ not in STIX_VERSIONS:
+        raise UpdateError("The `to_` parameter specified an unknown STIX "
+                          "version: '%s'" % to_)
+
+    if StrictVersion(from_) >= StrictVersion(to_):
+        raise UpdateError("Cannot upgrade from '%s' to '%s'" % (from_, to_))
+
+    removed = []
+    remapped = {}
+    updated = root
+
+    idx = STIX_VERSIONS.index
+    for version in STIX_VERSIONS[idx(from_):idx(to_)]:
+        klass   = STIX_UPDATERS[version]
+        updater = klass()
+
+        updated = updater.update(updated, force)
+        removed.extend(updater.cleaned_fields)
+        remapped.update(updater.cleaned_ids)
+
+    updated = etree.ElementTree(updated)
+
+    return UpdateResults(document=updated,
+                         removed=removed,
+                         remapped_ids=remapped)

@@ -864,129 +864,6 @@ def _get_version(root):
     return get_version(root)
 
 
-def _update_stix(root, from_, to_=None, force=False):
-    """Updates a STIX document to align with a given version of the STIX
-    Language schemas.
-
-    Args:
-        root: The top-level node of the input document.
-        from_(string): The base version for the update process.
-        to_(string): The version to update to. If ``None``, the latest version
-            of STIX is assumed.
-        force(boolean): Forces the update process. This may result in content
-            being removed during the update process and could result in
-            schema-invalid content. **Use at your own risk!**
-
-    Returns:
-        An instance of ``UpdateResults`` named tuple.
-
-    Raises:
-        UpdateError: If any of the following conditions are encountered:
-            * The `from_` or `to_` versions are invalid.
-            * An untranslatable field is ecnountered and `force` is ``False``.
-            * A non-unique ID is encountered and `force` is ``False``.
-        InvalidVersionError: If the source document version and the `from_`
-            value do not match and `force` is ``False``.
-        UnknownVersionError: If the source document does not contain version
-            information and `force` is ``False``.
-
-    """
-    from ramrod.stix import STIX_UPDATERS, STIX_VERSIONS
-
-    to_ = to_ or STIX_VERSIONS[-1]  # The latest version if not specified
-
-    if from_ not in STIX_VERSIONS:
-        raise UpdateError("The `from_` parameter specified an unknown STIX "
-                          "version: '%s'" % from_)
-
-    if to_ not in STIX_VERSIONS:
-        raise UpdateError("The `to_` parameter specified an unknown STIX "
-                          "version: '%s'" % to_)
-
-    if StrictVersion(from_) >= StrictVersion(to_):
-        raise UpdateError("Cannot upgrade from '%s' to '%s'" % (from_, to_))
-
-    removed = []
-    remapped = {}
-    updated = root
-
-    idx = STIX_VERSIONS.index
-    for version in STIX_VERSIONS[idx(from_):idx(to_)]:
-        klass   = STIX_UPDATERS[version]
-        updater = klass()
-
-        updated = updater.update(updated, force)
-        removed.extend(updater.cleaned_fields)
-        remapped.update(updater.cleaned_ids)
-
-    updated = etree.ElementTree(updated)
-
-    return UpdateResults(document=updated,
-                         removed=removed,
-                         remapped_ids=remapped)
-
-
-def _update_cybox(root, from_, to_=None, force=False):
-    """Updates a CybOX document to align with a given version of the STIX
-    Language schemas.
-
-    Args:
-        root: The top-level node of the input document.
-        from_(string): The base version for the update process.
-        to_(string): The version to update to. If ``None``, the latest version
-            of CybOX is assumed.
-        force(boolean): Forces the update process. This may result in content
-            being removed during the update process and could result in
-            schema-invalid content. **Use at your own risk!**
-
-    Returns:
-        An instance of ``UpdateResults`` named tuple.
-
-    Raises:
-        UpdateError: If any of the following conditions are encountered:
-            * The `from_` or `to_` versions are invalid.
-            * An untranslatable field is ecnountered and `force` is ``False``.
-            * A non-unique ID is encountered and `force` is ``False``.
-        InvalidVersionError: If the source document version and the `from_`
-            value do not match and `force` is ``False``.
-        UnknownVersionError: If the source document does not contain version
-            information and `force` is ``False``.
-
-    """
-    from ramrod.cybox import CYBOX_UPDATERS, CYBOX_VERSIONS
-
-    to_ = to_ or CYBOX_VERSIONS[-1]  # The latest version if not specified
-
-    if from_ not in CYBOX_VERSIONS:
-        raise UpdateError("The `from_` parameter specified an unknown CybOX "
-                          "version: '%s'" % from_)
-
-    if to_ not in CYBOX_VERSIONS:
-        raise UpdateError("The `to_` parameter specified an unknown CybOX "
-                          "version: '%s'" % to_)
-
-    if StrictVersion(from_) >= StrictVersion(to_):
-        raise UpdateError("Cannot upgrade from '%s' to '%s'" % (from_, to_))
-
-    removed = []
-    remapped = {}
-    updated = root
-
-    idx = CYBOX_VERSIONS.index
-    for version in CYBOX_VERSIONS[idx(from_):idx(to_)]:
-        klass   = CYBOX_UPDATERS[version]
-        updater = klass()
-
-        updated = updater.update(updated, force)
-        removed.extend(updater.cleaned_fields)
-        remapped.update(updater.cleaned_ids)
-
-    updated = etree.ElementTree(updated)
-
-    return UpdateResults(document=updated,
-                         removed=removed,
-                         remapped_ids=remapped)
-
 
 def update(doc, to_=None, from_=None, force=False):
     """Updates an input STIX or CybOX document to align with a newer version
@@ -1026,12 +903,15 @@ def update(doc, to_=None, from_=None, force=False):
             document does not contain a version attribute.
 
     """
+    import ramrod.stix as stix
+    import ramrod.cybox as cybox
+
     root = _get_etree_root(doc)
     name = QName(root).localname
 
     update_methods = {
-        'STIX_Package': _update_stix,
-        'Observables': _update_cybox,
+        'STIX_Package': stix.update,
+        'Observables': cybox.update,
     }
 
     try:
