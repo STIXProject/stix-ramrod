@@ -305,6 +305,13 @@ class STIX_1_0_1_Updater(_STIXUpdater):
 
 
     def _update_optionals(self, root):
+        """Finds and removes empty xml elements and attributes which are
+        optional in the next language release.
+
+        Args:
+            root: The top-level xml node.
+
+        """
         optional_elements = self.OPTIONAL_ELEMENTS
         typed_nodes = get_typed_nodes(root)
 
@@ -314,6 +321,18 @@ class STIX_1_0_1_Updater(_STIXUpdater):
 
 
     def _get_disallowed(self, root):
+        """Finds all xml entities under `root` that cannot be updated.
+
+        Note:
+            This checks for both untranslatable STIX and CybOX entities.
+
+        Args:
+            root: The top-level xml node
+
+        Returns:
+            A list of untranslatable items.
+
+        """
         disallowed = []
 
         for klass in self.DISALLOWED:
@@ -356,7 +375,7 @@ class STIX_1_0_1_Updater(_STIXUpdater):
 
     def _update_versions(self, root):
         """Updates the versions of versioned nodes under `root` to align with
-        STIX v1.1 versions.
+        STIX v1.1 data type versions.
 
         """
         nodes = self._get_versioned_nodes(root)
@@ -431,10 +450,14 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         return removed
 
 
-    def _clean_duplicates(self, root, duplicates):
-        """CybOX 2.1 introduced schematic enforcement of ID uniqueness, so
-        CybOX 2.0.1 documents which contained duplicate IDs will need to have
-        its IDs remapped to produce a schema-valid document.
+    def _clean_duplicates(self, duplicates):
+        """Assigns a unique ID to each node in `duplicates`.
+
+        Args:
+            duplicates: A list of nodes with non-unique IDs
+
+        Returns:
+            The modified `duplicates` list.
 
         """
         for id_, nodes in duplicates.iteritems():
@@ -479,7 +502,7 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         disallowed = disallowed or self._get_disallowed(root)
         duplicates = duplicates or self._get_duplicates(root)
 
-        remapped = self._clean_duplicates(root, duplicates)
+        remapped = self._clean_duplicates(duplicates)
         removed = self._clean_disallowed(disallowed)
 
         self.cleaned_ids = remapped

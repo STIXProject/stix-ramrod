@@ -142,6 +142,18 @@ class STIX_1_0_Updater(_STIXUpdater):
 
 
     def _get_disallowed(self, root):
+        """Finds all xml entities under `root` that cannot be updated.
+
+        Note:
+            This checks for both untranslatable STIX and CybOX entities.
+
+        Args:
+            root: The top-level xml node
+
+        Returns:
+            A list of untranslatable items.
+
+        """
         disallowed = []
 
         for klass in self.DISALLOWED:
@@ -204,7 +216,7 @@ class STIX_1_0_Updater(_STIXUpdater):
             removed.append(dup)
 
         self.cleaned_fields = tuple(removed)
-
+        return root
 
     def _update_versions(self, root):
         """Updates the versions of versioned nodes under `root` to align with
@@ -243,65 +255,6 @@ class STIX_1_0_Updater(_STIXUpdater):
 
         return updated
 
-
-    def update(self, root, force=False):
-        """Attempts to update an input STIX v1.0 document to STIX v1.0.1.
-
-        This method performs the following changes:
-        * Removes schemaLocations
-        * STIX_Package/@version 1.0 => 1.0.1
-        * MotivationVocab 1.0 => 1.0.1
-          * "Ideological - Anti-Establisment" => "Ideological - Anti-Establishment"
-        * PlanningAndOperationalSupportVocab 1.0 => 1.0.1
-          * "Planning " => "Planning"
-          * "Planning - Open-Source Intelligence (OSINT) Gethering" => "Planning - Open-Source Intelligence (OSINT) Gathering"
-        * Threat_Actor/@version 1.0 => 1.0.1
-        * TTP/@version 1.0 => 1.0.1
-        * Campaign/@version 1.0 => 1.0.1
-        * COA/@version 1.0 => 1.0.1
-        * Incident/@version 1.0 => 1.0.1
-        * Indicator/@version 2.0 => 2.0.1
-        * Campaign/@version 1.0 => 1.0.1
-        * Exploit Target@version 1.0 => 1.0.1
-
-        Untranslatable items:
-        * MAEC 4.0 Malware extension
-        * CAPEC 2.5 Attack Pattern extension
-
-        Args:
-            root (lxml.etree._Element): The top-level node of the STIX
-                document.
-            force: If True, untranslatable fields are removed from the input
-                document. If False, an UpdateError is raised
-                when an untranslatable field is encountered.
-
-        Returns:
-            An updated copy of the input `root` document. If `force` is
-            ``True``, untranslatable items are removed from the document.
-
-            The ``cleaned_fields`` instance attribute contains a copy of
-            all the fields that were removed after calling ``updated()``.
-
-        Raises:
-            UnknownVersionError: If the input document does not have a version.
-            InvalidVersionError: If the version of the input document
-                is not ``1.0``.
-            UntranslatableFieldsError: If the`force` param is set to
-                ``False`` and an untranslatable field is encountered in the
-                input document.
-
-        """
-        try:
-            self.check_update(root)
-            updated = self._update(root)
-        except (UpdateError, UnknownVersionError, InvalidVersionError):
-            if force:
-                self.clean(root)
-                updated = self._update(root)
-            else:
-                raise
-
-        return updated
 
 # Wiring namespace dictionaries
 for klass in STIX_1_0_Updater.DISALLOWED:

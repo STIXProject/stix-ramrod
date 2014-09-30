@@ -333,6 +333,13 @@ class STIX_1_1_Updater(_STIXUpdater):
 
 
     def _update_optionals(self, root):
+        """Finds and removes empty xml elements and attributes which are
+        optional in the next language release.
+
+        Args:
+            root: The top-level xml node.
+
+        """
         optional_elements = self.OPTIONAL_ELEMENTS
         typed_nodes = get_typed_nodes(root)
 
@@ -342,6 +349,18 @@ class STIX_1_1_Updater(_STIXUpdater):
 
 
     def _get_disallowed(self, root):
+        """Finds all xml entities under `root` that cannot be updated.
+
+        Note:
+            This checks for both untranslatable STIX and CybOX entities.
+
+        Args:
+            root: The top-level xml node
+
+        Returns:
+            A list of untranslatable items.
+
+        """
         disallowed = []
 
         for klass in self.DISALLOWED:
@@ -376,16 +395,19 @@ class STIX_1_1_Updater(_STIXUpdater):
             raise UpdateError(disallowed=disallowed)
 
 
-    def clean(self, root):
+    def clean(self, root, disallowed=None, duplicates=None):
         """Attempts to remove untranslatable fields from the input document.
+
+        A copy of the removed nodes are stored on the instance-level
+        `cleaned_fields` attribute. This will overwrite the `cleaned_fields`
+        value with each invocation.
 
         Args:
             root (lxml.etree._Element): The top-level node of the STIX
                 document.
 
         Returns:
-            list: A list of lxml.etree._Element instances of objects removed
-            from the input document.
+            The `root` node.
 
         """
         removed = []
@@ -397,7 +419,7 @@ class STIX_1_1_Updater(_STIXUpdater):
             removed.append(dup)
 
         self.cleaned_fields = tuple(removed)
-
+        return root
 
     def _update_versions(self, root):
         """Updates the versions of versioned nodes under `root` to align with

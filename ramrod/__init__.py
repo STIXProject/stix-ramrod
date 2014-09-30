@@ -452,8 +452,13 @@ class _BaseUpdater(object):
     XPATH_ROOT_NODES = "."
 
     def __init__(self):
+        self._init_cleaned()
+
+
+    def _init_cleaned(self):
         self.cleaned_fields = ()
         self.cleaned_ids = {}
+
 
     def _is_leaf(self, node):
         """Returns ``True`` if the `node` has no children."""
@@ -737,6 +742,73 @@ class _BaseUpdater(object):
         return updated
 
 
+    def clean(self, root, disallowed=None, duplicates=None):
+        """Removes untranslatable items from the `root` document.
+
+        Note:
+            This needs to be overridden by an implementation class
+
+        Raises:
+            NotImplementedError: If this is called directly from _BaseUpdater.
+
+        """
+        raise NotImplementedError()
+
+
+    def check_update(self, root, check_version=True):
+        """Checks to see if the `root` document can be updated.
+
+        Note:
+            This needs to be overidden by an implementation class.
+
+        Raises:
+            NotImplementedError: If this is called directly from _BaseUpdater.
+
+        """
+        raise NotImplementedError()
+
+
+    def update(self, root, force=False):
+        """Attempts to update the `root` node. The update logic is defined
+        by implementations of this class.
+
+
+        If `force` is set to True, items may be removed during the
+        translation process and IDs may be reassigned if they are not
+        unique within the document.
+
+        Removed items can be retrieved via the `cleaned_fields` attribute.
+
+        Items which have been reassigned IDs can be retrieved via the
+        `cleaned_ids` attribute.
+
+        Returns:
+            An updated ``etree._Element`` version of `root`.
+
+        Raises:
+            UpdateError: If untranslatable fields or non-unique IDs are
+                discovered in `root` and `force` is ``False``.
+            UnknownVersionError: If the `root` node contains no version
+                information.
+            InvalidVersionError: If the `root` node contains invalid version
+                information (e.g., the class expects v1.0 content and the
+                `root` node contains v1.1 content).
+
+        """
+        try:
+            self._init_cleaned()
+            self.check_update(root)
+            updated = self._update(root)
+        except (UpdateError, UnknownVersionError, InvalidVersionError):
+            if force:
+                self.clean(root)
+                updated = self._update(root)
+            else:
+                raise
+
+        return updated
+
+
 def _get_xml_parser():
     parser = etree.ETCompatXMLParser(huge_tree=True,
                                      remove_comments=False,
@@ -916,7 +988,7 @@ def _update_cybox(root, from_, to_=None, force=False):
                          remapped_ids=remapped)
 
 
-def update(doc, to_, from_=None, force=False):
+def update(doc, to_=None, from_=None, force=False):
     """Updates an input STIX or CybOX document to align with a newer version
     of the STIX/CybOX schemas.
 
@@ -932,7 +1004,9 @@ def update(doc, to_, from_=None, force=False):
     Args:
         doc: A STIX or CybOX document filename, file-like object, or etree
             Element/ElementTree object instance.
-        to_(string): The expected output version of the update process.
+        to_(optional, string): The expected output version of the update
+            process. If not specified, the latest language version will be
+            assumed.
         from_(optional, string): The version to update from. If not specified,
             the `from_` version will be retrieved from the input document.
         force(boolean): Attempt to force the update process if the document

@@ -21,7 +21,6 @@ class _CyboxUpdater(_BaseUpdater):
 
     def __init__(self):
         super(_CyboxUpdater, self).__init__()
-        self.cleaned_fields = ()
 
 
     @classmethod
@@ -79,35 +78,6 @@ class _CyboxUpdater(_BaseUpdater):
             if StrictVersion(expected) != StrictVersion(found):
                 raise InvalidVersionError(node, expected, found)
 
-
-    def update(self, root, force=False):
-        """Attempts to update the `root` node. The update logic is defined
-        by implementations of this class.
-
-        Returns:
-            An updated ``etree._Element`` version of `root`.
-
-        Raises:
-            UpdateError: If untranslatable fields or non-unique IDs are
-                discovered in `root` and `force` is ``False``.
-            UnknownVersionError: If the `root` node contains no version
-                information.
-            InvalidVersionError: If the `root` node contains invalid version
-                information (e.g., the class expects v1.0 content and the
-                `root` node contains v1.1 content).
-
-        """
-        try:
-            self.check_update(root)
-            updated = self._update(root)
-        except (UpdateError, UnknownVersionError, InvalidVersionError):
-            if force:
-                self.clean(root)
-                updated = self._update(root)
-            else:
-                raise
-
-        return updated
 
 
 from .cybox_2_0 import Cybox_2_0_Updater

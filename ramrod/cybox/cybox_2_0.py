@@ -280,12 +280,12 @@ class Cybox_2_0_Updater(_CyboxUpdater):
             raise UpdateError(disallowed)
 
 
-    def clean(self, root):
+    def clean(self, root, disallowed=None, duplicates=None):
         """There are no untranslatable fields between CybOX 2.0 and
         CybOX v2.0.1 so this method just returns immediately.
 
         """
-        pass
+        return root
 
 
     def _update(self, root):
