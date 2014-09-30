@@ -1,20 +1,27 @@
 #!/usr/bin/env python
-
 import sys
 import argparse
-from lxml import etree
 import ramrod
 
 def _write_xml(tree, outfn=None):
+    """Writes the XML tree to an output stream. If `outfn` is ``None``,
+    sys.stdout is written to.
+
+    Args:
+        tree: An etree._ElementTree instance.
+
+    """
     out = outfn or sys.stdout
     tree.write(out, pretty_print=True)
 
 
-def _validate_args():
-    pass
-
-
 def _print_update_error(err):
+    """Prints ramrod.UpdateError information to stdout.
+
+    Args:
+        err: A ramrod.UpdateError instance.
+
+    """
     print "[!] %s" % (str(err))
 
     disallowed = err.disallowed
@@ -23,37 +30,53 @@ def _print_update_error(err):
     if disallowed:
         print "[!] Found the following untranslatable items:"
         for node in disallowed:
-            print "    Line %s: %s" % (node.sourceline, node.tag)
+            print "  Line %s: %s" % (node.sourceline, node.tag)
 
     if duplicates:
         print "[!] Found items with duplicate ids:"
         for id_, nodes in duplicates.iteritems():
-            print "    '%s' on lines %s" %  (id_, [x.sourceline for x in nodes])
+            print "  '%s' on lines %s" %  (id_, [x.sourceline for x in nodes])
 
 
 def _write_removed(removed):
+    """Prints information about xml entities that were removed during the
+    update process.
+
+    Args:
+        removed: A list of etree._Element nodes.
+
+    """
     if not removed:
         return
 
-    print ("\n[!] The following nodes were removed from the source document during "
-           "the update process:")
+    print ("\n[!] The following nodes were removed from the source document "
+           "during the update process:")
     
     for node in removed:
         print "    Line %s: %s" % (node.sourceline, node.tag)
 
 
 def _write_remapped_ids(remapped):
+    """Prints inormation about nodes that had IDs remapped to unique IDs during
+    the update process.
+
+    Args:
+        remapped: A dictionary of etree nodes which have had their IDs
+            remapped to unique IDs.
+
+    """
     if not remapped:
         return
 
     print ("\n[!] The following ids were duplicated in the source document and "
            "remapped during the update process:")
 
-    for old_id, new_ids in remapped.iteritems():
-        print "'%s': %s" % (old_id, [x.attrib['id'] for x in new_ids])
+    for orig_id, nodes in remapped.iteritems():
+        print "'%s': %s" % (orig_id, [x.attrib['id'] for x in nodes])
 
 
 def _get_arg_parser():
+    """Returns an ArgumentParser instance for this script."""
     parser = argparse.ArgumentParser(description="STIX/CybOX Document Updater v%s"
                                     % ramrod.__version__)
 
@@ -82,18 +105,17 @@ def _get_arg_parser():
 
     return parser
 
+
 def main():
     parser = _get_arg_parser()
     args = parser.parse_args()
 
     try:
-        _validate_args()
         updated = ramrod.update(args.infile, from_=args.from_, to_=args.to_, force=args.force)
 
         _write_xml(updated.document, args.outfile)
         _write_removed(updated.removed)
         _write_remapped_ids(updated.remapped_ids)
-
     except ramrod.UpdateError as ex:
         _print_update_error(ex)
 
