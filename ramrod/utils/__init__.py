@@ -9,6 +9,10 @@ TAG_XSI_TYPE = "{%s}type" % NS_XSI
 
 @contextmanager
 def ignored(*exceptions):
+    """Allows you to ignore exceptions cleanly using context managers. This
+    exists in Python 3.
+
+    """
     try:
         yield
     except exceptions:
@@ -16,6 +20,7 @@ def ignored(*exceptions):
 
 
 def get_xml_parser():
+    """Returns an etree.ETCompatXMLParser instance."""
     parser = etree.ETCompatXMLParser(huge_tree=True,
                                      remove_comments=False,
                                      strip_cdata=False)
@@ -48,6 +53,7 @@ def get_etree_root(doc):
 
 
 def replace_xml_element(old, new):
+    """Replaces `old` node with `new` in the document which `old` exists."""
     parent = old.getparent()
     idx = parent.index(old)
     parent.insert(idx, new)
@@ -67,10 +73,12 @@ def remove_xml_elements(nodes):
 
 
 def copy_xml_element(node, tag=None):
-    """Returns a copy of `node`."""
+    """Returns a copy of `node`. The copied node will be renamed to `tag`
+    if `tag` is not ``None``."""
     dup = copy.deepcopy(node)
     dup.tag = tag if tag else dup.tag
     return dup
+
 
 def remove_xml_attribute(node, attr):
     """Removes an attribute from `node`.
@@ -85,17 +93,32 @@ def remove_xml_attribute(node, attr):
 
 
 def remove_xml_attributes(node, attrs):
+    """Removes xml attributes `attrs` from `node`."""
     for attr in attrs:
         remove_xml_attribute(node, attr)
 
 
 def get_type_info(node):
+    """Returns a (ns alias, typename) tuple which is generated from the
+    ``xsi:type`` attribute on `node`.
+
+    Raises:
+        KeyError: If `node` does not contain an ``xsi:type`` attribute.
+        ValueError: If the ``xsi:type`` attribute does not have a colon in it.
+
+    """
     xsi_type = node.attrib[TAG_XSI_TYPE]
     alias, type_ = xsi_type.split(':')
     return (alias, type_)
 
 
 def get_typed_nodes(root):
+    """Finds all nodes under `root` which have an ``xsi:type`` attribute.
+
+    Returns:
+        A list of etree._Element instances.
+
+    """
     nsmap = {'xsi': NS_XSI}
     xpath = ".//*[@xsi:type]"
     nodes = root.xpath(xpath, namespaces=nsmap)
@@ -128,5 +151,9 @@ def get_ext_namespace(node):
 
 
 def create_new_id(orig_id):
+    """Creates a new ID from `orid_id` by appending '-cleaned-' and a UUID4
+    string to the end of the `orig_id` value.
+
+    """
     new_id = "%s-cleaned-%s" % (orig_id, uuid4())
     return new_id

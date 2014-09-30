@@ -50,6 +50,7 @@ class _STIXUpdater(_BaseUpdater):
         """
         raise NotImplementedError()
 
+
     @classmethod
     def get_version(cls, package):
         """Returns the version of the `package` STIX_Package element by
