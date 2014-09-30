@@ -37,7 +37,7 @@ Use pip to install or upgrade stix-ramrod:
 
 .. code-block::
 
-    $ pip install ramrod [--upgrade]
+    $ pip install stix-ramrod [--upgrade]
 
 For more information, see the `Installation instructions
 <http://stix-ramrod.readthedocs.org/en/latest/installation.html>`_.
