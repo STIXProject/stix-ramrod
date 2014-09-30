@@ -218,6 +218,7 @@ class STIX_1_0_Updater(_STIXUpdater):
         self.cleaned_fields = tuple(removed)
         return root
 
+
     def _update_versions(self, root):
         """Updates the versions of versioned nodes under `root` to align with
         STIX v1.0.1 versions.

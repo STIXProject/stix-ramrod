@@ -837,7 +837,7 @@ def _get_version(root):
 
 
 
-def update(doc, to_=None, from_=None, force=False):
+def update(doc, from_=None, to_=None, force=False):
     """Updates an input STIX or CybOX document to align with a newer version
     of the STIX/CybOX schemas.
 
