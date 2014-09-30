@@ -1,8 +1,6 @@
 import itertools
 from lxml import etree
-
-from ramrod import (_Vocab, UpdateError, UnknownVersionError,
-    InvalidVersionError, _DisallowedFields,  _OptionalElements,
+from ramrod import (_Vocab, UpdateError, _DisallowedFields,  _OptionalElements,
     _TranslatableField)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_1_Updater

@@ -1,9 +1,6 @@
 import itertools
-from collections import defaultdict
 from lxml import etree
-
-from ramrod import (_Vocab, UpdateError, UnknownVersionError,
-    InvalidVersionError, _DisallowedFields, _OptionalElements,
+from ramrod import (_Vocab, UpdateError, _DisallowedFields, _OptionalElements,
     _TranslatableField)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_1_Updater
@@ -54,8 +51,8 @@ class DisallowedDateTime(_DisallowedFields):
 
     XSD = \
     """
-    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-        <xs:element name="test" type="xs:dateTime"/>
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace='http://stix.mitre.org/common-1'>
+        <xs:element name="Date_Time" type="xs:dateTime"/>
     </xs:schema>
     """
     XML_SCHEMA = etree.XMLSchema(etree.fromstring(XSD))
@@ -65,9 +62,7 @@ class DisallowedDateTime(_DisallowedFields):
         if not node.text:
             return False
 
-        xml = etree.Element("test")
-        xml.text = node.text
-        return cls.XML_SCHEMA.validate(xml)
+        return cls.XML_SCHEMA.validate(node)
 
 
     @classmethod

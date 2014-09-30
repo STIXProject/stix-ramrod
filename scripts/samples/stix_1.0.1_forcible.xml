@@ -18,15 +18,21 @@
 <stix:STIX_Package
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:stix="http://stix.mitre.org/stix-1"
+    xmlns:stixCommon="http://stix.mitre.org/common-1"
     xmlns:indicator="http://stix.mitre.org/Indicator-2"
     xmlns:stixVocabs="http://stix.mitre.org/default_vocabularies-1"
     xmlns:testMechSnort="http://stix.mitre.org/extensions/TestMechanism#Snort-1"
+    xmlns:campaign="http://stix.mitre.org/Campaign-1"
     xmlns:example="http://example.com/"
+    xmlns:ramrod="http://ramrod.test/"
     xsi:schemaLocation=
-    "http://stix.mitre.org/stix-1 ../stix_core.xsd
-    http://stix.mitre.org/Indicator-2 ../indicator.xsd
-    http://stix.mitre.org/default_vocabularies-1 ../stix_default_vocabularies.xsd
-    http://stix.mitre.org/extensions/TestMechanism#Snort-1 ../extensions/test_mechanism/snort.xsd"
+    "http://stix.mitre.org/stix-1 http://stix.mitre.org/XMLSchema/core/1.0.1/stix_core.xsd
+    http://stix.mitre.org/common-1 http://stix.mitre.org/XMLSchema/common/1.0.1/stix_common.xsd
+    http://stix.mitre.org/Indicator-2 http://stix.mitre.org/XMLSchema/indicator/2.0.1/indicator.xsd
+    http://stix.mitre.org/Campaign-1 http://stix.mitre.org/XMLSchema/campaign/1.0.1/campaign.xsd
+    http://cybox.mitre.org/default_vocabularies-2 http://cybox.mitre.org/XMLSchema/default_vocabularies/2.0.1/cybox_default_vocabularies.xsd
+    http://stix.mitre.org/default_vocabularies-1 http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd
+    http://stix.mitre.org/extensions/TestMechanism#Snort-1 http://stix.mitre.org/XMLSchema/extensions/test_mechanism/snort/1.0.1/snort.xsd"
     id="example:STIXPackage-0935d61b-69a4-4e64-8c4c-d9ce885f7fcc"
     version="1.0.1"
     >
@@ -51,4 +57,14 @@
             </indicator:Test_Mechanisms>
         </stix:Indicator>
     </stix:Indicators>
+    <stix:Campaigns>
+        <stix:Campaign xsi:type="campaign:CampaignType" id="example:Campaign-this-is-for-testing-purposes-1">
+            <campaign:Activity xsi:type="ramrod:ActivityType">
+                <stixCommon:Date_Time>2002-05-30T09:30:10+06:00</stixCommon:Date_Time>
+            </campaign:Activity>
+            <campaign:Activity xsi:type="ramrod:ActivityType">
+                <stixCommon:Date_Time>THIS CANNOT BE TRANSLATED</stixCommon:Date_Time>
+            </campaign:Activity>
+        </stix:Campaign>
+    </stix:Campaigns>
 </stix:STIX_Package>

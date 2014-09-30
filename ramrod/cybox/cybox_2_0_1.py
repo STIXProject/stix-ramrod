@@ -1,7 +1,5 @@
 import itertools
-from collections import defaultdict
-from ramrod import (_Vocab, UpdateError, UnknownVersionError,
-    InvalidVersionError, _DisallowedFields, _OptionalElements,
+from ramrod import (_Vocab, UpdateError, _DisallowedFields, _OptionalElements,
     _TranslatableField, _RenamedField)
 from ramrod.utils import (ignored, get_typed_nodes, copy_xml_element,
     remove_xml_element, remove_xml_elements, remove_xml_attributes,

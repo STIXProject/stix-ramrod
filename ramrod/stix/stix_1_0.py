@@ -1,7 +1,5 @@
 from lxml import etree
-
-from ramrod import (_Vocab, UpdateError, UnknownVersionError,
-    InvalidVersionError, _DisallowedFields)
+from ramrod import (_Vocab, UpdateError, _DisallowedFields)
 from ramrod.utils import (remove_xml_element, copy_xml_element)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_Updater
