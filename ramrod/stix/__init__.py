@@ -2,6 +2,7 @@ from lxml import etree
 from distutils.version import StrictVersion
 from ramrod import (_BaseUpdater, UnknownVersionError, InvalidVersionError,
     UpdateError, UpdateResults)
+from ramrod.utils import get_etree_root
 
 class _STIXUpdater(_BaseUpdater):
     """Base class for STIX updating code. Sets default values for
@@ -100,15 +101,18 @@ STIX_UPDATERS = {
     '1.1': STIX_1_1_Updater
 }
 
-def update(root, from_, to_=None, force=False):
+def update(doc, from_=None, to_=None, force=False):
     """Updates a STIX document to align with a given version of the STIX
     Language schemas.
 
     Args:
-        root: The top-level node of the input document.
-        from_(string): The base version for the update process.
-        to_(string): The version to update to. If ``None``, the latest version
-            of STIX is assumed.
+        doc: A STIX document filename, file-like object, etree._Element, or
+            etree._ElementTree.
+        from_(optional, string): The base version for the update process. If
+            ``None``, an attempt will be made to extract the version number
+            from `doc`.
+        to_(optional, string): The version to update to. If ``None``, the
+            latest version of STIX is assumed.
         force(boolean): Forces the update process. This may result in content
             being removed during the update process and could result in
             schema-invalid content. **Use at your own risk!**
@@ -127,12 +131,14 @@ def update(root, from_, to_=None, force=False):
             information and `force` is ``False``.
 
     """
-    to_ = to_ or STIX_VERSIONS[-1]  # The latest version if not specified
+    root = get_etree_root(doc)
 
+    from_ = from_ or _STIXUpdater.get_version(root)
     if from_ not in STIX_VERSIONS:
         raise UpdateError("The `from_` parameter specified an unknown STIX "
                           "version: '%s'" % from_)
 
+    to_ = to_ or STIX_VERSIONS[-1]  # The latest version if not specified
     if to_ not in STIX_VERSIONS:
         raise UpdateError("The `to_` parameter specified an unknown STIX "
                           "version: '%s'" % to_)

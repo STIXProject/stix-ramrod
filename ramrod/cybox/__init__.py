@@ -2,6 +2,7 @@ from lxml import etree
 from distutils.version import StrictVersion
 from ramrod import (_BaseUpdater, UnknownVersionError, InvalidVersionError,
     UpdateError, UpdateResults)
+from ramrod.utils import get_etree_root
 
 TAG_CYBOX_MAJOR  = "cybox_major_version"
 TAG_CYBOX_MINOR  = "cybox_minor_version"
@@ -89,15 +90,18 @@ CYBOX_UPDATERS = {
     '2.0.1': Cybox_2_0_1_Updater
 }
 
-def update(root, from_, to_=None, force=False):
+def update(doc, from_=None, to_=None, force=False):
     """Updates a CybOX document to align with a given version of the CybOX
     Language.
 
     Args:
-        root: The top-level node of the input document.
-        from_(string): The base version for the update process.
-        to_(string): The version to update to. If ``None``, the latest version
-            of CybOX is assumed.
+        doc: A CybOX document filename, file-like object, etree._Element, or
+            etree._ElementTree.
+        from_(optional, string): The base version for the update process. If
+            ``None``, an attempt will be made to extract the version number
+            from `doc`.
+        to_(optional, string): The version to update to. If ``None``, the
+            latest version of CybOX is assumed.
         force(boolean): Forces the update process. This may result in content
             being removed during the update process and could result in
             schema-invalid content. **Use at your own risk!**
@@ -116,12 +120,14 @@ def update(root, from_, to_=None, force=False):
             information and `force` is ``False``.
 
     """
-    to_ = to_ or CYBOX_VERSIONS[-1]  # The latest version if not specified
+    root = get_etree_root(doc)
 
+    from_ = from_ or _CyboxUpdater.get_version(root)
     if from_ not in CYBOX_VERSIONS:
         raise UpdateError("The `from_` parameter specified an unknown CybOX "
                           "version: '%s'" % from_)
 
+    to_ = to_ or CYBOX_VERSIONS[-1]  # The latest version if not specified
     if to_ not in CYBOX_VERSIONS:
         raise UpdateError("The `to_` parameter specified an unknown CybOX "
                           "version: '%s'" % to_)
