@@ -43,7 +43,7 @@ class DisallowedCAPEC(_DisallowedFields):
 
 
 class DisallowedDateTime(_DisallowedFields):
-    XPATH = ".//stixCommon:Date_Time"
+    XPATH = ".//campaign:Activity/stixCommon:Date_Time"
 
     # Ugh. This could probably be solved with a regex but I can't find an
     # authoritative source on a xs:dateTime/ISO8601 regex. The libxml2 2.9.1
@@ -67,7 +67,16 @@ class DisallowedDateTime(_DisallowedFields):
 
     @classmethod
     def _interrogate(cls, nodes):
-        return [x for x in nodes if not cls._validate(x)]
+        """Returns `Activity` nodes which have a `Date_Time` child node with
+        a non-xs:dateTime value.
+
+        Note:
+            The `Date_Time` field is required, so if the value is invalid the
+            entire `Activity` instance must be flagged as disallowed and
+            removed if an update is forced.
+
+        """
+        return [x.getparent() for x in nodes if not cls._validate(x)]
 
 
 class TransTTPExploitTargets(_TranslatableField):
