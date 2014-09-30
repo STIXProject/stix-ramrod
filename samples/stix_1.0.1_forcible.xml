@@ -35,7 +35,7 @@
         <stix:Package_Intent xsi:type="stixVocabs:PackageIntentVocab-1.0">Indicators - Network Activity</stix:Package_Intent>
         <stix:Handling>
             <marking:Marking>
-                <marking:Controlled_Structure>//node()</marking:Controlled_Structure>
+                <marking:Controlled_Structure></marking:Controlled_Structure>
                     <marking:Marking_Structure xsi:type="tlp:TLPMarkingStructureType" color="AMBER" />
                 </marking:Marking>
         </stix:Handling>
