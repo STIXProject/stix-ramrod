@@ -26,7 +26,7 @@ class IndicatorTypeVocab(_Vocab):
 class OptionalDataMarkingFields(_OptionalElements):
     XPATH = (
         ".//marking:Controlled_Structure | "
-        ".//marking:Marking_Structures"
+        ".//marking:Marking_Structure"
     )
 
 
