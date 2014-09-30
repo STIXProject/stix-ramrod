@@ -1,11 +1,11 @@
 import itertools
 from lxml import etree
 from ramrod import (_Vocab, UpdateError, _DisallowedFields, _OptionalElements,
-    _TranslatableField)
+    _TranslatableField, TAG_XSI_TYPE)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_1_Updater
 from ramrod.utils import (get_typed_nodes, copy_xml_element,
-    remove_xml_element, remove_xml_elements, create_new_id)
+    remove_xml_element, remove_xml_elements, create_new_id, get_ext_namespace)
 
 
 class MotivationVocab(_Vocab):
@@ -34,6 +34,33 @@ class DisallowedMAEC(_DisallowedFields):
     CTX_TYPES = {
         "MAEC4.0InstanceType": "http://stix.mitre.org/extensions/Malware#MAEC4.0-1"
     }
+
+
+class DisallowedMalware(_DisallowedFields):
+    XPATH = ".//ttp:Malware"
+    NS_MAEC_EXT = "http://stix.mitre.org/extensions/Malware#MAEC4.0-1"
+
+    @classmethod
+    def _check_maec(cls, node):
+        """Returns ``False`` if a child node does not contain an ``xsi:type``
+        referring to the MAEC Malware extension. Returns ``True`` if every
+        child node is an instance of the MAEC Malware extension.
+
+        """
+        for child in node.iterchildren():
+            if TAG_XSI_TYPE not in child.attrib:
+                return False
+
+            ns = get_ext_namespace(child)
+            if ns != cls.NS_MAEC_EXT:
+                return False
+
+        return True
+
+
+    @classmethod
+    def _interrogate(cls, nodes):
+        return [x for x in nodes if cls._check_maec(x)]
 
 
 class DisallowedCAPEC(_DisallowedFields):
@@ -272,6 +299,7 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         DisallowedMAEC,
         DisallowedCAPEC,
         DisallowedDateTime,
+        DisallowedMalware,
     )
 
     OPTIONAL_ELEMENTS = (

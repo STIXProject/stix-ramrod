@@ -267,7 +267,6 @@ class STIX_1_1_Updater(_STIXUpdater):
         'yaraTM': 'http://stix.mitre.org/extensions/TestMechanism#YARA-1'
     }
 
-    # STIX v1.1.1 NS => SCHEMALOC
     UPDATE_SCHEMALOC_MAP = {
         'http://data-marking.mitre.org/Marking-1': 'http://stix.mitre.org/XMLSchema/data_marking/1.1.1/data_marking.xsd',
         'http://data-marking.mitre.org/extensions/MarkingStructure#Simple-1': 'http://stix.mitre.org/XMLSchema/extensions/marking/simple/1.1.1/simple_marking.xsd',
