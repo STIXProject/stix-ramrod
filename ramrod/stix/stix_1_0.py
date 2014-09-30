@@ -64,6 +64,33 @@ class DisallowedCAPEC(_DisallowedFields):
     }
 
 
+class DisallowedAttackPatterns(_DisallowedFields):
+    XPATH = ".//ttp:Attack_Patterns"
+    NS_CAPEC_EXT = "http://stix.mitre.org/extensions/AP#CAPEC2.5-1"
+
+    @classmethod
+    def _check_capec(cls, node):
+        """Returns ``False`` if a child node does not contain an ``xsi:type``
+        referring to the CAPEC Attack Pattern extension. Returns ``True`` if
+        every child node is an instance of the CAPEC Attack Pattern extension.
+
+        """
+        for child in node.iterchildren():
+            if TAG_XSI_TYPE not in child.attrib:
+                return False
+
+            ns = get_ext_namespace(child)
+            if ns != cls.NS_CAPEC_EXT:
+                return False
+
+        return True
+
+
+    @classmethod
+    def _interrogate(cls, nodes):
+        return [x for x in nodes if cls._check_capec(x)]
+
+
 class STIX_1_0_Updater(_STIXUpdater):
     """Updates STIX v1.0 content to STIX v1.0.1.
 
@@ -76,6 +103,8 @@ class STIX_1_0_Updater(_STIXUpdater):
     * MAEC 4.0 Malware extension instances
     * CAPEC 2.5 Attack Pattern extension instances
     * TTP:Malware nodes that contain only MAEC Malware_Instance children
+    * TTP:Attack_Patterns nodes that contain only CAPEC Attack Pattern
+      instance children
 
     """
     VERSION = '1.0'
@@ -115,7 +144,8 @@ class STIX_1_0_Updater(_STIXUpdater):
     DISALLOWED = (
         DisallowedCAPEC,
         DisallowedMAEC,
-        DisallowedMalware
+        DisallowedMalware,
+        DisallowedAttackPatterns,
     )
 
     # STIX v1.0.1 NS => STIX v1.0.1 SCHEMALOC

@@ -69,6 +69,28 @@ class DisallowedCAPEC(_DisallowedFields):
     }
 
 
+class DisallowedAttackPatterns(_DisallowedFields):
+    XPATH = ".//ttp:Attack_Patterns"
+    NS_CAPEC_EXT = "http://stix.mitre.org/extensions/AP#CAPEC2.6-1"
+
+    @classmethod
+    def _check_capec(cls, node):
+        """Returns ``False`` if a child node does not contain an ``xsi:type``
+        referring to the CAPEC Attack Pattern extension. Returns ``True`` if
+        every child node is an instance of the CAPEC Attack Pattern extension.
+
+        """
+        for child in node.iterchildren():
+            if TAG_XSI_TYPE not in child.attrib:
+                return False
+
+            ns = get_ext_namespace(child)
+            if ns != cls.NS_CAPEC_EXT:
+                return False
+
+        return True
+
+
 class DisallowedDateTime(_DisallowedFields):
     XPATH = ".//campaign:Activity/stixCommon:Date_Time"
 
@@ -300,6 +322,7 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         DisallowedCAPEC,
         DisallowedDateTime,
         DisallowedMalware,
+        DisallowedAttackPatterns,
     )
 
     OPTIONAL_ELEMENTS = (
