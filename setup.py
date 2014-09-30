@@ -52,9 +52,9 @@ setup(
     url='http://stix.mitre.org/',
     version=get_version(),
     packages=find_packages(),
-    scripts=['ramrod/scripts/update.py'],
+    scripts=['ramrod/scripts/ramrod_update.py'],
     entry_points={
-        'console_scripts': ['update = ramrod.scripts.update:main']
+        'console_scripts': ['ramrod_update = ramrod.scripts.ramrod_update:main']
     },
     install_requires=install_requires,
     extras_require=extras_require,
