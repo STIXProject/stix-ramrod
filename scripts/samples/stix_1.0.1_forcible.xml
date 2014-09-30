@@ -64,7 +64,7 @@
             </campaign:Activity>
             <campaign:Activity xsi:type="ramrod:ActivityType">
                 <stixCommon:Date_Time>THIS CANNOT BE TRANSLATED</stixCommon:Date_Time>
-                <stixCommon:Description>This should still be here after forced update.</stixCommon:Description>
+                <stixCommon:Description>The Date_Time field is required, so if an update is forced then the entire Activity node will be removed.</stixCommon:Description>
             </campaign:Activity>
         </stix:Campaign>
     </stix:Campaigns>
