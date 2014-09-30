@@ -51,9 +51,9 @@
                     </ttp:Malware_Instance>
                     <ttp:Malware_Instance xsi:type="stix-maec:MAEC4.0InstanceType">
                         <ttp:Name>This cannot be updated to STIX v1.0.1</ttp:Name>
-                        <stix-maec:MAEC id="maec-example-pkg-1" schema_version="2.0">
+                        <stix-maec:MAEC id="maec-example-pkg-2" schema_version="2.0">
                             <Malware_Subjects xmlns="http://maec.mitre.org/XMLSchema/maec-package-2">
-                                <Malware_Subject id="maec-example-sub-1">
+                                <Malware_Subject id="maec-example-sub-2">
                                     <Malware_Instance_Object_Attributes/>
                                 </Malware_Subject>
                             </Malware_Subjects>

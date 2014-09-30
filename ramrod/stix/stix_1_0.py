@@ -37,6 +37,11 @@ class DisallowedMalware(_DisallowedFields):
 
     @classmethod
     def _check_maec(cls, node):
+        """Returns ``False`` if a child node does not contain an ``xsi:type``
+        referring to the MAEC Malware extension. Returns ``True`` if every
+        child node is an instance of the MAEC Malware extension.
+
+        """
         for child in node.iterchildren():
             if TAG_XSI_TYPE not in child.attrib:
                 return False
@@ -50,8 +55,7 @@ class DisallowedMalware(_DisallowedFields):
 
     @classmethod
     def _interrogate(cls, nodes):
-        check = cls._check_maec
-        return [x for x in nodes if check(x)]
+        return [x for x in nodes if cls._check_maec(x)]
 
 
 class DisallowedCAPEC(_DisallowedFields):
@@ -71,6 +75,7 @@ class STIX_1_0_Updater(_STIXUpdater):
     The following fields and types cannot be translated:
     * MAEC 4.0 Malware extension instances
     * CAPEC 2.5 Attack Pattern extension instances
+    * TTP:Malware nodes that contain only MAEC Malware_Instance children
 
     """
     VERSION = '1.0'
