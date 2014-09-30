@@ -42,11 +42,21 @@ Use pip to install or upgrade stix-ramrod:
 For more information, see the `Installation instructions
 <http://stix-ramrod.readthedocs.org/en/latest/installation.html>`_.
 
+Dependencies
+------------
+
+The stix-ramrod library depends on the presence of certain packages/libraries
+to function. Please refer to their installation documentation for installation
+instructions.
+
+-  `lxml <http://lxml.de/>`_
+
+
 
 Getting Started
 ---------------
 
-Read the `Getting Started guide
+Read the `Getting Started guide 
 <http://stix-ramrod.readthedocs.org/en/latest/getting_started.html>`_.
 
 
@@ -65,8 +75,7 @@ Versioning
 ----------
 
 Releases of stix-ramrod are given ``major.minor.patch`` version numbers and
-follow `semantic versioning
-<http://semver.org/>`_ guidelines.
+follow `semantic versioning <http://semver.org/>`_ guidelines.
 
 
 Feedback
