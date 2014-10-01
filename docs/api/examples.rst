@@ -47,24 +47,45 @@ retrieve the lost data.
 
     import ramrod
 
-    updated = ramrod.update('stix-content.xml')
+    # Attempt to update an untranslatable document
+    updated = ramrod.update('untranslatable-stix-content.xml')
 
-The ``stix-content.xml`` contains untranslatable data, so a
+The ``untranslatable-stix-content.xml`` contains untranslatable data, so a
 :class:`ramrod.UpdateError` gets raised:
 
 .. testoutput::
 
-    ramrod.UpdateError: Update Error: Found untranslatable fields in source
-    document.
+    ramrod.UpdateError: Update Error: Found untranslatable fields in source document.
 
 
-So we pass in ``force=True`` to the :meth:`ramrod.update` method:
+To find out *exactly* what couldn't be translated, you can inspect the
+``disallowed`` and ``duplicates`` attributes on the :class:`ramrod.UpdateError`
+instance:
 
 .. code-block:: python
 
     import ramrod
 
-    updated = ramrod.update('stix-content.xml', force=True)
+    try:
+        # Attempt to update an untranslatable document
+        updated = ramrod.update('untranslatable-stix-content.xml')
+    except ramrod.UpdateError as ex:
+        # Print untranslatable items
+        for node in ex.disallowed:
+            print "TAG: %s, LINE: %s" % (node.tag, node.sourceline)  # etree API
+
+        # Print non-unique IDs and each line they're found on
+        for id_, nodes in ex.duplicates.iteritems():
+            print "ID: %s, LINES: %s" % (id_, [x.sourceline for x in nodes])
+
+To force the update, pass in ``force=True`` to the :meth:`ramrod.update` method:
+
+.. code-block:: python
+
+    import ramrod
+
+    # Force-update the document
+    updated = ramrod.update('untranslatable-stix-content.xml', force=True)
 
 Once the :meth:`ramrod.update` call has been forced, we can collect the updated
 document from the ``updated.document`` attribute.
@@ -72,11 +93,15 @@ document from the ``updated.document`` attribute.
 .. code-block:: python
 
     import ramrod
-    from lxml import etree  # used for printing the updated XML document
+    from lxml import etree  # Used for printing the updated XML document
 
-    updated = ramrod.update('stix-content.xml', force=True)
+    # Force-update the document
+    updated = ramrod.update('untranslatable-stix-content.xml', force=True)
 
+    # Retrieve the updated document from the returned UpdateResults object
     new_stix_doc = updated.document
+
+    # Print the results
     print etree.tostring(new_stix_doc)
 
 And inspect the removed and remapped items:
@@ -84,13 +109,16 @@ And inspect the removed and remapped items:
 .. code-block:: python
 
     import ramrod
-    from lxml import etree  # used for parsing XML
 
-    updated = ramrod.update('stix_content.xml', force=True)
+    # Force-update the document
+    updated = ramrod.update('untranslatable-stix_content.xml', force=True)
 
+    # Iterate over the items which were lost in translation
     for node in updated.removed:
         do_something_with_the_removed_item(node)
 
+    # Iterate over the {id: [nodes]} dictionary containing nodes
+    # with remapped IDs
     for original_id, node_list in updated.remapped.iteritems():
         do_something_with_remapped_items(original_id, node_list)
 
