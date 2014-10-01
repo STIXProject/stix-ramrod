@@ -1,5 +1,4 @@
-from ramrod import (_Vocab, UpdateError, UnknownVersionError,
-    InvalidVersionError)
+from ramrod import (_Vocab, UpdateError, DEFAULT_UPDATE_OPTIONS)
 from ramrod.cybox import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
     TAG_CYBOX_UPDATE)
 
@@ -256,7 +255,7 @@ class Cybox_2_0_Updater(_CyboxUpdater):
         return []
 
 
-    def check_update(self, root, check_version=True):
+    def check_update(self, root, options=None):
         """Determines if the input document can be upgraded.
 
         Args:
@@ -272,15 +271,19 @@ class Cybox_2_0_Updater(_CyboxUpdater):
                 be updated.
 
         """
-        if check_version:
+        options = options or DEFAULT_UPDATE_OPTIONS
+
+        if options.check_versions:
             self._check_version(root)
 
         disallowed = self._get_disallowed(root)
         if disallowed:
-            raise UpdateError(disallowed)
+            raise UpdateError("Found untranslatable fields in source "
+                              "document.",
+                              disallowed=disallowed)
 
 
-    def clean(self, root, disallowed=None, duplicates=None):
+    def clean(self, root, options=None):
         """There are no untranslatable fields between CybOX 2.0 and
         CybOX v2.0.1 so this method just returns immediately.
 
@@ -288,10 +291,12 @@ class Cybox_2_0_Updater(_CyboxUpdater):
         return root
 
 
-    def _update(self, root):
+    def _update(self, root, options):
         self._update_schemalocs(root)
         self._update_versions(root)
-        self._update_vocabs(root)
         self._update_lists(root)
+
+        if options.update_vocabularies:
+            self._update_vocabs(root)
 
         return root

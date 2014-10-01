@@ -225,32 +225,32 @@ class STIX_1_0_Updater(_STIXUpdater):
         return disallowed
 
 
-    def check_update(self, root, options=None):
-        """Determines if the input document can be upgraded.
-
-        Args:
-            root (lxml.etree._Element): The top-level node of the document
-                being upgraded.
-            check_version(boolean): If True, the version of `root` is checked.
-
-        Raises:
-            UnknownVersionError: If the input document does not have a version.
-            InvalidVersionError: If the version of the input document
-                does not match the `VERSION` class-level attribute value.
-            UpdateError: If the input document contains fields which cannot
-                be updated.
+    def _update_versions(self, root):
+        """Updates the versions of versioned nodes under `root` to align with
+        STIX v1.0.1 versions.
 
         """
-        options = options or DEFAULT_UPDATE_OPTIONS
+        nodes = self._get_versioned_nodes(root)
+        for node in nodes:
+            tag = etree.QName(node)
+            name = tag.localname
 
-        if options.check_versions:
-            self._check_version(root)
-            self._cybox_updater._check_version(root)
+            if name == "Indicator":
+                node.attrib['version'] = '2.0.1'
+            else:
+                node.attrib['version'] = '1.0.1'
 
-        disallowed  = self._get_disallowed(root)
 
-        if disallowed:
-            raise UpdateError(disallowed=disallowed)
+    def _update_cybox(self, root, options):
+        """Updates the CybOX content found under the `root` node.
+
+        Returns:
+            An updated `root` node. This may be a new ``etree._Element``
+            instance.
+
+        """
+        updated = self._cybox_updater._update(root, options)
+        return updated
 
 
     def clean(self, root, options=None):
@@ -280,43 +280,41 @@ class STIX_1_0_Updater(_STIXUpdater):
         return root
 
 
-    def _update_versions(self, root):
-        """Updates the versions of versioned nodes under `root` to align with
-        STIX v1.0.1 versions.
+    def check_update(self, root, options=None):
+        """Determines if the input document can be upgraded.
+
+        Args:
+            root (lxml.etree._Element): The top-level node of the document
+                being upgraded.
+            check_version(boolean): If True, the version of `root` is checked.
+
+        Raises:
+            UnknownVersionError: If the input document does not have a version.
+            InvalidVersionError: If the version of the input document
+                does not match the `VERSION` class-level attribute value.
+            UpdateError: If the input document contains fields which cannot
+                be updated.
 
         """
-        nodes = self._get_versioned_nodes(root)
-        for node in nodes:
-            tag = etree.QName(node)
-            name = tag.localname
-
-            if name == "Indicator":
-                node.attrib['version'] = '2.0.1'
-            else:
-                node.attrib['version'] = '1.0.1'
-
-
-    def _update_cybox(self, root, options):
-        """Updates the CybOX content found under the `root` node.
-
-        Returns:
-            An updated `root` node. This may be a new ``etree._Element``
-            instance.
-
-        """
-        updated = self._cybox_updater.update(root, options)
-        return updated
-
-
-    def _update(self, root, options=None):
         options = options or DEFAULT_UPDATE_OPTIONS
-        updated = self._update_cybox(root, options)
 
-        if options.update_namespaces:
-            updated = self._update_namespaces(updated)
-            
-        if options.update_schemalocations:
-            self._update_schemalocs(updated)
+        if options.check_versions:
+            self._check_version(root)
+            self._cybox_updater._check_version(root)
+
+        disallowed  = self._get_disallowed(root)
+
+        if disallowed:
+            raise UpdateError("Found untranslatable fields in source "
+                              "document.",
+                              disallowed=disallowed)
+
+
+    def _update(self, root, options):
+        updated = self._update_cybox(root, options)
+        updated = self._update_namespaces(updated)
+
+        self._update_schemalocs(updated)
 
         if options.update_versions:
             self._update_versions(updated)

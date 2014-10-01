@@ -810,8 +810,7 @@ class _BaseUpdater(object):
                 `root` node contains v1.1 content).
 
         """
-        if not options:
-            options = DEFAULT_UPDATE_OPTIONS
+        options = options or DEFAULT_UPDATE_OPTIONS
 
         try:
             self._init_cleaned()
@@ -904,11 +903,12 @@ def update(doc, from_=None, to_=None, options=None, force=False):
     }
 
     try:
+        options = options or DEFAULT_UPDATE_OPTIONS
         from_ = from_ or _get_version(root)  # _get_version raises KeyError
         func = update_methods[name]
     except KeyError:
         error = "Document root node must be one of %s" % (update_methods.keys(),)
         raise UpdateError(error)
 
-    updated = func(root, from_, to_, force)
+    updated = func(root, from_, to_, options, force)
     return updated

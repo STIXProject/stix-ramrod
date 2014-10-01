@@ -1,8 +1,8 @@
 import itertools
 from ramrod import (_Vocab, UpdateError, _DisallowedFields, _OptionalElements,
-    _TranslatableField, _RenamedField)
+    _TranslatableField, _RenamedField, DEFAULT_UPDATE_OPTIONS)
 from ramrod.utils import (ignored, get_typed_nodes, copy_xml_element,
-    remove_xml_element, remove_xml_elements, remove_xml_attributes, new_id,
+    remove_xml_element, remove_xml_elements, remove_xml_attributes,
     replace_xml_element)
 from ramrod.cybox import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
     TAG_CYBOX_UPDATE)
@@ -564,35 +564,6 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         return disallowed
 
 
-    def check_update(self, root, check_version=True):
-        """Determines if the input document can be upgraded.
-
-        Args:
-            root (lxml.etree._Element): The top-level node of the document
-                being upgraded.
-            check_version(boolean): If True, the version of `root` is checked.
-
-        Raises:
-            UnknownVersionError: If the input document does not have a version.
-            InvalidVersionError: If the version of the input document
-                does not match the `VERSION` class-level attribute value.
-            UpdateError: If the input document contains fields which cannot
-                be updated or constructs with non-unique IDs are discovered.
-
-        """
-        if check_version:
-            self._check_version(root)
-
-        duplicates = self._get_duplicates(root)
-        disallowed = self._get_disallowed(root)
-
-        if any((disallowed, duplicates)):
-            raise UpdateError("Found duplicate or untranslatable fields in "
-                              "source document.",
-                              disallowed=disallowed,
-                              duplicates=duplicates)
-
-
     def _clean_disallowed(self, disallowed):
         """Removes the `disallowed` nodes from the source document.
 
@@ -612,7 +583,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         return removed
 
 
-    def _clean_duplicates(self, duplicates):
+    def _clean_duplicates(self, duplicates, options):
         """Assigns a unique ID to each node in `duplicates`.
 
         Args:
@@ -622,13 +593,14 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
             The modified `duplicates` list.
 
         """
+        new_id = options.new_id_func
         for id_, nodes in duplicates.iteritems():
             for node in nodes:
                 new_id(node)
 
         return duplicates
 
-    def clean(self, root, disallowed=None, duplicates=None):
+    def clean(self, root, options=None):
         """Removes disallowed elements from `root` and remaps non-unique
         IDs to unique IDs for the sake of schema-validation.
 
@@ -647,22 +619,15 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
             The `cleaned_fields` and `cleanded_ids` attributes will be
             overwritten with each method invocation.
 
-        Args:
-            disallowed: A list of disallowed nodes to remove from the `root`
-                document. If ``None``, an attempt will be made to discover
-                all untranslatable elements under the `root` node.
-            duplicates: A dictionary of id => [nodes] where the key represents
-                the non-unique IDs and the ``[nodes]`` value is a list of nodes
-                with that ID value.
-
         Returns:
             The source `root` node.
 
         """
-        disallowed = disallowed or self._get_disallowed(root)
-        duplicates = duplicates or self._get_duplicates(root)
+        options = options or DEFAULT_UPDATE_OPTIONS
+        disallowed = self._get_disallowed(root)
+        duplicates = self._get_duplicates(root)
 
-        remapped = self._clean_duplicates(duplicates)
+        remapped = self._clean_duplicates(duplicates, options)
         removed = self._clean_disallowed(disallowed)
 
         self.cleaned_ids = remapped
@@ -671,15 +636,50 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         return root
 
 
-    def _update(self, root):
+    def check_update(self, root, options=None):
+        """Determines if the input document can be upgraded.
+
+        Args:
+            root (lxml.etree._Element): The top-level node of the document
+                being upgraded.
+
+        Raises:
+            UnknownVersionError: If the input document does not have a version.
+            InvalidVersionError: If the version of the input document
+                does not match the `VERSION` class-level attribute value.
+            UpdateError: If the input document contains fields which cannot
+                be updated or constructs with non-unique IDs are discovered.
+
+        """
+        options = options or DEFAULT_UPDATE_OPTIONS
+
+        if options.check_versions:
+            self._check_version(root)
+
+        duplicates = self._get_duplicates(root)
+        disallowed = self._get_disallowed(root)
+
+        if any((disallowed, duplicates)):
+            raise UpdateError("Found duplicate or untranslatable fields in "
+                              "source document.",
+                              disallowed=disallowed,
+                              duplicates=duplicates)
+
+
+    def _update(self, root, options):
         updated = self._update_namespaces(root)
+
         self._update_schemalocs(updated)
         self._update_versions(updated)
-        self._update_vocabs(updated)
-        self._update_optionals(updated)
         self._translate_fields(updated)
-        return updated
 
+        if options.update_vocabularies:
+            self._update_vocabs(updated)
+
+        if options.remove_optionals:
+            self._update_optionals(updated)
+
+        return updated
 
 
 # Wiring namespace dictionaries

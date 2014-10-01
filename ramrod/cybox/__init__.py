@@ -143,7 +143,7 @@ def update(doc, from_=None, to_=None, options=None, force=False):
         klass   = CYBOX_UPDATERS[version]
         updater = klass()
 
-        updated = updater.update(updated, force)
+        updated = updater.update(updated, options=options, force=force)
         removed.extend(updater.cleaned_fields)
         remapped.update(updater.cleaned_ids)
 

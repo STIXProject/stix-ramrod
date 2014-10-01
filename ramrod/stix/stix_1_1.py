@@ -1,7 +1,7 @@
 import itertools
 from lxml import etree
 from ramrod import (_Vocab, UpdateError, _DisallowedFields,  _OptionalElements,
-    _TranslatableField)
+    _TranslatableField, DEFAULT_UPDATE_OPTIONS)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_1_Updater
 from ramrod.utils import (get_typed_nodes, copy_xml_element,
@@ -367,57 +367,6 @@ class STIX_1_1_Updater(_STIXUpdater):
         return disallowed
 
 
-    def check_update(self, root, check_version=True):
-        """Determines if the input document can be upgraded.
-
-        Args:
-            root (lxml.etree._Element): The top-level node of the document
-                being upgraded.
-            check_version(boolean): If True, the version of `root` is checked.
-
-        Raises:
-            UnknownVersionError: If the input document does not have a version.
-            InvalidVersionError: If the version of the input document
-                does not match the `VERSION` class-level attribute value.
-            UpdateError: If the input document contains fields which cannot
-                be updated.
-
-        """
-        if check_version:
-            self._check_version(root)
-
-        disallowed  = self._get_disallowed(root)
-
-        if disallowed:
-            raise UpdateError(disallowed=disallowed)
-
-
-    def clean(self, root, disallowed=None, duplicates=None):
-        """Attempts to remove untranslatable fields from the input document.
-
-        A copy of the removed nodes are stored on the instance-level
-        `cleaned_fields` attribute. This will overwrite the `cleaned_fields`
-        value with each invocation.
-
-        Args:
-            root (lxml.etree._Element): The top-level node of the STIX
-                document.
-
-        Returns:
-            The `root` node.
-
-        """
-        removed = []
-        disallowed = self._get_disallowed(root)
-
-        for node in disallowed:
-            dup = copy_xml_element(node)
-            remove_xml_element(node)
-            removed.append(dup)
-
-        self.cleaned_fields = tuple(removed)
-        return root
-
     def _update_versions(self, root):
         """Updates the versions of versioned nodes under `root` to align with
         STIX v1.1.1 versions.
@@ -434,7 +383,7 @@ class STIX_1_1_Updater(_STIXUpdater):
                 node.attrib['version'] = '1.1.1'
 
 
-    def _update_cybox(self, root):
+    def _update_cybox(self, root, options):
         """Updates the CybOX content found under the `root` node.
 
         Note:
@@ -448,38 +397,6 @@ class STIX_1_1_Updater(_STIXUpdater):
 
         """
         self._cybox_updater._update_schemalocs(root)
-
-
-    def check_update(self, root, check_version=True):
-        """Determines if the input document can be updated from CybOX 2.0.1
-        to CybOX 2.1.
-
-        A CybOX document cannot be upgraded if any of the following constructs
-        are found in the document:
-
-        * TODO: Add constructs
-
-        CybOX 2.1 also introduces schematic enforcement of ID uniqueness. Any
-        nodes with duplicate IDs are reported.
-
-        Args:
-            root (lxml.etree._Element): The top-level node of the STIX
-                document.
-
-        Raises:
-            TODO fill out.
-
-        """
-        if check_version:
-            self._check_version(root)
-            self._cybox_updater._check_version(root)
-
-        disallowed = self._get_disallowed(root)
-
-        if disallowed:
-            raise UpdateError("Found duplicate or untranslatable fields in "
-                              "source document.",
-                              disallowed=disallowed)
 
 
     def _clean_disallowed(self, disallowed):
@@ -501,7 +418,7 @@ class STIX_1_1_Updater(_STIXUpdater):
         return removed
 
 
-    def clean(self, root, disallowed=None, duplicates=None):
+    def clean(self, root, options=None):
         """Removes disallowed elements from `root`.
 
         A copy of the removed nodes are stored on the instance-level
@@ -516,20 +433,59 @@ class STIX_1_1_Updater(_STIXUpdater):
             The source `root` node.
 
         """
-        disallowed = disallowed or self._get_disallowed(root)
+        disallowed = self._get_disallowed(root)
         removed = self._clean_disallowed(disallowed)
 
         self.cleaned_fields = tuple(removed)
         return root
 
 
-    def _update(self, root):
-        self._update_cybox(root)
+    def check_update(self, root, options=None):
+        """Determines if the input document can be updated from CybOX 2.0.1
+        to CybOX 2.1.
+
+        A CybOX document cannot be upgraded if any of the following constructs
+        are found in the document:
+
+        * TODO: Add constructs
+
+        CybOX 2.1 also introduces schematic enforcement of ID uniqueness. Any
+        nodes with duplicate IDs are reported.
+
+        Args:
+            root (lxml.etree._Element): The top-level node of the STIX
+                document.
+
+        Raises:
+            TODO fill out.
+
+        """
+        options = options or DEFAULT_UPDATE_OPTIONS
+
+        if options.check_versions:
+            self._check_version(root)
+            self._cybox_updater._check_version(root)
+
+        disallowed = self._get_disallowed(root)
+
+        if disallowed:
+            raise UpdateError("Found duplicate or untranslatable fields in "
+                              "source document.",
+                              disallowed=disallowed)
+
+
+    def _update(self, root, options):
+        self._update_cybox(root, options)
         self._update_schemalocs(root)
         self._update_versions(root)
-        self._update_vocabs(root)
-        self._update_optionals(root)
         self._translate_fields(root)
+
+        if options.update_vocabularies:
+            self._update_vocabs(root)
+
+        if options.remove_optionals:
+            self._update_optionals(root)
+
         return root
 
 
