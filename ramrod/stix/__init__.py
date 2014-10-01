@@ -101,7 +101,7 @@ STIX_UPDATERS = {
     '1.1': STIX_1_1_Updater
 }
 
-def update(doc, from_=None, to_=None, force=False):
+def update(doc, from_=None, to_=None, options=None, force=False):
     """Updates a STIX document to align with a given version of the STIX
     Language schemas.
 

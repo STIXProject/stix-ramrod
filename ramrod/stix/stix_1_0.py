@@ -1,5 +1,6 @@
 from lxml import etree
-from ramrod import (_Vocab, UpdateError, _DisallowedFields, TAG_XSI_TYPE)
+from ramrod import (_Vocab, UpdateError, _DisallowedFields, TAG_XSI_TYPE,
+    DEFAULT_UPDATE_OPTIONS)
 from ramrod.utils import (remove_xml_element, copy_xml_element, get_type_info,
     get_ext_namespace)
 from ramrod.stix import _STIXUpdater
@@ -224,7 +225,7 @@ class STIX_1_0_Updater(_STIXUpdater):
         return disallowed
 
 
-    def check_update(self, root, check_version=True):
+    def check_update(self, root, options=None):
         """Determines if the input document can be upgraded.
 
         Args:
@@ -240,7 +241,9 @@ class STIX_1_0_Updater(_STIXUpdater):
                 be updated.
 
         """
-        if check_version:
+        options = options or DEFAULT_UPDATE_OPTIONS
+
+        if options.check_versions:
             self._check_version(root)
             self._cybox_updater._check_version(root)
 
@@ -250,7 +253,7 @@ class STIX_1_0_Updater(_STIXUpdater):
             raise UpdateError(disallowed=disallowed)
 
 
-    def clean(self, root, disallowed=None, duplicates=None):
+    def clean(self, root, options=None):
         """Removes disallowed elements from `root`.
 
         A copy of the removed nodes are stored on the instance-level
@@ -266,7 +269,7 @@ class STIX_1_0_Updater(_STIXUpdater):
 
         """
         removed = []
-        disallowed = disallowed or self._get_disallowed(root)
+        disallowed = self._get_disallowed(root)
 
         for node in disallowed:
             dup = copy_xml_element(node)
@@ -293,7 +296,7 @@ class STIX_1_0_Updater(_STIXUpdater):
                 node.attrib['version'] = '1.0.1'
 
 
-    def _update_cybox(self, root):
+    def _update_cybox(self, root, options):
         """Updates the CybOX content found under the `root` node.
 
         Returns:
@@ -301,16 +304,25 @@ class STIX_1_0_Updater(_STIXUpdater):
             instance.
 
         """
-        updated = self._cybox_updater.update(root)
+        updated = self._cybox_updater.update(root, options)
         return updated
 
 
-    def _update(self, root):
-        updated = self._update_cybox(root)
-        updated = self._update_namespaces(updated)
-        self._update_schemalocs(updated)
-        self._update_versions(updated)
-        self._update_vocabs(updated)
+    def _update(self, root, options=None):
+        options = options or DEFAULT_UPDATE_OPTIONS
+        updated = self._update_cybox(root, options)
+
+        if options.update_namespaces:
+            updated = self._update_namespaces(updated)
+            
+        if options.update_schemalocations:
+            self._update_schemalocs(updated)
+
+        if options.update_versions:
+            self._update_versions(updated)
+
+        if options.update_vocabularies:
+            self._update_vocabs(updated)
 
         return updated
 

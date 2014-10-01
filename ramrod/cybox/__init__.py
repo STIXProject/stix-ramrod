@@ -90,7 +90,7 @@ CYBOX_UPDATERS = {
     '2.0.1': Cybox_2_0_1_Updater
 }
 
-def update(doc, from_=None, to_=None, force=False):
+def update(doc, from_=None, to_=None, options=None, force=False):
     """Updates a CybOX document to align with a given version of the CybOX
     Language.
 

@@ -6,7 +6,7 @@ from lxml import etree
 from lxml.etree import QName
 from ramrod.utils import (ignored, get_ext_namespace, get_type_info,
     get_typed_nodes, replace_xml_element, remove_xml_attribute,
-    get_etree_root)
+    get_etree_root, new_id)
 
 __version__ = "1.0a1"
 
@@ -25,6 +25,20 @@ UpdateResults = namedtuple(
         'remapped_ids'      # IDs that were remapped during a forced update
     )
 )
+
+
+class UpdateOptions(object):
+    def __init__(self):
+        self.new_id_func = new_id
+        self.update_vocabularies = True
+        self.update_namespaces = True
+        self.update_schemalocations = True
+        self.remove_optionals = True
+        self.update_versions = True
+        self.check_versions = True
+
+
+DEFAULT_UPDATE_OPTIONS = UpdateOptions()
 
 
 class UnknownVersionError(Exception):
@@ -743,7 +757,7 @@ class _BaseUpdater(object):
         return updated
 
 
-    def clean(self, root, disallowed=None, duplicates=None):
+    def clean(self, root, options=None):
         """Removes untranslatable items from the `root` document.
 
         Note:
@@ -756,7 +770,7 @@ class _BaseUpdater(object):
         raise NotImplementedError()
 
 
-    def check_update(self, root, check_version=True):
+    def check_update(self, root, options=None):
         """Checks to see if the `root` document can be updated.
 
         Note:
@@ -769,7 +783,7 @@ class _BaseUpdater(object):
         raise NotImplementedError()
 
 
-    def update(self, root, force=False):
+    def update(self, root, options=None, force=False):
         """Attempts to update the `root` node. The update logic is defined
         by implementations of this class.
 
@@ -796,14 +810,17 @@ class _BaseUpdater(object):
                 `root` node contains v1.1 content).
 
         """
+        if not options:
+            options = DEFAULT_UPDATE_OPTIONS
+
         try:
             self._init_cleaned()
-            self.check_update(root)
-            updated = self._update(root)
+            self.check_update(root, options)
+            updated = self._update(root, options)
         except (UpdateError, UnknownVersionError, InvalidVersionError):
             if force:
                 self.clean(root)
-                updated = self._update(root)
+                updated = self._update(root, options)
             else:
                 raise
 
@@ -837,7 +854,7 @@ def _get_version(root):
 
 
 
-def update(doc, from_=None, to_=None, force=False):
+def update(doc, from_=None, to_=None, options=None, force=False):
     """Updates an input STIX or CybOX document to align with a newer version
     of the STIX/CybOX schemas.
 
