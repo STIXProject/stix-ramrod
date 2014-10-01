@@ -1,7 +1,7 @@
 Example Code
 ============
 
-The following steps demonstrate how to use the **stix-ramrod** library to
+The following sections demonstrate how to use the **stix-ramrod** library to
 update STIX content.
 
 Import stix-ramrod
