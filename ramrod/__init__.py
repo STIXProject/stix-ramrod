@@ -27,11 +27,31 @@ UpdateResults = namedtuple(
 
 
 class UpdateOptions(object):
+    """Defines configurable options for STIX/CybOX updates.
+
+    Attributes:
+        check_versions (bool): If ``True``, input document version information
+            will be collected and checked against what the Updater class
+            expects. If ``False`` no version check operations will be performed.
+            Default value is ``True``.
+        new_id_func: A function for setting new IDs on an `etree._Element`node.
+            The function must accept one parameter and set a new, unique ID.
+            Default value is ``ramrod.utils.new_id`` function.
+        update_vocabularies: If ``True``, default controlled vocabulary
+            instances will be updated and typos will be fixed. If ``False``,
+            no updates will be performed against controlled vocabulary
+            instances. Default is ``True``.
+        remove_optionals: Between revisions of language, some elements which
+            were required are made optional. If ``True``, an attempt is made
+            to find and remove empty instances of once required
+            elements/attributes. Default is ``True``.
+
+    """
     def __init__(self):
+        self.check_versions = True
         self.new_id_func = new_id
         self.update_vocabularies = True
         self.remove_optionals = True
-        self.check_versions = True
 
 
 DEFAULT_UPDATE_OPTIONS = UpdateOptions()
