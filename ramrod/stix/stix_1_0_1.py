@@ -409,6 +409,13 @@ class STIX_1_0_1_Updater(_STIXUpdater):
 
 
     def _get_duplicates(self, root):
+        """Returns nodes with non-unique IDs from `root`.
+
+        Returns:
+            A dictionary where the colliding ID is the key and a list of nodes
+            with that ID is the value.
+
+        """
         duplicates = super(STIX_1_0_1_Updater, self)._get_duplicates(root)
         cybox = self._cybox_updater._get_duplicates(root)
         return dict(duplicates.items() + cybox.items())
