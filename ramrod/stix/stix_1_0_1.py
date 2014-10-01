@@ -4,8 +4,8 @@ from ramrod import (_Vocab, UpdateError, _DisallowedFields, _OptionalElements,
     _TranslatableField, TAG_XSI_TYPE)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_1_Updater
-from ramrod.utils import (get_typed_nodes, copy_xml_element,
-    remove_xml_element, remove_xml_elements, create_new_id, get_ext_namespace)
+from ramrod.utils import (get_typed_nodes, copy_xml_element, new_id,
+    remove_xml_element, remove_xml_elements, get_ext_namespace)
 
 
 class MotivationVocab(_Vocab):
@@ -524,9 +524,8 @@ class STIX_1_0_1_Updater(_STIXUpdater):
 
         """
         for id_, nodes in duplicates.iteritems():
-            for dup in nodes:
-                new_id = create_new_id(id_)
-                dup.attrib['id'] = new_id
+            for node in nodes:
+               new_id(node)
 
         return duplicates
 

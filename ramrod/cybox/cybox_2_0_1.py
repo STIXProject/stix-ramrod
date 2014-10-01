@@ -2,8 +2,8 @@ import itertools
 from ramrod import (_Vocab, UpdateError, _DisallowedFields, _OptionalElements,
     _TranslatableField, _RenamedField)
 from ramrod.utils import (ignored, get_typed_nodes, copy_xml_element,
-    remove_xml_element, remove_xml_elements, remove_xml_attributes,
-    create_new_id, replace_xml_element)
+    remove_xml_element, remove_xml_elements, remove_xml_attributes, new_id,
+    replace_xml_element)
 from ramrod.cybox import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
     TAG_CYBOX_UPDATE)
 
@@ -624,8 +624,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         """
         for id_, nodes in duplicates.iteritems():
             for node in nodes:
-                new_id = create_new_id(id_)
-                node.attrib['id'] = new_id
+                new_id(node)
 
         return duplicates
 
