@@ -102,6 +102,8 @@ def update(doc, from_=None, to_=None, options=None, force=False):
             from `doc`.
         to_(optional, string): The version to update to. If ``None``, the
             latest version of CybOX is assumed.
+        options(optional): A `ramrod.UpdateOptions` instance. If ``None``,
+            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
         force(boolean): Forces the update process. This may result in content
             being removed during the update process and could result in
             schema-invalid content. **Use at your own risk!**

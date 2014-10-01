@@ -261,7 +261,8 @@ class Cybox_2_0_Updater(_CyboxUpdater):
         Args:
             root (lxml.etree._Element): The top-level node of the document
                 being upgraded.
-            check_version(boolean): If True, the version of `root` is checked.
+            options(optional): A `ramrod.UpdateOptions` instance. If ``None``,
+            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
 
         Raises:
             UnknownVersionError: If the input document does not have a version.

@@ -429,6 +429,12 @@ class STIX_1_1_Updater(_STIXUpdater):
             The `duplicates` parameter isn't handled. It is just kept for
             the sake of consistency across `clean()` method signatures.
 
+        Args:
+            root: The top-level XML document node.
+            options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
+                `ramrod.UpdateOptions` will be used.
+
+
         Returns:
             The source `root` node.
 
@@ -455,6 +461,8 @@ class STIX_1_1_Updater(_STIXUpdater):
         Args:
             root (lxml.etree._Element): The top-level node of the STIX
                 document.
+            options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
+                `ramrod.UpdateOptions` will be used.
 
         Raises:
             TODO fill out.

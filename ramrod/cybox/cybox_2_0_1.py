@@ -619,6 +619,11 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
             The `cleaned_fields` and `cleanded_ids` attributes will be
             overwritten with each method invocation.
 
+        Args:
+            root: The top-level XML document node.
+            options(optional): A `ramrod.UpdateOptions` instance. If ``None``,
+            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
+
         Returns:
             The source `root` node.
 
@@ -642,6 +647,8 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         Args:
             root (lxml.etree._Element): The top-level node of the document
                 being upgraded.
+            options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
+            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
 
         Raises:
             UnknownVersionError: If the input document does not have a version.

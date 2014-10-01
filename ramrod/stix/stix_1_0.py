@@ -264,6 +264,11 @@ class STIX_1_0_Updater(_STIXUpdater):
             The `duplicates` parameter isn't handled. It is just kept for
             the sake of consistency across `clean()` method signatures.
 
+        Args:
+            root: The top-level XML document node.
+            options(optional): A `ramrod.UpdateOptions` instance. If ``None``,
+            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
+
         Returns:
             The source `root` node.
 
@@ -286,7 +291,8 @@ class STIX_1_0_Updater(_STIXUpdater):
         Args:
             root (lxml.etree._Element): The top-level node of the document
                 being upgraded.
-            check_version(boolean): If True, the version of `root` is checked.
+            options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
+            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
 
         Raises:
             UnknownVersionError: If the input document does not have a version.

@@ -108,12 +108,14 @@ def update(doc, from_=None, to_=None, options=None, force=False):
     Args:
         doc: A STIX document filename, file-like object, etree._Element, or
             etree._ElementTree.
-        from_(optional, string): The base version for the update process. If
+        from_ (optional, string): The base version for the update process. If
             ``None``, an attempt will be made to extract the version number
             from `doc`.
-        to_(optional, string): The version to update to. If ``None``, the
+        to_ (optional, string): The version to update to. If ``None``, the
             latest version of STIX is assumed.
-        force(boolean): Forces the update process. This may result in content
+        options(optional): A `ramrod.UpdateOptions` instance. If ``None``,
+            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
+        force (boolean): Forces the update process. This may result in content
             being removed during the update process and could result in
             schema-invalid content. **Use at your own risk!**
 

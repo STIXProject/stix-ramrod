@@ -494,6 +494,11 @@ class STIX_1_0_1_Updater(_STIXUpdater):
             The `cleaned_fields` and `cleaned_ids` attributes will be
             overwritten with each method invocation.
 
+        Args:
+            root: The top-level XML document node.
+            options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
+            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
+
         Returns:
             The source `root` node.
 
@@ -514,9 +519,9 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         """Determines if the input document can be upgraded.
 
         Args:
-            root (lxml.etree._Element): The top-level node of the document
-                being upgraded.
-            check_version(boolean): If True, the version of `root` is checked.
+            root (lxml.etree._Element): The top-level node of the document.
+            options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
+                `ramrod.UpdateOptions` will be used.
 
         Raises:
             UnknownVersionError: If the input document does not have a version.

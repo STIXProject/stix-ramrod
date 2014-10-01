@@ -794,6 +794,15 @@ class _BaseUpdater(object):
         Items which have been reassigned IDs can be retrieved via the
         `cleaned_ids` attribute.
 
+        Args:
+            root: The top-level XML document node
+            options: A `ramrod.UpdateOptions` instance. If ``None``,
+                `DEFAULT_UPDATE_OPTIONS` will be used.
+            force: Forces the update process to complete by potentially
+                removing untranslatable xml nodes and/or remapping non-unique
+                IDs. This may result in non-schema=conformant XML, so use at
+                your own risk!
+
         Returns:
             An updated ``etree._Element`` version of `root`.
 
@@ -871,6 +880,8 @@ def update(doc, from_=None, to_=None, options=None, force=False):
             assumed.
         from_(optional, string): The version to update from. If not specified,
             the `from_` version will be retrieved from the input document.
+        options(optional): A `ramrod.UpdateOptions` instance. If ``None``,
+            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
         force(boolean): Attempt to force the update process if the document
             contains untranslatable fields.
 
