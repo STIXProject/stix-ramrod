@@ -75,6 +75,24 @@ def _write_remapped_ids(remapped):
         print "'%s': %s" % (orig_id, [x.attrib['id'] for x in nodes])
 
 
+def _get_options(args):
+    """Builds a ramrod.UpdateOptions instance from the command line arguments.
+
+    Args:
+        args: Command line arguments parsed by `argparse` module.
+
+    Returns:
+        An instance of ramrod.UpdateOptions.
+
+    """
+    options = ramrod.UpdateOptions()
+    options.remove_optionals = not(args.disable_remove_optionals)
+    options.update_vocabularies = not(args.disable_vocab_update)
+    options.check_versions = not(args.from_)
+
+    return options
+
+
 def _get_arg_parser():
     """Returns an ArgumentParser instance for this script."""
     parser = argparse.ArgumentParser(description="STIX/CybOX Document Updater v%s"
@@ -99,9 +117,21 @@ def _get_arg_parser():
                              "is supplied, the document will be updated to "
                              "the latest version.")
 
+    parser.add_argument("--disable-vocab-update", action="store_true",
+                        default=False,
+                        help="Controlled vocabulary strings will not be "
+                             "updated.")
+
+    parser.add_argument("--disable-remove-optionals", action="store_true",
+                        default=False,
+                        help="Do not remove empty elements and attributes which "
+                             "were required in previous language versions but "
+                             "became optional in later releases.")
+
+
     parser.add_argument("-f", "--force", action="store_true", default=False,
-                        help="Removes untranslatable fields and attempts to "
-                             "force the update process.")
+                        help="Removes untranslatable fields, remaps non-unique "
+                             "IDs, and attempts to force the update process.")
 
     return parser
 
@@ -111,7 +141,12 @@ def main():
     args = parser.parse_args()
 
     try:
-        updated = ramrod.update(args.infile, from_=args.from_, to_=args.to_, force=args.force)
+        options = _get_options(args)
+        updated = ramrod.update(args.infile,
+                                from_=args.from_,
+                                to_=args.to_,
+                                options=options,
+                                force=args.force)
 
         _write_xml(updated.document, args.outfile)
         _write_removed(updated.removed)

@@ -1,7 +1,6 @@
-import copy
+from distutils.version import StrictVersion
 from collections import defaultdict, namedtuple
 from itertools import izip
-from distutils.version import StrictVersion
 from lxml import etree
 from lxml.etree import QName
 from ramrod.utils import (ignored, get_ext_namespace, get_type_info,
@@ -856,6 +855,23 @@ def _get_version(root):
 
     get_version = methods[name]
     return get_version(root)
+
+
+def _validate_version(version, allowed):
+    if not version:
+        raise UpdateError("The version was `None` or could not be determined.")
+
+    if version not in allowed:
+        raise UpdateError("The version '%s' is not valid. Must be one of '%s' "
+                          % (version, allowed,))
+
+
+def _validate_versions(from_, to_, allowed):
+    _validate_version(from_, allowed)
+    _validate_version(to_, allowed)
+
+    if StrictVersion(from_) >= StrictVersion(to_):
+        raise UpdateError("Cannot upgrade from '%s' to '%s'" % (from_, to_))
 
 
 

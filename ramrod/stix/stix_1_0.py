@@ -321,9 +321,7 @@ class STIX_1_0_Updater(_STIXUpdater):
         updated = self._update_namespaces(updated)
 
         self._update_schemalocs(updated)
-
-        if options.update_versions:
-            self._update_versions(updated)
+        self._update_versions(updated)
 
         if options.update_vocabularies:
             self._update_vocabs(updated)

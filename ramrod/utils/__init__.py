@@ -169,3 +169,4 @@ def new_id(node):
 
     node.attrib['id'] = unique_id
     return node
+
