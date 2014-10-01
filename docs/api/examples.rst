@@ -7,15 +7,12 @@ update STIX content.
 Import stix-ramrod
 ^^^^^^^^^^^^^^^^^^
 
-To use **stix-ramrod** for basic updates, all you need to import are the
-:mod:`ramrod` and ``lxml.etree`` modules:
+To use **stix-ramrod** for basic updates, all you need to import is the
+:mod:`ramrod` module.
 
 .. code-block:: python
 
-    import ramrod
-    from lxml import etree  # used for parsing XML
-
-    stix_content = etree.parse('stix_filename.xml')
+    import ramrod  # That's it!
 
 Calling the ramrod.update() Function
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -24,13 +21,19 @@ Once the imports are taken care of and the content is parsed, you only need to
 call the :meth:`ramrod.update` method, which returns an instance of
 :class:`ramrod.UpdateResults`, a ``namedtuple`` instance.
 
+.. note::
+
+    The example below passes the ``stix-content.xml`` filename into
+    :meth:`ramrod.update`, but :meth:`ramrod.update` accepts file-like objects
+    like files on disk or ``StringIO`` instances, ``etree._Element`` instances,
+    or ``etree._ElementTree`` instances!
+
 .. code-block:: python
 
     import ramrod
     from lxml import etree  # used for parsing XML
 
-    stix_content = etree.parse('stix_filename.xml')
-    updated = ramrod.update(stix_content)
+    updated = ramrod.update('stix-content.xml')
 
 Forcing An Update
 ^^^^^^^^^^^^^^^^^
@@ -43,17 +46,16 @@ retrieve the lost data.
 .. testcode::
 
     import ramrod
-    from lxml import etree  # used for parsing XML
 
-    stix_content = etree.parse('stix_filename.xml')
-    updated = ramrod.update(stix_content)
+    updated = ramrod.update('stix-content.xml')
 
-The ``stix_filename.xml`` contains untranslatable data, so a
+The ``stix-content.xml`` contains untranslatable data, so a
 :class:`ramrod.UpdateError` gets raised:
 
 .. testoutput::
 
-    ramrod.UpdateError: Update Error: Found untranslatable fields in source document.
+    ramrod.UpdateError: Update Error: Found untranslatable fields in source
+    document.
 
 
 So we pass in ``force=True`` to the :meth:`ramrod.update` method:
@@ -61,10 +63,8 @@ So we pass in ``force=True`` to the :meth:`ramrod.update` method:
 .. code-block:: python
 
     import ramrod
-    from lxml import etree  # used for parsing XML
 
-    stix_content = etree.parse('stix_filename.xml')
-    updated = ramrod.update(stix_content, force=True)
+    updated = ramrod.update('stix-content.xml', force=True)
 
 Once the :meth:`ramrod.update` call has been forced, we can collect the updated
 document from the ``updated.document`` attribute.
@@ -72,10 +72,9 @@ document from the ``updated.document`` attribute.
 .. code-block:: python
 
     import ramrod
-    from lxml import etree  # used for parsing XML
+    from lxml import etree  # used for printing the updated XML document
 
-    stix_content = etree.parse('stix_filename.xml')
-    updated = ramrod.update(stix_content, force=True)
+    updated = ramrod.update('stix-content.xml', force=True)
 
     new_stix_doc = updated.document
     print etree.tostring(new_stix_doc)
@@ -87,8 +86,7 @@ And inspect the removed and remapped items:
     import ramrod
     from lxml import etree  # used for parsing XML
 
-    stix_content = etree.parse('stix_filename.xml')
-    updated = ramrod.update(stix_content, force=True)
+    updated = ramrod.update('stix_content.xml', force=True)
 
     for node in updated.removed:
         do_something_with_the_removed_item(node)
@@ -111,15 +109,12 @@ to let the update code know **not** to update controlled vocabulary instances:
     import ramrod
     from lxml import etree  # used for parsing XML
 
-    # Parse the STIX content using lxml etree
-    stix_content = etree.parse('stix_filename.xml')
-
     # Create the UpdateOptions instance
     options = ramrod.UpdateOptions()
     options.update_vocabularies = False  # Don't Update Vocabs!
 
     # Update the content
-    updated = ramrod.update(stix_content, options=options)
+    updated = ramrod.update('stix-content.xml', options=options)
 
     # Print the results!
     print etree.tostring(updated.document)
