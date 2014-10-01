@@ -1,0 +1,117 @@
+<stix:STIX_Package 
+    xmlns:indicator="http://stix.mitre.org/Indicator-2" 
+    xmlns:tlp="http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1" 
+    xmlns:stixCommon="http://stix.mitre.org/common-1" 
+    xmlns:ttp="http://stix.mitre.org/TTP-1" 
+    xmlns:incident="http://stix.mitre.org/Incident-1"
+    xmlns:marking="http://data-marking.mitre.org/Marking-1" 
+    xmlns:stixVocabs="http://stix.mitre.org/default_vocabularies-1"
+    xmlns:ramrod="http://ramrod.test/" 
+    xmlns:testMechSnort="http://stix.mitre.org/extensions/TestMechanism#Snort-1" 
+    xmlns:stix="http://stix.mitre.org/stix-1" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:example="http://example.com/" 
+    xmlns:ta="http://stix.mitre.org/ThreatActor-1" 
+    xsi:schemaLocation="http://stix.mitre.org/stix-1 http://stix.mitre.org/XMLSchema/core/1.1/stix_core.xsd   
+    http://stix.mitre.org/common-1 http://stix.mitre.org/XMLSchema/common/1.1/stix_common.xsd   
+    http://data-marking.mitre.org/Marking-1 http://stix.mitre.org/XMLSchema/data_marking/1.1/data_marking.xsd   
+    http://stix.mitre.org/Indicator-2 http://stix.mitre.org/XMLSchema/indicator/2.1/indicator.xsd   
+    http://stix.mitre.org/Incident-1 http://stix.mitre.org/XMLSchema/incident/1.1/incident.xsd
+    http://stix.mitre.org/ThreatActor-1 http://stix.mitre.org/XMLSchema/threat_actor/1.1/threat_actor.xsd  
+    http://stix.mitre.org/TTP-1 http://stix.mitre.org/XMLSchema/ttp/1.1/ttp.xsd   
+    http://cybox.mitre.org/default_vocabularies-2 http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd   
+    http://stix.mitre.org/default_vocabularies-1 http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.0/stix_default_vocabularies.xsd   
+    http://stix.mitre.org/extensions/TestMechanism#Snort-1 http://stix.mitre.org/XMLSchema/extensions/test_mechanism/snort/1.1/snort_test_mechanism.xsd   
+    http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1 http://stix.mitre.org/XMLSchema/extensions/marking/tlp/1.1/tlp_marking.xsd" 
+    id="example:STIXPackage-0935d61b-69a4-4e64-8c4c-d9ce885f7fcc" version="1.1">
+    <stix:STIX_Header>
+        <stix:Title>Example SNORT Indicator</stix:Title>
+        <stix:Package_Intent xsi:type="stixVocabs:PackageIntentVocab-1.0">Indicators - Network Activity</stix:Package_Intent>
+        <stix:Handling>
+            <marking:Marking>
+                <marking:Marking_Structure xsi:type="tlp:TLPMarkingStructureType" color="AMBER"/>
+            </marking:Marking>
+        </stix:Handling>
+    </stix:STIX_Header>
+    <stix:Indicators>
+        <stix:Indicator xsi:type="indicator:IndicatorType" id="example:Indicator-ad560917-6ede-4abb-a4aa-994568a2abf4">
+            <indicator:Type xsi:type="stixVocabs:IndicatorTypeVocab-1.1">Exfiltration</indicator:Type>
+            <indicator:Description>The Type field should be upgraded to 1.1</indicator:Description>
+            <indicator:Test_Mechanisms>
+                <indicator:Test_Mechanism id="example:TestMechanism-5f5fde43-ee30-4582-afaa-238a672f70b1" xsi:type="testMechSnort:SnortTestMechanismType">
+                    <!-- From http://manual.snort.org/node29.html -->
+                    <testMechSnort:Rule><![CDATA[log udp any any -> 192.168.1.0/24 1:1024]]></testMechSnort:Rule>
+                </indicator:Test_Mechanism>
+            </indicator:Test_Mechanisms>
+            <indicator:Producer>
+                <stixCommon:Contributing_Sources>
+                    <stixCommon:Source><stixCommon:Identity>
+                            <stixCommon:Name>Example</stixCommon:Name>
+                        </stixCommon:Identity>
+                    </stixCommon:Source>
+                    <stixCommon:Source><stixCommon:Identity>
+                            <stixCommon:Name>Another</stixCommon:Name>
+                        </stixCommon:Identity>
+                    </stixCommon:Source>
+                </stixCommon:Contributing_Sources>
+            </indicator:Producer>
+        </stix:Indicator>
+        <stix:Indicator xsi:type="indicator:IndicatorType">
+            <indicator:Title>Demonstrates translation of Sighting/Source</indicator:Title>
+            <indicator:Sightings>
+                <indicator:Sighting>
+                    <indicator:Source>Foobar</indicator:Source>
+                </indicator:Sighting>
+            </indicator:Sightings>
+        </stix:Indicator>
+    </stix:Indicators>
+    <stix:TTPs>
+        <stix:TTP xsi:type="ttp:TTPType">
+            <ttp:Title>This TTP should require a forced update because of the use of the CAPEC Attack Pattern extension</ttp:Title>
+            <ttp:Exploit_Targets>
+                <ttp:Exploit_Target>
+                    <stixCommon:Exploit_Target idref="example:et-1"/>
+                </ttp:Exploit_Target>
+                <ttp:Exploit_Target>
+                    <stixCommon:Exploit_Target idref="example:et-2"/>
+                </ttp:Exploit_Target>
+            </ttp:Exploit_Targets>
+        </stix:TTP>
+        <stix:TTP xsi:type="ttp:TTPType">
+            <ttp:Title>Demonstrates Confidence translation</ttp:Title>
+            <ttp:Intended_Effect>
+                <stixCommon:Confidence>
+                    <stixCommon:Source>Foobar</stixCommon:Source>
+                </stixCommon:Confidence>
+            </ttp:Intended_Effect>
+        </stix:TTP>
+    </stix:TTPs>
+    <stix:Incidents>
+        <stix:Incident xsi:type="incident:IncidentType">
+            <incident:Title>Demonstrates AvailabilityLossVocab translation</incident:Title>
+            <incident:Affected_Assets>
+                <incident:Affected_Asset>
+                    <incident:Nature_Of_Security_Effect>
+                        <incident:Property_Affected>
+                            <incident:Type_Of_Availability_Loss xsi:type="stixVocabs:AvailabilityLossTypeVocab-1.0">Degredation</incident:Type_Of_Availability_Loss>
+                        </incident:Property_Affected>
+                    </incident:Nature_Of_Security_Effect>
+                </incident:Affected_Asset>
+            </incident:Affected_Assets>
+        </stix:Incident>
+        <stix:Incident xsi:type="incident:IncidentType">
+            <incident:Title>Demonstrates Confidence translation</incident:Title>
+            <incident:Confidence>
+                <stixCommon:Source>Foobar</stixCommon:Source>
+            </incident:Confidence>
+        </stix:Incident>
+    </stix:Incidents>
+    <stix:Threat_Actors>
+        <stix:Threat_Actor xsi:type="ta:ThreatActorType">
+            <ta:Title>Demonstrating MotivationVocab translations</ta:Title>
+            <ta:Motivation>
+                <stixCommon:Value xsi:type="stixVocabs:MotivationVocab-1.1">Political</stixCommon:Value>
+            </ta:Motivation>
+        </stix:Threat_Actor>
+    </stix:Threat_Actors>
+</stix:STIX_Package>
