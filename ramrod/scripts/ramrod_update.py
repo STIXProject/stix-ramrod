@@ -95,7 +95,8 @@ def _get_options(args):
 
 def _get_arg_parser():
     """Returns an ArgumentParser instance for this script."""
-    parser = argparse.ArgumentParser(description="STIX/CybOX Document Updater v%s"
+    parser = argparse.ArgumentParser(description="Ramrod Updater v%s: Updates "
+                                                 "STIX and CybOX documents."
                                     % ramrod.__version__)
 
     parser.add_argument("--infile", default=None, required=True,
