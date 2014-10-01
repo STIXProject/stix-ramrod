@@ -31,10 +31,7 @@ class UpdateOptions(object):
     def __init__(self):
         self.new_id_func = new_id
         self.update_vocabularies = True
-        self.update_namespaces = True
-        self.update_schemalocations = True
         self.remove_optionals = True
-        self.update_versions = True
         self.check_versions = True
 
 
