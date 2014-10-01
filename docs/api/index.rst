@@ -1,7 +1,8 @@
 API Documentation
 =================
 
-The *stix-ramrod* APIs provide methods for updating STIX and CybOX XML content.
+The **stix-ramrod** APIs provide methods for updating STIX and CybOX XML
+content.
 
 .. note::
 

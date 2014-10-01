@@ -34,7 +34,7 @@ installing **stix-ramrod**.
 Options
 ^^^^^^^
 
-Running :code:`ramrod_update -h` displays the following:
+Running :code:`ramrod_update.py -h` displays the following:
 
 .. code-block:: bash
 

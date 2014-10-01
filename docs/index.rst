@@ -6,7 +6,15 @@
 Welcome to stix-ramrod's documentation!
 =======================================
 
-Contents:
+The **stix-ramrod** library provides scripts and APIs for updating STIX and
+CybOX XML content.
+
+For more information about STIX, please visit the
+`STIX website <http://stix.mitre.org/>`_. For more information about CybOX,
+please visit the `CybOX website <http://cybox.mitre.org>`_.
+
+Contents
+=========
 
 .. toctree::
    :maxdepth: 2
@@ -22,7 +30,7 @@ API Reference
    :maxdepth: 2
 
    api/index
-
+   api/examples
 
 Contributing
 ============
