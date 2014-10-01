@@ -7,17 +7,6 @@ A Python library for upgrading STIX and CybOX XML content.
 :Documentation: http://stix-ramrod.readthedocs.org
 :Information: http://stixproject.github.io
 
-
-|travis badge| |version badge| |downloads badge|
-
-.. |travis badge| image:: https://api.travis-ci.org/STIXProject/stix-ramrodi.png?branch=master
-   :target: https://travis-ci.org/STIXProject/stix-ramrod
-   :alt: Build Status
-.. |version badge| image:: https://pypip.in/v/ramrod/badge.png
-   :target: https://pypi.python.org/pypi/ramrod/
-.. |downloads badge| image:: https://pypip.in/d/ramrod/badge.png
-   :target: https://pypi.python.org/pypi/ramrod/
-
 Overview
 --------
 
