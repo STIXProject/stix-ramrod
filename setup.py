@@ -3,9 +3,10 @@
 # Copyright (C) 2014 - The MITRE Corporation
 # For license information, see the LICENSE.txt file
 
+import sys
 from os.path import abspath, dirname, join, realpath
 from setuptools import setup, find_packages
-import sys
+
 
 BASE_DIR = dirname(abspath(__file__))
 INIT_FILE = join(BASE_DIR, 'ramrod', '__init__.py')
@@ -45,7 +46,7 @@ extras_require = {
 }
 
 setup(
-    name='ramrod',
+    name='stix-ramrod',
     description='STIX and CybOX upgrade API and utilities.',
     author='The MITRE Corporation',
     author_email='stix@mitre.org',
