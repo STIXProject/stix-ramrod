@@ -20,7 +20,7 @@ def ignored(*exceptions):
 
 
 def get_xml_parser():
-    """Returns an etree.ETCompatXMLParser instance."""
+    """Returns an ``etree.ETCompatXMLParser`` instance."""
     parser = etree.ETCompatXMLParser(huge_tree=True,
                                      remove_comments=False,
                                      strip_cdata=False)
@@ -116,7 +116,7 @@ def get_typed_nodes(root):
     """Finds all nodes under `root` which have an ``xsi:type`` attribute.
 
     Returns:
-        A list of etree._Element instances.
+        A list of ``etree._Element`` instances.
 
     """
     nsmap = {'xsi': NS_XSI}
