@@ -125,9 +125,9 @@ def _get_arg_parser():
 
     parser.add_argument("--disable-remove-optionals", action="store_true",
                         default=False,
-                        help="Do not remove empty elements and attributes which "
-                             "were required in previous language versions but "
-                             "became optional in later releases.")
+                        help="Do not remove empty elements and attributes "
+                             "which were required in previous language "
+                             "versions but became optional in later releases.")
 
 
     parser.add_argument("-f", "--force", action="store_true", default=False,
