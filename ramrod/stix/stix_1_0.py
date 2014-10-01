@@ -1,5 +1,6 @@
 from lxml import etree
-from ramrod import (_Vocab, UpdateError, _DisallowedFields, TAG_XSI_TYPE)
+from ramrod import (_Vocab, UpdateError, _DisallowedFields, TAG_XSI_TYPE,
+    DEFAULT_UPDATE_OPTIONS)
 from ramrod.utils import (remove_xml_element, copy_xml_element, get_type_info,
     get_ext_namespace)
 from ramrod.stix import _STIXUpdater
@@ -224,59 +225,6 @@ class STIX_1_0_Updater(_STIXUpdater):
         return disallowed
 
 
-    def check_update(self, root, check_version=True):
-        """Determines if the input document can be upgraded.
-
-        Args:
-            root (lxml.etree._Element): The top-level node of the document
-                being upgraded.
-            check_version(boolean): If True, the version of `root` is checked.
-
-        Raises:
-            UnknownVersionError: If the input document does not have a version.
-            InvalidVersionError: If the version of the input document
-                does not match the `VERSION` class-level attribute value.
-            UpdateError: If the input document contains fields which cannot
-                be updated.
-
-        """
-        if check_version:
-            self._check_version(root)
-            self._cybox_updater._check_version(root)
-
-        disallowed  = self._get_disallowed(root)
-
-        if disallowed:
-            raise UpdateError(disallowed=disallowed)
-
-
-    def clean(self, root, disallowed=None, duplicates=None):
-        """Removes disallowed elements from `root`.
-
-        A copy of the removed nodes are stored on the instance-level
-        `cleaned_fields` attribute. This will overwrite the `cleaned_fields`
-        value with each invocation.
-
-        Note:
-            The `duplicates` parameter isn't handled. It is just kept for
-            the sake of consistency across `clean()` method signatures.
-
-        Returns:
-            The source `root` node.
-
-        """
-        removed = []
-        disallowed = disallowed or self._get_disallowed(root)
-
-        for node in disallowed:
-            dup = copy_xml_element(node)
-            remove_xml_element(node)
-            removed.append(dup)
-
-        self.cleaned_fields = tuple(removed)
-        return root
-
-
     def _update_versions(self, root):
         """Updates the versions of versioned nodes under `root` to align with
         STIX v1.0.1 versions.
@@ -293,7 +241,7 @@ class STIX_1_0_Updater(_STIXUpdater):
                 node.attrib['version'] = '1.0.1'
 
 
-    def _update_cybox(self, root):
+    def _update_cybox(self, root, options):
         """Updates the CybOX content found under the `root` node.
 
         Returns:
@@ -301,16 +249,82 @@ class STIX_1_0_Updater(_STIXUpdater):
             instance.
 
         """
-        updated = self._cybox_updater.update(root)
+        updated = self._cybox_updater._update(root, options)
         return updated
 
 
-    def _update(self, root):
-        updated = self._update_cybox(root)
+    def clean(self, root, options=None):
+        """Removes disallowed elements from `root`.
+
+        A copy of the removed nodes are stored on the instance-level
+        `cleaned_fields` attribute. This will overwrite the `cleaned_fields`
+        value with each invocation.
+
+        Note:
+            The `duplicates` parameter isn't handled. It is just kept for
+            the sake of consistency across `clean()` method signatures.
+
+        Args:
+            root: The top-level XML document node.
+            options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
+            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
+
+        Returns:
+            The source `root` node.
+
+        """
+        removed = []
+        disallowed = self._get_disallowed(root)
+
+        for node in disallowed:
+            dup = copy_xml_element(node)
+            remove_xml_element(node)
+            removed.append(dup)
+
+        self.cleaned_fields = tuple(removed)
+        return root
+
+
+    def check_update(self, root, options=None):
+        """Determines if the input document can be upgraded.
+
+        Args:
+            root (lxml.etree._Element): The top-level node of the document
+                being upgraded.
+            options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
+            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
+
+        Raises:
+            UnknownVersionError: If the input document does not have a version.
+            InvalidVersionError: If the version of the input document
+                does not match the `VERSION` class-level attribute value.
+            UpdateError: If the input document contains fields which cannot
+                be updated.
+
+        """
+        options = options or DEFAULT_UPDATE_OPTIONS
+
+        if options.check_versions:
+            self._check_version(root)
+            self._cybox_updater._check_version(root)
+
+        disallowed  = self._get_disallowed(root)
+
+        if disallowed:
+            raise UpdateError("Found untranslatable fields in source "
+                              "document.",
+                              disallowed=disallowed)
+
+
+    def _update(self, root, options):
+        updated = self._update_cybox(root, options)
         updated = self._update_namespaces(updated)
+
         self._update_schemalocs(updated)
         self._update_versions(updated)
-        self._update_vocabs(updated)
+
+        if options.update_vocabularies:
+            self._update_vocabs(updated)
 
         return updated
 

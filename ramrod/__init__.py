@@ -1,12 +1,11 @@
-import copy
+from distutils.version import StrictVersion
 from collections import defaultdict, namedtuple
 from itertools import izip
-from distutils.version import StrictVersion
 from lxml import etree
 from lxml.etree import QName
 from ramrod.utils import (ignored, get_ext_namespace, get_type_info,
     get_typed_nodes, replace_xml_element, remove_xml_attribute,
-    get_etree_root)
+    get_etree_root, new_id)
 
 __version__ = "1.0a1"
 
@@ -25,6 +24,17 @@ UpdateResults = namedtuple(
         'remapped_ids'      # IDs that were remapped during a forced update
     )
 )
+
+
+class UpdateOptions(object):
+    def __init__(self):
+        self.new_id_func = new_id
+        self.update_vocabularies = True
+        self.remove_optionals = True
+        self.check_versions = True
+
+
+DEFAULT_UPDATE_OPTIONS = UpdateOptions()
 
 
 class UnknownVersionError(Exception):
@@ -743,7 +753,7 @@ class _BaseUpdater(object):
         return updated
 
 
-    def clean(self, root, disallowed=None, duplicates=None):
+    def clean(self, root, options=None):
         """Removes untranslatable items from the `root` document.
 
         Note:
@@ -756,7 +766,7 @@ class _BaseUpdater(object):
         raise NotImplementedError()
 
 
-    def check_update(self, root, check_version=True):
+    def check_update(self, root, options=None):
         """Checks to see if the `root` document can be updated.
 
         Note:
@@ -769,7 +779,7 @@ class _BaseUpdater(object):
         raise NotImplementedError()
 
 
-    def update(self, root, force=False):
+    def update(self, root, options=None, force=False):
         """Attempts to update the `root` node. The update logic is defined
         by implementations of this class.
 
@@ -782,6 +792,15 @@ class _BaseUpdater(object):
 
         Items which have been reassigned IDs can be retrieved via the
         `cleaned_ids` attribute.
+
+        Args:
+            root: The top-level XML document node
+            options: A `ramrod.UpdateOptions` instance. If ``None``,
+                `DEFAULT_UPDATE_OPTIONS` will be used.
+            force: Forces the update process to complete by potentially
+                removing untranslatable xml nodes and/or remapping non-unique
+                IDs. This may result in non-schema=conformant XML, so use at
+                your own risk!
 
         Returns:
             An updated ``etree._Element`` version of `root`.
@@ -796,14 +815,16 @@ class _BaseUpdater(object):
                 `root` node contains v1.1 content).
 
         """
+        options = options or DEFAULT_UPDATE_OPTIONS
+
         try:
             self._init_cleaned()
-            self.check_update(root)
-            updated = self._update(root)
+            self.check_update(root, options)
+            updated = self._update(root, options)
         except (UpdateError, UnknownVersionError, InvalidVersionError):
             if force:
                 self.clean(root)
-                updated = self._update(root)
+                updated = self._update(root, options)
             else:
                 raise
 
@@ -836,8 +857,25 @@ def _get_version(root):
     return get_version(root)
 
 
+def _validate_version(version, allowed):
+    if not version:
+        raise UpdateError("The version was `None` or could not be determined.")
 
-def update(doc, from_=None, to_=None, force=False):
+    if version not in allowed:
+        raise UpdateError("The version '%s' is not valid. Must be one of '%s' "
+                          % (version, allowed,))
+
+
+def _validate_versions(from_, to_, allowed):
+    _validate_version(from_, allowed)
+    _validate_version(to_, allowed)
+
+    if StrictVersion(from_) >= StrictVersion(to_):
+        raise UpdateError("Cannot upgrade from '%s' to '%s'" % (from_, to_))
+
+
+
+def update(doc, from_=None, to_=None, options=None, force=False):
     """Updates an input STIX or CybOX document to align with a newer version
     of the STIX/CybOX schemas.
 
@@ -853,12 +891,14 @@ def update(doc, from_=None, to_=None, force=False):
     Args:
         doc: A STIX or CybOX document filename, file-like object, or etree
             Element/ElementTree object instance.
-        to_(optional, string): The expected output version of the update
+        to_ (optional, string): The expected output version of the update
             process. If not specified, the latest language version will be
             assumed.
-        from_(optional, string): The version to update from. If not specified,
+        from_ (optional, string): The version to update from. If not specified,
             the `from_` version will be retrieved from the input document.
-        force(boolean): Attempt to force the update process if the document
+        options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
+            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
+        force (boolean): Attempt to force the update process if the document
             contains untranslatable fields.
 
     Returns:
@@ -887,11 +927,12 @@ def update(doc, from_=None, to_=None, force=False):
     }
 
     try:
+        options = options or DEFAULT_UPDATE_OPTIONS
         from_ = from_ or _get_version(root)  # _get_version raises KeyError
         func = update_methods[name]
     except KeyError:
         error = "Document root node must be one of %s" % (update_methods.keys(),)
         raise UpdateError(error)
 
-    updated = func(root, from_, to_, force)
+    updated = func(root, from_, to_, options, force)
     return updated

@@ -1,7 +1,7 @@
 from lxml import etree
 from distutils.version import StrictVersion
 from ramrod import (_BaseUpdater, UnknownVersionError, InvalidVersionError,
-    UpdateError, UpdateResults)
+     UpdateResults, _validate_versions)
 from ramrod.utils import get_etree_root
 
 class _STIXUpdater(_BaseUpdater):
@@ -101,19 +101,22 @@ STIX_UPDATERS = {
     '1.1': STIX_1_1_Updater
 }
 
-def update(doc, from_=None, to_=None, force=False):
+
+def update(doc, from_=None, to_=None, options=None, force=False):
     """Updates a STIX document to align with a given version of the STIX
     Language schemas.
 
     Args:
         doc: A STIX document filename, file-like object, etree._Element, or
             etree._ElementTree.
-        from_(optional, string): The base version for the update process. If
+        from_ (optional, string): The base version for the update process. If
             ``None``, an attempt will be made to extract the version number
             from `doc`.
-        to_(optional, string): The version to update to. If ``None``, the
+        to_ (optional, string): The version to update to. If ``None``, the
             latest version of STIX is assumed.
-        force(boolean): Forces the update process. This may result in content
+        options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
+            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
+        force (boolean): Forces the update process. This may result in content
             being removed during the update process and could result in
             schema-invalid content. **Use at your own risk!**
 
@@ -132,29 +135,19 @@ def update(doc, from_=None, to_=None, force=False):
 
     """
     root = get_etree_root(doc)
-
     from_ = from_ or _STIXUpdater.get_version(root)
-    if from_ not in STIX_VERSIONS:
-        raise UpdateError("The `from_` parameter specified an unknown STIX "
-                          "version: '%s'" % from_)
-
     to_ = to_ or STIX_VERSIONS[-1]  # The latest version if not specified
-    if to_ not in STIX_VERSIONS:
-        raise UpdateError("The `to_` parameter specified an unknown STIX "
-                          "version: '%s'" % to_)
 
-    if StrictVersion(from_) >= StrictVersion(to_):
-        raise UpdateError("Cannot upgrade from '%s' to '%s'" % (from_, to_))
+    _validate_versions(from_, to_, STIX_VERSIONS)
 
     removed, remapped = [], {}
     updated = root
-
     idx = STIX_VERSIONS.index
     for version in STIX_VERSIONS[idx(from_):idx(to_)]:
         klass   = STIX_UPDATERS[version]
         updater = klass()
 
-        updated = updater.update(updated, force)
+        updated = updater.update(updated, options=options, force=force)
         removed.extend(updater.cleaned_fields)
         remapped.update(updater.cleaned_ids)
 
