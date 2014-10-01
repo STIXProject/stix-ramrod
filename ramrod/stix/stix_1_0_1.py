@@ -408,6 +408,12 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         return disallowed
 
 
+    def _get_duplicates(self, root):
+        duplicates = super(STIX_1_0_1_Updater, self)._get_duplicates(root)
+        cybox = self._cybox_updater._get_duplicates(root)
+        return dict(duplicates.items() + cybox.items())
+
+
     def _update_versions(self, root):
         """Updates the versions of versioned nodes under `root` to align with
         STIX v1.1 data type versions.
