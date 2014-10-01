@@ -21,27 +21,49 @@ Once the imports are taken care of and the content is parsed, you only need to
 call the :meth:`ramrod.update` method, which returns an instance of
 :class:`ramrod.UpdateResults`, a ``namedtuple`` instance.
 
+.. code-block:: python
+
+    import ramrod
+
+    # Update the 'stix-content.xml' STIX document.
+    updated = ramrod.update('stix-content.xml')
+
 .. note::
 
-    The example below passes the ``stix-content.xml`` filename into
+    The example above passes the ``stix-content.xml`` filename into
     :meth:`ramrod.update`, but :meth:`ramrod.update` accepts file-like objects
-    like files on disk or ``StringIO`` instances, ``etree._Element`` instances,
-    or ``etree._ElementTree`` instances!
+    (such as files on disk or ``StringIO`` instances), ``etree._Element``
+    instances, or ``etree._ElementTree`` instances. Neato!
+
+Retrieving Updated Content
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+After successfully calling :meth:`ramrod.update`, the update document can be
+retrieved from the returned :class:`ramrod.UpdateResults` object instance via
+the ``document`` attribute.
 
 .. code-block:: python
 
     import ramrod
-    from lxml import etree  # used for parsing XML
+    from lxml import etree  # Used for printing the updated XML document
 
+    # Update the document
     updated = ramrod.update('stix-content.xml')
+
+    # Retrieve the updated document from the returned UpdateResults object
+    new_stix_doc = updated.document
+
+    # Print the results
+    print etree.tostring(new_stix_doc)
+
 
 Forcing An Update
 ^^^^^^^^^^^^^^^^^
 
-Sometimes an update doesn't go smoothly and a :class:`ramrod.UpdateError`,
-:class:`ramrod.InvalidVersionError`, or :class:`ramrod.UnknownVersionError` is
-raised. The following code and output demonstrates how to force the update and
-retrieve the lost data.
+Sometimes an update doesn't go smoothly and a :class:`ramrod.UpdateError`
+is raised because untranslatable data or non-unique IDs are discovered in the
+source document. The following code and output demonstrates how to force the
+update and retrieve the data that is lost in the process.
 
 .. testcode::
 
@@ -87,24 +109,9 @@ To force the update, pass in ``force=True`` to the :meth:`ramrod.update` method:
     # Force-update the document
     updated = ramrod.update('untranslatable-stix-content.xml', force=True)
 
-Once the :meth:`ramrod.update` call has been forced, we can collect the updated
-document from the ``updated.document`` attribute.
-
-.. code-block:: python
-
-    import ramrod
-    from lxml import etree  # Used for printing the updated XML document
-
-    # Force-update the document
-    updated = ramrod.update('untranslatable-stix-content.xml', force=True)
-
-    # Retrieve the updated document from the returned UpdateResults object
-    new_stix_doc = updated.document
-
-    # Print the results
-    print etree.tostring(new_stix_doc)
-
-And inspect the removed and remapped items:
+After sucessfullying force-updating the document, items that had IDs remapped
+or that were lost in translation can be retrieved from the returned
+:class:`ramrod.UpdateResults` object instance.
 
 .. code-block:: python
 
