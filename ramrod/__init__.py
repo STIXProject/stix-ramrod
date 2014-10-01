@@ -875,14 +875,14 @@ def update(doc, from_=None, to_=None, options=None, force=False):
     Args:
         doc: A STIX or CybOX document filename, file-like object, or etree
             Element/ElementTree object instance.
-        to_(optional, string): The expected output version of the update
+        to_ (optional, string): The expected output version of the update
             process. If not specified, the latest language version will be
             assumed.
-        from_(optional, string): The version to update from. If not specified,
+        from_ (optional, string): The version to update from. If not specified,
             the `from_` version will be retrieved from the input document.
-        options(optional): A `ramrod.UpdateOptions` instance. If ``None``,
+        options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
             `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
-        force(boolean): Attempt to force the update process if the document
+        force (boolean): Attempt to force the update process if the document
             contains untranslatable fields.
 
     Returns:

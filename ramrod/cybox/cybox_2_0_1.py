@@ -621,7 +621,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
         Args:
             root: The top-level XML document node.
-            options(optional): A `ramrod.UpdateOptions` instance. If ``None``,
+            options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
             `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
 
         Returns:

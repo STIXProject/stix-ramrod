@@ -266,7 +266,7 @@ class STIX_1_0_Updater(_STIXUpdater):
 
         Args:
             root: The top-level XML document node.
-            options(optional): A `ramrod.UpdateOptions` instance. If ``None``,
+            options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
             `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
 
         Returns:
