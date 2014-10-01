@@ -109,7 +109,7 @@ To force the update, pass in ``force=True`` to the :meth:`ramrod.update` method:
     # Force-update the document
     updated = ramrod.update('untranslatable-stix-content.xml', force=True)
 
-After sucessfullying force-updating the document, items that had IDs remapped
+After successfully force-updating the document, items that had IDs remapped
 or that were lost in translation can be retrieved from the returned
 :class:`ramrod.UpdateResults` object instance.
 
