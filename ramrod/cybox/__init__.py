@@ -33,9 +33,12 @@ class _CyboxUpdater(_BaseUpdater):
         ``cybox_minor`` and ``cybox_update`` attribute values.
 
         Raises:
-            UnknownVersionError: If `observables` does not contain a
-                ``cybox_major_version``, ``cybox_minor_version``, or
-                 ``cybox_update_version`` attribute..
+            UnknownVersionError: If `observables` does not contain any of the
+                following attributes:
+
+                * ``cybox_major_version``
+                * ``cybox_minor_version``
+                * ``cybox_update_version``
         """
         cybox_major  = observables.attrib.get(TAG_CYBOX_MAJOR)
         cybox_minor  = observables.attrib.get(TAG_CYBOX_MINOR)
@@ -102,8 +105,8 @@ def update(doc, from_=None, to_=None, options=None, force=False):
             from `doc`.
         to_ (optional, string): The version to update to. If ``None``, the
             latest version of CybOX is assumed.
-        options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
-            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
+        options (optional): A ``ramrod.UpdateOptions`` instance. If ``None``,
+            ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
         force (boolean): Forces the update process. This may result in content
             being removed during the update process and could result in
             schema-invalid content. **Use at your own risk!**
@@ -113,6 +116,7 @@ def update(doc, from_=None, to_=None, options=None, force=False):
 
     Raises:
         UpdateError: If any of the following conditions are encountered:
+
             * The `from_` or `to_` versions are invalid.
             * An untranslatable field is encountered and `force` is ``False``.
             * A non-unique ID is encountered and `force` is ``False``.

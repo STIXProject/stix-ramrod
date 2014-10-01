@@ -240,21 +240,28 @@ class STIX_1_0_1_Updater(_STIXUpdater):
     """Updates STIX v1.0.1 content to STIX v1.1.
 
     The following fields and types are translated:
-    * MotivationVocab-1.0.1 updated to MotivaionVocab-1.1
-    * IndicatorTypeVocab-1.0 updated to IndicatorTypeVocab-1.1
-    * Empty data marking fields are stripped
-    * TTP/Exploit_Targets instances are updated to align with
-      GenericRelationshipListType datatype.
-    * Instances of stixCommon:ContributorsType are converted to instances of
-      stixCommon:ContributingSourcesType
 
-    The following fields and types cannot be translated:
+    * ``MotivationVocab-1.0.1`` updated to ``MotivationVocab-1.1``
+    * ``IndicatorTypeVocab-1.0`` updated to ``IndicatorTypeVocab-1.1``
+    * ``TTP/Exploit_Targets`` instances are updated to align with
+      ``stixCommon:GenericRelationshipListType`` data type.
+    * Instances of STIX v1.0.1 ``stixCommon:ContributorsType`` are converted
+      into instances of STIX v1.1 ``stixCommon:ContributingSourcesType``
+
+    Empty instances of the following optional items are removed:
+
+    * ``marking:Controlled_Structure``
+    * ``marking:Marking_Structure``
+
+    The following fields and types **cannot** be translated:
+
     * MAEC 4.0.1 Malware extension
     * CAPEC 2.6 Attack Pattern extension
-    * TTP:Malware nodes that contain only MAEC Malware_Instance children
-    * TTP:Attack_Patterns nodes that contain only CAPEC Attack Pattern
+    * ``TTP:Malware`` nodes that contain only MAEC Malware_Instance children
+    * ``TTP:Attack_Patterns`` nodes that contain only CAPEC Attack Pattern
       instance children
-    * stixCommon:Date_Time fields that do not contain xs:dateTime values
+    * ``stixCommon:Date_Time`` fields that do not contain ``xs:dateTime``
+      values
 
     """
     VERSION = '1.0.1'
@@ -497,11 +504,19 @@ class STIX_1_0_1_Updater(_STIXUpdater):
             it is impossible to determine which entity the ``idref`` was
             pointing to.
 
-        A copy of the removed nodes are stored on the instance-level
-        `cleaned_fields` attribute.
+        Removed items can be retrieved via the `cleaned_fields` attribute:
 
-        The `cleaned_ids` instance-level dictionary will be populated with
-        ids and nodes which had their ids remapped.
+        >>> updated = updater.update(root, force=True)
+        >>> print updater.cleaned_fields
+        (<Element at 0xffdcf234>, <Element at 0xffdcf284>)
+
+        Items which have been reassigned IDs can be retrieved via the
+        `cleaned_ids` instance attribute:
+
+        >>> updated = updater.update(root, force=True)
+        >>> print updater.cleaned_ids
+        {'example:Observable-duplicate': [<Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67e64>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f2c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f54>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f7c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67fa4>]}
+
 
         Note:
             The `cleaned_fields` and `cleaned_ids` attributes will be
@@ -509,8 +524,8 @@ class STIX_1_0_1_Updater(_STIXUpdater):
 
         Args:
             root: The top-level XML document node.
-            options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
-            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
+            options (optional): A ``ramrod.UpdateOptions`` instance. If
+                ``None``,  ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
         Returns:
             The source `root` node.

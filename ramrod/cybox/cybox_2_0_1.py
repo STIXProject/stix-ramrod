@@ -223,40 +223,50 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
     """Updates CybOX v2.0.1 content to CybOX v2.1.
 
     The following fields are translated:
-    * ToolTypeVocab-1.0 updated to ToolTypeVocab-1.1
-    * ObjectRelationshipVocab-1.0 updated to ObjectRelationshipVocab-1.1
-    * ActionNameVocab-1.0 updated to ActionNameVocab-1.1
-    * Empty instances of cyboxCommon:Tool_Configuration are removed
-    * Empty instances of DNSCacheObj:DNS_Entry are removed
-    * Empty instances of DNSQueryObj:QName are removed
-    * Empty instances of DiskPartitionObj:Partition_ID are removed
-    * Empty instances of FileObj:Depth are removed
-    * Empty instances of HTTPSessionObj:Message_Body and Domain_Name are removed
-    * Many empty instance od elements under PacketeObj (see
-      `OptionalNetworkPacketFields` class)
-    * Empty instances of SystemObj:IP_Address are removed
-    * Empty instances of URIObj:Value are removed
-    * Empty instances of WinComputerAccountObj:Delegation, Bitmask, and Service
-      are removed.
-    * Empty instances of WinNetworkShareObj:Netname are removed
-    * Empty instances of WinFileObj:Size_In_Bytes are removed
-    * Empty instances of WinPrefetchObj:VolumeItem and DeviceItem are removed
-    * HTTPSessionObj:DNT updated from URIObjectType to StringObjectPropertyType
-    * HTTPSessionObj:Vary updated from URIObjectType to StringObjectPropertyType
-    * HTTPSessionObj:Refresh updated from IntegerObjectPropertyType
-      to StringObjectPropertyType
-    * PacketObj:Protol_Addr_Size renamed to Proto_Addr_Size
-    * PacketObj:Excapsulating_Security_Payload renamed to
-      Encapsulating_Security_Payload
-    * PacketObj:Authenication_Data renamed to Authentication_Data
-    * WinMailslotObj:Handle container element removed and child bubbled up when
-      only one child is defined.
 
-    The following fields cannot be translated:
-    * WinTaskObj:Task_Trigger instances.
-    * WinMailslotObj:Handle when more than one child is defined.
-    * WinExecutableFileObj:PESectionType/Type instances.
-    * HTTPSession:X_Forwarded_Proto instances.
+    * ``ToolTypeVocab-1.0`` updated to ``ToolTypeVocab-1.1``
+    * ``ObjectRelationshipVocab-1.0`` updated to ``ObjectRelationshipVocab-1.1``
+    * ``ActionNameVocab-1.0`` updated to ``ActionNameVocab-1.1``
+    * ``HTTPSessionObj:DNT`` updated from ``URIObjectType`` to
+      ``StringObjectPropertyType``
+    * ``HTTPSessionObj:Vary`` updated from ``URIObjectType`` to
+      ``StringObjectPropertyType``
+    * ``HTTPSessionObj:Refresh`` updated from ``IntegerObjectPropertyType``
+      to ``StringObjectPropertyType``
+    * ``PacketObj:Protol_Addr_Size`` renamed to ``PacketObjProto_Addr_Size``
+    * ``PacketObj:Excapsulating_Security_Payload`` renamed to
+      ``PacketObj:Encapsulating_Security_Payload``
+    * ``PacketObj:Authenication_Data`` renamed to
+      ``PacketObj:Authentication_Data``
+    * ``WinMailslotObj:Handle`` container element removed and child bubbled
+      up when only one child is defined.
+
+    Empty instances of the following optional items are removed:
+
+    * ``cyboxCommon:Tool_Configuration``
+    * ``DNSCacheObj:DNS_Entry``
+    * ``DNSQueryObj:QName``
+    * ``DiskPartitionObj:Partition_ID``
+    * ``FileObj:Depth``
+    * ``HTTPSessionObj:Message_Bod``
+    * ``HTTPSessionObj:Domain_Name``
+    * **Many** ``PacketObj:*`` elements
+    * ``SystemObj:IP_Address``
+    * ``URIObj:Value``
+    * ``WinComputerAccountObj:Delegation``
+    * ``WinComputerAccountObj:Bitmask``
+    * ``WinComputerAccountObj:Service``
+    * ``WinNetworkShareObj:Netname``
+    * ``WinFileObj:Size_In_Bytes``
+    * ``WinPrefetchObj:VolumeItem``
+    * ``WinPrefetchObj:DeviceItem``
+
+    The following fields **cannot** be translated:
+
+    * ``WinTaskObj:Task_Trigger`` instances.
+    * ``WinMailslotObj:Handle`` when more than one child is defined.
+    * ``WinExecutableFileObj:PESectionType/Type`` instances.
+    * ``HTTPSession:X_Forwarded_Proto`` instances.
 
     """
     VERSION = '2.0.1'
@@ -609,11 +619,19 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
             it is impossible to determine which entity the ``idref`` was
             pointing to.
 
-        A copy of the removed nodes are stored on the instance-level
-        `cleaned_fields` attribute.
+        Removed items can be retrieved via the `cleaned_fields` attribute:
 
-        The `cleaned_ids` instance-level dictionary will be populated with
-        ids and nodes which had their ids remapped.
+        >>> updated = updater.update(root, force=True)
+        >>> print updater.cleaned_fields
+        (<Element at 0xffdcf234>, <Element at 0xffdcf284>)
+
+        Items which have been reassigned IDs can be retrieved via the
+        `cleaned_ids` instance attribute:
+
+        >>> updated = updater.update(root, force=True)
+        >>> print updater.cleaned_ids
+        {'example:Observable-duplicate': [<Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67e64>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f2c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f54>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f7c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67fa4>]}
+
 
         Note:
             The `cleaned_fields` and `cleanded_ids` attributes will be
@@ -621,8 +639,8 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
         Args:
             root: The top-level XML document node.
-            options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
-            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
+            options (optional): A ``ramrod.UpdateOptions`` instance. If
+                ``None``,  ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
         Returns:
             The source `root` node.
@@ -647,8 +665,8 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         Args:
             root (lxml.etree._Element): The top-level node of the document
                 being upgraded.
-            options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
-            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
+            options (optional): A ``ramrod.UpdateOptions`` instance. If
+                ``None``, ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
         Raises:
             UnknownVersionError: If the input document does not have a version.

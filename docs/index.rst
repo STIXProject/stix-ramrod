@@ -21,7 +21,7 @@ API Reference
 .. toctree::
    :maxdepth: 2
 
-   api/module
+   api/index
 
 
 Contributing

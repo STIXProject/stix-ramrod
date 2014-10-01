@@ -15,6 +15,7 @@ class Cybox_2_0_Updater(_CyboxUpdater):
     """Updates CybOX v2.0 content to CybOX v2.0.1.
 
     The following fields are translated:
+
     * EventTypeVocab-1.0 updated to EventTypeVocab-1.0.1
 
     Note:
@@ -261,8 +262,8 @@ class Cybox_2_0_Updater(_CyboxUpdater):
         Args:
             root (lxml.etree._Element): The top-level node of the document
                 being upgraded.
-            options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
-            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
+            options (optional): A ``ramrod.UpdateOptions`` instance. If ``None``,
+                ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
         Raises:
             UnknownVersionError: If the input document does not have a version.

@@ -30,7 +30,7 @@ class UpdateOptions(object):
     """Defines configurable options for STIX/CybOX updates.
 
     Attributes:
-        check_versions (bool): If ``True``, input document version information
+        check_versions: If ``True``, input document version information
             will be collected and checked against what the Updater class
             expects. If ``False`` no version check operations will be performed.
             Default value is ``True``.
@@ -800,27 +800,38 @@ class _BaseUpdater(object):
 
 
     def update(self, root, options=None, force=False):
-        """Attempts to update the `root` node. The update logic is defined
-        by implementations of this class.
-
+        """Attempts to update the `root` node.
 
         If `force` is set to True, items may be removed during the
         translation process and IDs may be reassigned if they are not
         unique within the document.
 
-        Removed items can be retrieved via the `cleaned_fields` attribute.
+        Note:
+            This does not remap ``idref`` attributes to new ID values because
+            it is impossible to determine which entity the ``idref`` was
+            pointing to.
+
+        Removed items can be retrieved via the `cleaned_fields` attribute:
+
+        >>> updated = updater.update(root, force=True)
+        >>> print updater.cleaned_fields
+        (<Element at 0xffdcf234>, <Element at 0xffdcf284>)
 
         Items which have been reassigned IDs can be retrieved via the
-        `cleaned_ids` attribute.
+        `cleaned_ids` instance attribute:
+
+        >>> updated = updater.update(root, force=True)
+        >>> print updater.cleaned_ids
+        {'example:Observable-duplicate': [<Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67e64>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f2c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f54>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f7c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67fa4>]}
 
         Args:
             root: The top-level XML document node
-            options: A `ramrod.UpdateOptions` instance. If ``None``,
-                `DEFAULT_UPDATE_OPTIONS` will be used.
+            options: A ``ramrod.UpdateOptions`` instance. If ``None``,
+                ``DEFAULT_UPDATE_OPTIONS`` will be used.
             force: Forces the update process to complete by potentially
                 removing untranslatable xml nodes and/or remapping non-unique
-                IDs. This may result in non-schema=conformant XML, so use at
-                your own risk!
+                IDs. This may result in non-schema=conformant XML. **USE AT
+                YOUR OWN RISK!**
 
         Returns:
             An updated ``etree._Element`` version of `root`.
@@ -900,6 +911,7 @@ def update(doc, from_=None, to_=None, options=None, force=False):
     of the STIX/CybOX schemas.
 
     This will perform the following updates:
+
     * Update namespaces
     * Update schemalocations
     * Update construct versions (``STIX_Package``, ``Observables``, etc.)
@@ -916,8 +928,8 @@ def update(doc, from_=None, to_=None, options=None, force=False):
             assumed.
         from_ (optional, string): The version to update from. If not specified,
             the `from_` version will be retrieved from the input document.
-        options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
-            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
+        options (optional): A ``UpdateOptions`` instance. If ``None``,
+            ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
         force (boolean): Attempt to force the update process if the document
             contains untranslatable fields.
 
@@ -925,10 +937,12 @@ def update(doc, from_=None, to_=None, options=None, force=False):
         An instance of ``UpdateResults`` named tuple.
 
     Raises:
-        UpdateError: If the input `doc` does not contain a ``STIX_Package``
-            or ``Observables`` root-level node. An `UpdateError` may also be
-            raised it `force` is ``False`` and an untranslatable field or
-            non-unique ID is found in the input `doc`.
+        UpdateError: If any of the following occur:
+
+            * The input `doc` does not contain a ``STIX_Package``
+              or ``Observables`` root-level node.
+            * If`force` is ``False`` and an untranslatable field or
+              non-unique ID is found in the input `doc`.
         InvalidVersionError: If the input document contains a version attribute
             that is incompatible with a STIX/CybOX Updater class instance.
         UnknownVersionError: If `from_` was not specified and the input

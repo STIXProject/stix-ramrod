@@ -218,6 +218,7 @@ class STIX_1_1_Updater(_STIXUpdater):
     """Updates STIX v1.1 content to STIX v1.1.1.
 
     The following update operations are performed:
+
     * The ``Source`` field under instances of ``StatementType`` and
       ``ConfidenceType`` are translated from ``ControlledVocabularyStringType``
       instances to ``IdentityType`` instances. The original value becomes the

@@ -96,15 +96,17 @@ class STIX_1_0_Updater(_STIXUpdater):
     """Updates STIX v1.0 content to STIX v1.0.1.
 
     The following fields and types are translated:
-    * MotivationVocab-1.0 upgraded to MotivationVocab-1.0.1
-    * PlanningAndOperationalSupportVocab-1.0 updated to
-      PlanningAndOperationalSupportVocab 1.0.1
 
-    The following fields and types cannot be translated:
+    * ``MotivationVocab-1.0`` upgraded to ``MotivationVocab-1.0.1``
+    * ``PlanningAndOperationalSupportVocab-1.0`` updated to
+      ``PlanningAndOperationalSupportVocab 1.0.1``
+
+    The following fields and types **cannot** be translated:
+
     * MAEC 4.0 Malware extension instances
     * CAPEC 2.5 Attack Pattern extension instances
-    * TTP:Malware nodes that contain only MAEC Malware_Instance children
-    * TTP:Attack_Patterns nodes that contain only CAPEC Attack Pattern
+    * ``TTP:Malware`` nodes that contain only MAEC Malware_Instance children
+    * ``TTP:Attack_Patterns`` nodes that contain only CAPEC Attack Pattern
       instance children
 
     """
@@ -258,11 +260,7 @@ class STIX_1_0_Updater(_STIXUpdater):
 
         A copy of the removed nodes are stored on the instance-level
         `cleaned_fields` attribute. This will overwrite the `cleaned_fields`
-        value with each invocation.
-
-        Note:
-            The `duplicates` parameter isn't handled. It is just kept for
-            the sake of consistency across `clean()` method signatures.
+        value with each invocation..
 
         Args:
             root: The top-level XML document node.

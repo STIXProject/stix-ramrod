@@ -26,10 +26,10 @@
         <stix:Title>A STIX Package with duplicate IDs which will be remapped</stix:Title>
     </stix:STIX_Header>
     <stix:Observables cybox_major_version="2" cybox_minor_version="0">
-        <cybox:Observable id="example:Obervable-duplicate"/>
-        <cybox:Observable id="example:Obervable-duplicate"/>
-        <cybox:Observable id="example:Obervable-duplicate"/>
-        <cybox:Observable id="example:Obervable-duplicate"/>
-        <cybox:Observable id="example:Obervable-duplicate"/>
+        <cybox:Observable id="example:Observable-duplicate"/>
+        <cybox:Observable id="example:Observable-duplicate"/>
+        <cybox:Observable id="example:Observable-duplicate"/>
+        <cybox:Observable id="example:Observable-duplicate"/>
+        <cybox:Observable id="example:Observable-duplicate"/>
     </stix:Observables>
 </stix:STIX_Package>

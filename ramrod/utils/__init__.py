@@ -141,7 +141,7 @@ def get_ext_namespace(node):
         The namespace for the type defintion of this node.
 
     Raises:
-        KeyError if the node does not contain an ``xsi:type`` attribute.
+        KeyError: if the node does not contain an ``xsi:type`` attribute.
 
     """
     xsi_type = node.attrib[TAG_XSI_TYPE]
@@ -151,7 +151,7 @@ def get_ext_namespace(node):
 
 
 def create_new_id(orig_id):
-    """Creates a new ID from `orid_id` by appending '-cleaned-' and a UUID4
+    """Creates a new ID from `orig_id` by appending '-cleaned-' and a UUID4
     string to the end of the `orig_id` value.
 
     """
