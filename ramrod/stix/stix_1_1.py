@@ -172,6 +172,7 @@ class TransIndicatorRelatedCampaign(_TranslatableField):
     XPATH_NODE = ".//indicator:Related_Campaigns/indicator:Related_Campaign"
     NEW_TAG =  "{http://stix.mitre.org/Campaign-1}Campaign"
 
+    @classmethod
     def _translate_fields(cls, node):
         """Translates Indicator Related_Campaigns/Related_Campaign instances
         to STIX v1.1.1.
