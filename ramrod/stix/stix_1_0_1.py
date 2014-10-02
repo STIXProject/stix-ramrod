@@ -517,14 +517,13 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         >>> print updater.cleaned_ids
         {'example:Observable-duplicate': [<Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67e64>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f2c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f54>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f7c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67fa4>]}
 
-
         Note:
             The `cleaned_fields` and `cleaned_ids` attributes will be
             overwritten with each method invocation.
 
         Args:
-            root: The top-level XML document node.
-            options (optional): A ``ramrod.UpdateOptions`` instance. If
+            root (lxml.etree._Element): The top-level XML document node.
+            options (optional): A :class:`ramrod.UpdateOptions` instance. If
                 ``None``,  ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
         Returns:
@@ -548,15 +547,17 @@ class STIX_1_0_1_Updater(_STIXUpdater):
 
         Args:
             root (lxml.etree._Element): The top-level node of the document.
-            options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
-                `ramrod.UpdateOptions` will be used.
+            options (optional): A :class:`ramrod.UpdateOptions` instance. If
+                ``None``, ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
         Raises:
-            UnknownVersionError: If the input document does not have a version.
-            InvalidVersionError: If the version of the input document
+            ramrod.UnknownVersionError: If the input document does not have a
+                version.
+            ramrod.InvalidVersionError: If the version of the input document
                 does not match the `VERSION` class-level attribute value.
-            UpdateError: If the input document contains fields which cannot
-                be updated or constructs with non-unique IDs are discovered.
+            ramrod.UpdateError: If the input document contains fields which
+                cannot be updated or constructs with non-unique IDs are
+                discovered.
 
         """
         options = options or DEFAULT_UPDATE_OPTIONS

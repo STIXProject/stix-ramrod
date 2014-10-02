@@ -257,20 +257,26 @@ class Cybox_2_0_Updater(_CyboxUpdater):
 
 
     def check_update(self, root, options=None):
-        """Determines if the input document can be upgraded.
+        """Removes disallowed elements from `root`.
+
+        Removed items can be retrieved via the `cleaned_fields` attribute:
+
+        >>> updated = updater.update(root, force=True)
+        >>> print updater.cleaned_fields
+        (<Element at 0xffdcf234>, <Element at 0xffdcf284>)
+
+
+        Note:
+            The `cleaned_fields` attribute will be overwritten with each method
+            invocation.
 
         Args:
-            root (lxml.etree._Element): The top-level node of the document
-                being upgraded.
-            options (optional): A ``ramrod.UpdateOptions`` instance. If ``None``,
-                ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
+            root (lxml.etree._Element): The top-level XML document node.
+            options (optional): A :class:`ramrod.UpdateOptions` instance. If
+                ``None``,  ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
-        Raises:
-            UnknownVersionError: If the input document does not have a version.
-            InvalidVersionError: If the version of the input document
-                does not match the `VERSION` class-level attribute value.
-            UpdateError: If the input document contains fields which cannot
-                be updated.
+        Returns:
+            The source `root` node.
 
         """
         options = options or DEFAULT_UPDATE_OPTIONS

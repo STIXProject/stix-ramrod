@@ -669,11 +669,12 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
                 ``None``, ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
         Raises:
-            UnknownVersionError: If the input document does not have a version.
-            InvalidVersionError: If the version of the input document
+            ramrod.UnknownVersionError: If the input document does not have a
+                version.
+            ramrod.InvalidVersionError: If the version of the input document
                 does not match the `VERSION` class-level attribute value.
-            UpdateError: If the input document contains fields which cannot
-                be updated or constructs with non-unique IDs are discovered.
+            ramrod.UpdateError: If the input document contains fields which
+                cannot be updated or constructs with non-unique IDs are discovered.
 
         """
         options = options or DEFAULT_UPDATE_OPTIONS

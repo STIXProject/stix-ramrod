@@ -115,15 +115,15 @@ def update(doc, from_=None, to_=None, options=None, force=False):
         An instance of ``UpdateResults`` named tuple.
 
     Raises:
-        UpdateError: If any of the following conditions are encountered:
+        ramrod.UpdateError: If any of the following conditions are encountered:
 
             * The `from_` or `to_` versions are invalid.
             * An untranslatable field is encountered and `force` is ``False``.
             * A non-unique ID is encountered and `force` is ``False``.
-        InvalidVersionError: If the source document version and the `from_`
-            value do not match and `force` is ``False``.
-        UnknownVersionError: If the source document does not contain version
-            information and `force` is ``False``.
+        ramrod.InvalidVersionError: If the source document version and the
+            `from_` value do not match and `force` is ``False``.
+        ramrod.UnknownVersionError: If the source document does not contain
+            version information and `force` is ``False``.
 
     """
     root = get_etree_root(doc)

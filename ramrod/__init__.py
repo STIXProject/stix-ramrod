@@ -34,9 +34,9 @@ class UpdateOptions(object):
             will be collected and checked against what the Updater class
             expects. If ``False`` no version check operations will be performed.
             Default value is ``True``.
-        new_id_func: A function for setting new IDs on an `etree._Element`node.
-            The function must accept one parameter and set a new, unique ID.
-            Default value is ``ramrod.utils.new_id`` function.
+        new_id_func: A function for setting new IDs on an ``etree._Element``
+            node. The function must accept one parameter and set a new, unique
+            ID. Default value is :meth:`ramrod.utils.new_id` function.
         update_vocabularies: If ``True``, default controlled vocabulary
             instances will be updated and typos will be fixed. If ``False``,
             no updates will be performed against controlled vocabulary
@@ -73,7 +73,7 @@ class UpdateError(Exception):
         disallowed(list): A list of nodes found in the input document that
             cannot be translated during the update process.
         duplicates(dict): A dictionary of nodes found in the input document
-            that contain the same `id`.
+            that contain the same `id` attribute value.
     """
     def __init__(self, message=None, disallowed=None, duplicates=None):
         super(UpdateError, self).__init__(message)
@@ -178,7 +178,7 @@ class _TranslatableField(object):
 
         If `COPY_ATTRIBUTES` is set to ``True``, attributes from the `old` node
         value are copied to `new`. If an attribute is found that matches a key
-        in `OVERRIDE_ATTRIBUTES`, its value is overriden by the value found in
+        in `OVERRIDE_ATTRIBUTES`, its value is overridden by the value found in
         `OVERRIDE_ATTRIBUTES`.
 
         """
@@ -205,7 +205,7 @@ class _TranslatableField(object):
         element.
 
         Returns:
-            A translated etree Element.
+            A translated ``etree._Element``.
         """
         tag = cls.NEW_TAG or node.tag
         new = etree.Element(tag)
@@ -813,21 +813,21 @@ class _BaseUpdater(object):
 
         Removed items can be retrieved via the `cleaned_fields` attribute:
 
-        >>> updated = updater.update(root, force=True)
+        >>> doc = updater.update(root, force=True)
         >>> print updater.cleaned_fields
         (<Element at 0xffdcf234>, <Element at 0xffdcf284>)
 
         Items which have been reassigned IDs can be retrieved via the
         `cleaned_ids` instance attribute:
 
-        >>> updated = updater.update(root, force=True)
+        >>> doc = updater.update(root, force=True)
         >>> print updater.cleaned_ids
         {'example:Observable-duplicate': [<Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67e64>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f2c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f54>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f7c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67fa4>]}
 
         Args:
-            root: The top-level XML document node
-            options: A ``ramrod.UpdateOptions`` instance. If ``None``,
-                ``DEFAULT_UPDATE_OPTIONS`` will be used.
+            root (lxml.etree._Element): The top-level XML document node
+            options: A :class:`ramrod.UpdateOptions` instance. If ``None``,
+                ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
             force: Forces the update process to complete by potentially
                 removing untranslatable xml nodes and/or remapping non-unique
                 IDs. This may result in non-schema=conformant XML. **USE AT
@@ -837,13 +837,13 @@ class _BaseUpdater(object):
             An updated ``etree._Element`` version of `root`.
 
         Raises:
-            UpdateError: If untranslatable fields or non-unique IDs are
+            ramrod.UpdateError: If untranslatable fields or non-unique IDs are
                 discovered in `root` and `force` is ``False``.
-            UnknownVersionError: If the `root` node contains no version
+            ramrod.UnknownVersionError: If the `root` node contains no version
                 information.
-            InvalidVersionError: If the `root` node contains invalid version
-                information (e.g., the class expects v1.0 content and the
-                `root` node contains v1.1 content).
+            ramrod.InvalidVersionError: If the `root` node contains invalid
+                version information (e.g., the class expects v1.0 content and
+                the `root` node contains v1.1 content).
 
         """
         options = options or DEFAULT_UPDATE_OPTIONS
@@ -928,24 +928,25 @@ def update(doc, from_=None, to_=None, options=None, force=False):
             assumed.
         from_ (optional, string): The version to update from. If not specified,
             the `from_` version will be retrieved from the input document.
-        options (optional): A ``UpdateOptions`` instance. If ``None``,
-            ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
+        options (optional): A :class:`ramrod.UpdateOptions` instance. If
+            ``None``, ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
         force (boolean): Attempt to force the update process if the document
             contains untranslatable fields.
 
     Returns:
-        An instance of ``UpdateResults`` named tuple.
+        An instance of :class:`ramrod.UpdateResults` ``namedtuple``.
 
     Raises:
-        UpdateError: If any of the following occur:
+        ramrod.UpdateError: If any of the following occur:
 
             * The input `doc` does not contain a ``STIX_Package``
               or ``Observables`` root-level node.
             * If`force` is ``False`` and an untranslatable field or
               non-unique ID is found in the input `doc`.
-        InvalidVersionError: If the input document contains a version attribute
-            that is incompatible with a STIX/CybOX Updater class instance.
-        UnknownVersionError: If `from_` was not specified and the input
+        ramrod.InvalidVersionError: If the input document contains a version
+            attribute that is incompatible with a STIX/CybOX Updater class
+            instance.
+        ramrod.UnknownVersionError: If `from_` was not specified and the input
             document does not contain a version attribute.
 
     """

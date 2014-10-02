@@ -258,14 +258,21 @@ class STIX_1_0_Updater(_STIXUpdater):
     def clean(self, root, options=None):
         """Removes disallowed elements from `root`.
 
-        A copy of the removed nodes are stored on the instance-level
-        `cleaned_fields` attribute. This will overwrite the `cleaned_fields`
-        value with each invocation..
+        Removed items can be retrieved via the `cleaned_fields` attribute:
+
+        >>> updated = updater.update(root, force=True)
+        >>> print updater.cleaned_fields
+        (<Element at 0xffdcf234>, <Element at 0xffdcf284>)
+
+
+        Note:
+            The `cleaned_fields` attribute will be overwritten with each method
+            invocation.
 
         Args:
-            root: The top-level XML document node.
-            options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
-            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
+            root (lxml.etree._Element): The top-level XML document node.
+            options (optional): A :class:`ramrod.UpdateOptions` instance. If
+                ``None``,  ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
         Returns:
             The source `root` node.
@@ -289,15 +296,16 @@ class STIX_1_0_Updater(_STIXUpdater):
         Args:
             root (lxml.etree._Element): The top-level node of the document
                 being upgraded.
-            options (optional): A `ramrod.UpdateOptions` instance. If ``None``,
-            `ramrod.DEFAULT_UPDATE_OPTIONS` will be used.
+            options (optional): A :class:`ramrod.UpdateOptions` instance. If
+                ``None``, ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
         Raises:
-            UnknownVersionError: If the input document does not have a version.
-            InvalidVersionError: If the version of the input document
+            ramrod.UnknownVersionError: If the input document does not have a
+                version.
+            ramrod.InvalidVersionError: If the version of the input document
                 does not match the `VERSION` class-level attribute value.
-            UpdateError: If the input document contains fields which cannot
-                be updated.
+            ramrod.UpdateError: If the input document contains fields which
+                cannot be updated.
 
         """
         options = options or DEFAULT_UPDATE_OPTIONS

@@ -70,10 +70,10 @@ class _STIXUpdater(_BaseUpdater):
             ``VERSION`` class-level attribute.
 
         Raises:
-            UnknownVersionError: If `root` does not contain a ``version``
+            ramrod.UnknownVersionError: If `root` does not contain a ``version``
                 attribute.
-            InvalidVersionError: If the ``version`` attribute value for `root`
-                does not match the value of ``VERSION``.
+            ramrod.InvalidVersionError: If the ``version`` attribute value for
+                `root` does not match the value of ``VERSION``.
 
         """
         roots = self._get_root_nodes(root)
@@ -114,25 +114,25 @@ def update(doc, from_=None, to_=None, options=None, force=False):
             from `doc`.
         to_ (optional, string): The version to update to. If ``None``, the
             latest version of STIX is assumed.
-        options (optional): A ``ramrod.UpdateOptions`` instance. If ``None``,
-            ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
+        options (optional): A :class:`ramrod.UpdateOptions` instance. If
+            ``None``, ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
         force (boolean): Forces the update process. This may result in content
             being removed during the update process and could result in
             schema-invalid content. **Use at your own risk!**
 
     Returns:
-        An instance of ``UpdateResults`` named tuple.
+        An instance of :class:`ramrod.UpdateResults` named tuple.
 
     Raises:
-        UpdateError: If any of the following conditions are encountered:
+        ramrod.UpdateError: If any of the following conditions are encountered:
 
             * The `from_` or `to_` versions are invalid.
             * An untranslatable field is encountered and `force` is ``False``.
             * A non-unique ID is encountered and `force` is ``False``.
-        InvalidVersionError: If the source document version and the `from_`
-            value do not match and `force` is ``False``.
-        UnknownVersionError: If the source document does not contain version
-            information and `force` is ``False``.
+        ramrod.InvalidVersionError: If the source document version and the
+            `from_` value do not match and `force` is ``False``.
+        ramrod.UnknownVersionError: If the source document does not contain
+            version information and `force` is ``False``.
 
     """
     root = get_etree_root(doc)
