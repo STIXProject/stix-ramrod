@@ -23,6 +23,7 @@
                     <EmailMessageObj:From category="e-mail">
                         <AddrObj:Address_Value condition="Equals" apply_condition="ANY">attacker@example.com,attacker1@example.com,attacker@bad.example.com</AddrObj:Address_Value>
                     </EmailMessageObj:From>
+                    <!-- A comment to test out the lxml iterdescendants() method -->
                     <EmailMessageObj:Subject condition="Equals" apply_condition="ANY">New modifications to the specification<![CDATA[&comma;]]>Brad,Free Enlargement Pills!</EmailMessageObj:Subject>
                 </EmailMessageObj:Header>
             </cybox:Properties>

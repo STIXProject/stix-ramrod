@@ -237,7 +237,7 @@ class Cybox_2_0_Updater(_CyboxUpdater):
         props = root.xpath(self.XPATH_OBJECT_PROPS, namespaces=self.NSMAP)
 
         for prop in props:
-            for child in prop.iterdescendants():
+            for child in prop.findall(".//*"):
                 if not self._is_leaf(child):
                     continue
 
