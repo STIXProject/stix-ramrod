@@ -934,7 +934,7 @@ def update(doc, from_=None, to_=None, options=None, force=False):
             contains untranslatable fields.
 
     Returns:
-        An instance of :class:`ramrod.UpdateResults` ``namedtuple``.
+        An instance of ``ramrod.UpdateResults``.
 
     Raises:
         ramrod.UpdateError: If any of the following occur:
