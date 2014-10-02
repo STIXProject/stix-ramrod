@@ -233,7 +233,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
       ``StringObjectPropertyType``
     * ``HTTPSessionObj:Refresh`` updated from ``IntegerObjectPropertyType``
       to ``StringObjectPropertyType``
-    * ``PacketObj:Protol_Addr_Size`` renamed to ``PacketObjProto_Addr_Size``
+    * ``PacketObj:Protol_Addr_Size`` renamed to ``PacketObj:Proto_Addr_Size``
     * ``PacketObj:Excapsulating_Security_Payload`` renamed to
       ``PacketObj:Encapsulating_Security_Payload``
     * ``PacketObj:Authenication_Data`` renamed to
@@ -241,32 +241,42 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
     * ``WinMailslotObj:Handle`` container element removed and child bubbled
       up when only one child is defined.
 
-    Empty instances of the following optional items are removed:
+    Empty instances of the following optional elements are removed:
 
     * ``cyboxCommon:Tool_Configuration``
-    * ``DNSCacheObj:DNS_Entry``
-    * ``DNSQueryObj:QName``
     * ``DiskPartitionObj:Partition_ID``
+    * ``DNSCacheObj:DNS_Entry``, ``DNSQueryObj:QName``
     * ``FileObj:Depth``
-    * ``HTTPSessionObj:Message_Bod``
-    * ``HTTPSessionObj:Domain_Name``
-    * **Many** ``PacketObj:*`` elements
+    * ``HTTPSessionObj:Message_Bod``, ``HTTPSessionObj:Domain_Name``
+    * ``PacketObj:Address_Mask``, ``PacketObj:Address_Mask_Reply``,
+      ``PacketObj:Address_Mask_Request``, ``PacketObj:Destination_Unreachable``,
+      ``PacketObj:Echo_Reply``, ``PacketObj:Echo_Request``,
+      ``PacketObj:Error_Msg``, ``PacketObj:Frag_Reassembly_Time_Exceeded``,
+      ``PacketObj:Host_Redirect``, ``PacketObj:IP_Addr_Prefix``,
+      ``PacketObj:IPv6_Addr``, ``PacketObj:Info_Msg``,
+      ``PacketObj:Network_Redirect``,
+      ``PacketObj:Outbound_Packet_Forward_Success``,
+      ``PacketObj:Outbound_Packet_no_Route``, ``PacketObj:Receive_Timestamp``,
+      ``PacketObj:Redirect_Message``, ``PacketObj:Source_Quench``,
+      ``PacketObj:TTL_Exceeded_In_Transit``, ``PacketObj:Time_Exceeded``,
+      ``PacketObj:Timestamp``, ``PacketObj:Timestamp_Reply``,
+      ``PacketObj:Timestamp_Request``, ``PacketObj:ToS_Host_Redirect``,
+      ``PacketObj:ToS_Network_Redirect``, ``PacketObj:Traceroute``,
+      ``PacketObj:Transmit_Timestamp``
     * ``SystemObj:IP_Address``
     * ``URIObj:Value``
-    * ``WinComputerAccountObj:Delegation``
-    * ``WinComputerAccountObj:Bitmask``
-    * ``WinComputerAccountObj:Service``
-    * ``WinNetworkShareObj:Netname``
+    * ``WinComputerAccountObj:Delegation``, ``WinComputerAccountObj:Bitmask``,
+      ``WinComputerAccountObj:Service``
     * ``WinFileObj:Size_In_Bytes``
-    * ``WinPrefetchObj:VolumeItem``
-    * ``WinPrefetchObj:DeviceItem``
+    * ``WinNetworkShareObj:Netname``
+    * ``WinPrefetchObj:VolumeItem``, ``WinPrefetchObj:DeviceItem``
 
     The following fields **cannot** be translated:
 
-    * ``WinTaskObj:Task_Trigger`` instances.
-    * ``WinMailslotObj:Handle`` when more than one child is defined.
-    * ``WinExecutableFileObj:PESectionType/Type`` instances.
     * ``HTTPSession:X_Forwarded_Proto`` instances.
+    * ``WinExecutableFileObj:PESectionType/Type`` instances.
+    * ``WinMailslotObj:Handle`` when more than one child is defined.
+    * ``WinTaskObj:Task_Trigger`` instances.
 
     """
     VERSION = '2.0.1'

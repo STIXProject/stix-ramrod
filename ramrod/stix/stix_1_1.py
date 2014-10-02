@@ -235,8 +235,7 @@ class STIX_1_1_Updater(_STIXUpdater):
       ``AvailabilityLossVocab-1.1``
 
     Note:
-        There are no STIX fields which cannot be translated between STIX v1.1
-        and STIX v1.1.1.
+        All fields can be translated between STIX v1.1 and STIX v1.1.1.
 
     """
     VERSION = '1.1'

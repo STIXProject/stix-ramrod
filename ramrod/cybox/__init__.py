@@ -27,10 +27,11 @@ class _CyboxUpdater(_BaseUpdater):
 
     @classmethod
     def get_version(cls, observables):
-        """Returns the version of the `observables` Observables node.
+        """Returns the version of the `observables` ``Observables`` node.
 
-        This generates a version string from the ``cybox_major``,
-        ``cybox_minor`` and ``cybox_update`` attribute values.
+        Returns:
+            A dotted-decimal a version string from the ``cybox_major``,
+            ``cybox_minor`` and ``cybox_update`` attribute values.
 
         Raises:
             UnknownVersionError: If `observables` does not contain any of the
@@ -98,21 +99,21 @@ def update(doc, from_=None, to_=None, options=None, force=False):
     Language.
 
     Args:
-        doc: A CybOX document filename, file-like object, etree._Element, or
-            etree._ElementTree.
+        doc: A CybOX document filename, file-like object, ``etree._Element``, or
+            ``etree._ElementTree``.
         from_ (optional, string): The base version for the update process. If
             ``None``, an attempt will be made to extract the version number
             from `doc`.
         to_ (optional, string): The version to update to. If ``None``, the
             latest version of CybOX is assumed.
-        options (optional): A ``ramrod.UpdateOptions`` instance. If ``None``,
-            ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
+        options (optional): A :class:`ramrod.UpdateOptions` instance. If
+            ``None``, ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
         force (boolean): Forces the update process. This may result in content
             being removed during the update process and could result in
             schema-invalid content. **Use at your own risk!**
 
     Returns:
-        An instance of ``UpdateResults`` named tuple.
+        An instance of :class:`ramrod.UpdateResults` named tuple.
 
     Raises:
         ramrod.UpdateError: If any of the following conditions are encountered:

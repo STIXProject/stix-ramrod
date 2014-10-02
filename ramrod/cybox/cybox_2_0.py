@@ -16,11 +16,10 @@ class Cybox_2_0_Updater(_CyboxUpdater):
 
     The following fields are translated:
 
-    * EventTypeVocab-1.0 updated to EventTypeVocab-1.0.1
+    * ``EventTypeVocab-1.0`` updated to ``EventTypeVocab-1.0.1``
 
     Note:
-        There are no fields which cannot be translated from CybOX v2.0 to
-        CybOX v2.0.1
+        All fields can be translated from CybOX v2.0 to CybOX v2.0.1
 
     """
     VERSION = '2.0'

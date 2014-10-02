@@ -107,8 +107,8 @@ def update(doc, from_=None, to_=None, options=None, force=False):
     Language schemas.
 
     Args:
-        doc: A STIX document filename, file-like object, etree._Element, or
-            etree._ElementTree.
+        doc: A STIX document filename, file-like object, ``etree._Element``, or
+            ``etree._ElementTree``.
         from_ (optional, string): The base version for the update process. If
             ``None``, an attempt will be made to extract the version number
             from `doc`.
