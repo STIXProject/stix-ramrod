@@ -47,7 +47,7 @@ Object Updates
 The following changes are made to CybOX Objects.
 
 HTTP Session Object
-^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~
 
 * ``HTTPSessionObj:DNT`` element data type changed from ``URIObj:URIObjectType``
   to ``cyboxCommon:StringObjectPropertyType``.
@@ -58,7 +58,7 @@ HTTP Session Object
   ``cyboxCommon:StringObjectPropertyType`
 
 Network Packet Object
-^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~
 
 * ``PacketObj:Protol_Addr_Size`` renamed to ``PacketObj:Proto_Addr_Size``
 * ``PacketObj:Excapsulating_Security_Payload`` renamed to
@@ -80,12 +80,23 @@ Windows Driver Object
 Controlled Vocabulary Updates
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+At a minimum, controlled vocabulary updates include updates to the
+``vocab_name``, ``vocab_reference``, and ``xsi:type`` attributes to refer
+to new data type names and versions. Instance values may be updated if
+typos were fixed in new versions.
+
+.. note::
+
+    This behavior can be disabled in **stix-ramrod** via the
+    :class:`ramrod.UpdateOptions` class or the ``--disable-vocab-update``
+    option if using ``ramrod_update.py``.
+
 The following updates were made to default CybOX controlled vocabularies,
 defined by the ``cybox_default_vocabularies.xsd`` schema.
 
 * ``ToolTypeVocab-1.0`` updated to ``ToolTypeVocab-1.1``.
 
-  - Term Change: ``"A/V" => "AV"``.
+  - Term ``'A/V'`` changed to ``'AV'``.
 
 * ``ObjectRelationshipVocab-1.0`` updated to ``ObjectRelationshipVocab-1.1``.
 * ``ActionNameVocab-1.0`` updated to ``ActionNameVocab-1.1``.
