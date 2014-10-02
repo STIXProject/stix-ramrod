@@ -121,7 +121,7 @@ def update(doc, from_=None, to_=None, options=None, force=False):
             schema-invalid content. **Use at your own risk!**
 
     Returns:
-        An instance of :class:`ramrod.UpdateResults` named tuple.
+        An instance of ``ramrod.UpdateResults`` named tuple.
 
     Raises:
         ramrod.UpdateError: If any of the following conditions are encountered:
