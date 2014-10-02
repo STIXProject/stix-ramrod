@@ -448,16 +448,8 @@ class STIX_1_1_Updater(_STIXUpdater):
 
 
     def check_update(self, root, options=None):
-        """Determines if the input document can be updated from CybOX 2.0.1
-        to CybOX 2.1.
-
-        A CybOX document cannot be upgraded if any of the following constructs
-        are found in the document:
-
-        * TODO: Add constructs
-
-        CybOX 2.1 also introduces schematic enforcement of ID uniqueness. Any
-        nodes with duplicate IDs are reported.
+        """Determines if the input document can be updated from STIX v1.1 to
+        STIX v1.1.1.
 
         Args:
             root (lxml.etree._Element): The top-level node of the STIX
@@ -466,7 +458,11 @@ class STIX_1_1_Updater(_STIXUpdater):
                 `ramrod.UpdateOptions` will be used.
 
         Raises:
-            TODO fill out.
+            UnknownVersionError: If the input document does not have a version.
+            InvalidVersionError: If the version of the input document
+                does not match the `VERSION` class-level attribute value.
+            UpdateError: If the input document contains fields which cannot
+                be updated or constructs with non-unique IDs are discovered.
 
         """
         options = options or DEFAULT_UPDATE_OPTIONS
