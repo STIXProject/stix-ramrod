@@ -70,9 +70,9 @@ class UpdateError(Exception):
     process..
 
     Attributes:
-        disallowed (list): A list of nodes found in the input document that
+        disallowed: A list of nodes found in the input document that
             cannot be translated during the update process.
-        duplicates (dict): A dictionary of nodes found in the input document
+        duplicates: A dictionary of nodes found in the input document
             that contain the same `id` attribute value.
     """
     def __init__(self, message=None, disallowed=None, duplicates=None):
