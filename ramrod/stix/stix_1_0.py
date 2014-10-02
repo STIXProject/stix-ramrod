@@ -33,25 +33,30 @@ class DisallowedMAEC(_DisallowedFields):
 
 
 class DisallowedMalware(_DisallowedFields):
+    """A ``ttp:Malware`` field **must** contain at least one child. If all
+    children are instances of the MAEC Malware Extension, they will be removed
+    and leave the parent ``ttp:Malware`` instance with no children, rendering
+    it schema-invalid.
+
+    This flags the ``ttp:Malware`` field as disallowed if it contains only
+    MAEC Malware Extension instances.
+
+    """
     XPATH = ".//ttp:Malware"
     NS_MAEC_EXT = "http://stix.mitre.org/extensions/Malware#MAEC4.0-1"
 
     @classmethod
     def _check_maec(cls, node):
-        """Returns ``False`` if a child node does not contain an ``xsi:type``
-        referring to the MAEC Malware extension. Returns ``True`` if every
-        child node is an instance of the MAEC Malware extension.
+        """Returns ``True`` if every child node is an instance of the MAEC
+        Malware extension.
 
         """
-        for child in node.iterchildren():
-            if TAG_XSI_TYPE not in child.attrib:
-                return False
-
-            ns = get_ext_namespace(child)
-            if ns != cls.NS_MAEC_EXT:
-                return False
-
-        return True
+        try:
+            namespaces = (get_ext_namespace(x) for x in node.findall("*"))
+            return all(ns == cls.NS_MAEC_EXT for ns in namespaces)
+        except KeyError as ex:
+            # At least one node didn't contain an xsi:type attribute
+            return False
 
 
     @classmethod
@@ -66,25 +71,31 @@ class DisallowedCAPEC(_DisallowedFields):
 
 
 class DisallowedAttackPatterns(_DisallowedFields):
+    """A ``ttp:Attack_Patterns`` field **must** contain at least one child. If
+    all children are instances of the CAPEC Attack Pattern Extension, they will
+    be removed and leave the parent ``ttp:Attack_Patterns`` instance with no
+    children, rendering it schema-invalid.
+
+    This flags the ``ttp:Attack_Patterns`` field as disallowed if it contains
+    only CAPEC Attack Pattern Extension instances.
+
+    """
     XPATH = ".//ttp:Attack_Patterns"
     NS_CAPEC_EXT = "http://stix.mitre.org/extensions/AP#CAPEC2.5-1"
 
+
     @classmethod
     def _check_capec(cls, node):
-        """Returns ``False`` if a child node does not contain an ``xsi:type``
-        referring to the CAPEC Attack Pattern extension. Returns ``True`` if
-        every child node is an instance of the CAPEC Attack Pattern extension.
+        """Returns ``True`` if every child node is an instance of the CAPEC
+        Attack Pattern extension.
 
         """
-        for child in node.iterchildren():
-            if TAG_XSI_TYPE not in child.attrib:
-                return False
-
-            ns = get_ext_namespace(child)
-            if ns != cls.NS_CAPEC_EXT:
-                return False
-
-        return True
+        try:
+            namespaces = (get_ext_namespace(x) for x in node.findall("*"))
+            return all(ns == cls.NS_CAPEC_EXT for ns in namespaces)
+        except KeyError as ex:
+            # At least one node didn't contain an xsi:type attribute
+            return False
 
 
     @classmethod
