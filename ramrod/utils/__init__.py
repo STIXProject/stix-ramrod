@@ -166,8 +166,8 @@ def new_id(node):
 
     """
     orig_id = node.attrib['id']
-    unique_id = "%s-cleaned-%s" % (orig_id, uuid4())
-
+    unique_id = create_new_id(orig_id)
+    
     node.attrib['id'] = unique_id
     return node
 
