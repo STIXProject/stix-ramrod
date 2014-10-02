@@ -70,9 +70,9 @@ class UpdateError(Exception):
     process..
 
     Attributes:
-        disallowed(list): A list of nodes found in the input document that
+        disallowed (list): A list of nodes found in the input document that
             cannot be translated during the update process.
-        duplicates(dict): A dictionary of nodes found in the input document
+        duplicates (dict): A dictionary of nodes found in the input document
             that contain the same `id` attribute value.
     """
     def __init__(self, message=None, disallowed=None, duplicates=None):
@@ -118,7 +118,7 @@ class _Vocab(object):
         TYPE: The XSD type name for the updated controlled vocabulary
         VOCAB_REFERENCE: The ``vocab_reference`` xml attribute text.
         VOCAB_NAME: The ``vocab_name`` xml attribute text.
-        TERMS(dict): A dictionary of vocabulary term mappings. This is useful
+        TERMS (dict): A dictionary of vocabulary term mappings. This is useful
             for typo corrections between controlled vocabulary revisions.
 
     """
@@ -145,9 +145,9 @@ class _TranslatableField(object):
         XPATH_VALUE: An xpath to be applied to the nodes discovered via
             `XPATH_NODE` which extracts the value.
         NEW_TAG: The etree tag for the translated field.
-        COPY_ATTRIBUTES(boolean): If true, attributes are copied from the node
+        COPY_ATTRIBUTES (boolean): If true, attributes are copied from the node
             discovered by `XPATH_VALUE` to the translated field.
-        OVERRIDE_ATTRIBUTES(dict): A dictionary of attribute names => value to
+        OVERRIDE_ATTRIBUTES (dict): A dictionary of attribute names => value to
             override during the translation. This will only update existing
             attributes--not add them.
 
