@@ -184,7 +184,7 @@ class TransCommonContributors(_TranslatableField):
 
     @classmethod
     def _translate_fields(cls, node):
-        """This changes instances of stixCommon:ContributorsType to instances
+        """This updates instances of stixCommon:ContributorsType to instances
         of stixCommon:ContributingSourcesType.
 
         The STIX v1.0.1 ContributorsType contains a list of `Contributor`
