@@ -245,7 +245,8 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
     * ``cyboxCommon:Tool_Configuration``
     * ``DiskPartitionObj:Partition_ID``
-    * ``DNSCacheObj:DNS_Entry``, ``DNSQueryObj:QName``
+    * ``DNSCacheObj:DNS_Entry``
+    * ``DNSQueryObj:QName``
     * ``FileObj:Depth``
     * ``HTTPSessionObj:Message_Bod``, ``HTTPSessionObj:Domain_Name``
     * ``PacketObj:Address_Mask``, ``PacketObj:Address_Mask_Reply``,

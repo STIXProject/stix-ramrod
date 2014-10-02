@@ -3,14 +3,17 @@ is small and translation is a simple process.
 
 General Updates
 ^^^^^^^^^^^^^^^
+
 The following general changes are made to CybOX 2.0 content when updating to
 CybOX 2.0.1:
 
 * ``xsi:schemaLocation`` attribute updated to refer to CybOX 2.0.1 schemas,
   hosted at http://cybox.mitre.org/.
 
-* ``cybox_update_version`` attribute added to root-level ``Observables``
-  and set to ``1``.
+* ``cybox_major_version`` attribute set to ``2``.
+* ``cybox_minor_version`` attribute set to ``0``.
+* ``cybox_minor_version`` attribute added to ``ObservablesType``
+  instances and set to ``1``.
 
 
 Controlled Vocabulary Updates
@@ -26,10 +29,12 @@ defined by the ``cybox_default_vocabularies.xsd`` schema.
 Datatype and Structural Changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Fill out
+The update from CybOX 2.0 to 2.0.1 does not require any structures to be
+translated. As a result, the **stix-ramrod** library does not perform and
+field translations when updating from CybOX 2.0 to 2.0.1.
 
 
-Now Optional
-^^^^^^^^^^^^
+Empty Fields Removed
+^^^^^^^^^^^^^^^^^^^^
 
-Fill out.
+No existing fields were made optional in CybOX 2.0.1.
