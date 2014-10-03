@@ -738,6 +738,23 @@ class _BaseUpdater(object):
         root.attrib[TAG_SCHEMALOCATION] = updated
 
 
+    def _apply_namespace_updates(self, root):
+        """Updates the children of `root` to be defined under their updated
+        namespace.
+
+        This uses the `UPDATE_NS_MAP` attribute to look up and assign
+        an updated namespace to a node.
+
+        If this isn't done, the node will retain its old namespace and receive
+        a new `ns0` namespace alias.
+
+        """
+        for node in root.findall(".//*"):
+            node_ns = QName(node).namespace
+            updated_ns = self.UPDATE_NS_MAP.get(node_ns, node_ns)
+            node.tag = node.tag.replace(node_ns, updated_ns)
+
+
     def _remap_namespaces(self, root):
         """Remaps the namespaces found on the input `root` document to
         namespaces defined by the ``UPDATE_NS_MAP``. If a namespace for
@@ -780,6 +797,7 @@ class _BaseUpdater(object):
         """
         remapped = self._remap_namespaces(root)
         updated = update_nsmap(root, remapped)
+        self._apply_namespace_updates(updated)
         return updated
 
 
