@@ -16,7 +16,7 @@ upgrading CybOX content.
     schema-valid, properly-versioned CybOX document.
 
     To see a complete list of changes made to CybOX, see the `Release Notes`
-    section of a `CybOXLanguage Release <http://cybox.mitre.org/language/>`_
+    section of a `CybOX Language Release <http://cybox.mitre.org/language/>`_
     page.
 
 .. contents::
