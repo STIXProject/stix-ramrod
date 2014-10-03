@@ -206,7 +206,7 @@ class _TranslatableField(object):
             new.attrib.update(source.attrib)
 
         if cls.OVERRIDE_ATTRIBUTES:
-            for name, val in cls.OVERRIDE_ATTRIBUTES:
+            for name, val in cls.OVERRIDE_ATTRIBUTES.iteritems():
                 if name not in source.attrib:
                     continue
                 new.attrib[name] = val
