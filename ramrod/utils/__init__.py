@@ -180,8 +180,7 @@ def update_nsmap(root, nsmap):
     an updated ``nsmap`` attribute.
 
     Returns:
-        A copy of `root` with its ``nsmap`` attribute updated to include the
-        values defined by the `nsmap` parameter.
+        A copy of `root` with its ``nsmap`` attribute set to `nsmap`.
 
     """
     new_root  = etree.Element(root.tag, nsmap=nsmap)
