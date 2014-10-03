@@ -1,3 +1,6 @@
+# Copyright (c) 2014, The MITRE Corporation. All rights reserved.
+# See LICENSE.txt for complete terms.
+
 import itertools
 from ramrod import (_Vocab, UpdateError, _DisallowedFields, _OptionalElements,
     _TranslatableField, _RenamedField, DEFAULT_UPDATE_OPTIONS)

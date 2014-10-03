@@ -41,7 +41,6 @@ instructions.
 -  `lxml <http://lxml.de/>`_
 
 
-
 Getting Started
 ---------------
 
@@ -74,3 +73,12 @@ You are encouraged to provide feedback by commenting on open issues or signing
 up for the `STIX discussion list
 <http://stix.mitre.org/community/registration.html>`_ and posting your
 questions.
+
+
+Terms
+-----
+
+BY USING STIX-RAMROD YOU SIGNIFY YOUR ACCEPTANCE OF THE TERMS AND CONDITIONS
+OF USE. IF YOU DO NOT AGREE TO THESE TERMS, DO NOT USE STIX-RAMROD.
+
+For more information, please refer to the LICENSE.txt file

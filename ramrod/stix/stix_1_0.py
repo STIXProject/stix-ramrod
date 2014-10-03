@@ -1,3 +1,6 @@
+# Copyright (c) 2014, The MITRE Corporation. All rights reserved.
+# See LICENSE.txt for complete terms.
+
 from lxml import etree
 from ramrod import (_Vocab, UpdateError, _DisallowedFields, TAG_XSI_TYPE,
     DEFAULT_UPDATE_OPTIONS)
