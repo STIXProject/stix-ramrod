@@ -13,11 +13,13 @@ General Updates
 The following general changes are made to CybOX 2.0.1 content when updating to
 CybOX 2.1.
 
-* ``xsi:schemaLocation`` attribute updated to refer to CybOX 2.1 schemas,
+* The ``xsi:schemaLocation`` attribute updated to refer to CybOX 2.1 schemas,
   hosted at http://cybox.mitre.org/.
-* ``cybox_major_version`` attribute set to ``2``.
-* ``cybox_minor_version`` attribute set to ``1``.
-* ``cybox_update_version`` attribute removed from ``ObservablesType``
+* The ``cybox_major_version`` attribute on ``ObservableType`` instances
+  set to ``2``.
+* The ``cybox_minor_version`` attribute on ``ObservableType`` instances
+  set to ``1``.
+* The ``cybox_update_version`` attribute removed from ``ObservablesType``
   instances.
 
 Untranslatable Fields
@@ -32,13 +34,6 @@ require a **forced** update.
 * ``WinMailslotObj:Handle`` element instances when it contains more than one
   child ``Handle`` element.
 * ``WinTaskObj:Task_Trigger`` element instances.
-
-
-Core and Common Updates
-^^^^^^^^^^^^^^^^^^^^^^^
-
-The following changes are made to CybOX Core and Common fields, data types,
-and other structures during a **stix-ramrod** update.
 
 
 Object Updates
@@ -85,12 +80,6 @@ At a minimum, controlled vocabulary updates include updates to the
 to new data type names and versions. Instance values may be updated if
 typos were fixed in new versions.
 
-.. note::
-
-    This behavior can be disabled in **stix-ramrod** via the
-    :class:`ramrod.UpdateOptions` class or the ``--disable-vocab-update``
-    option if using ``ramrod_update.py``.
-
 The following updates were made to default CybOX controlled vocabularies,
 defined by the ``cybox_default_vocabularies.xsd`` schema.
 
@@ -101,18 +90,15 @@ defined by the ``cybox_default_vocabularies.xsd`` schema.
 * ``ObjectRelationshipVocab-1.0`` updated to ``ObjectRelationshipVocab-1.1``.
 * ``ActionNameVocab-1.0`` updated to ``ActionNameVocab-1.1``.
 
+.. include:: /_includes/note_controlled_vocabulary_updates.rst
+
 
 Empty Optional Fields Removed
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The following elements were required in CybOX 2.0.1 but became optional in
-CybOX 2.1.
-
-.. note::
-    By default, **stix-ramrod** will remove empty instances of these fields
-    which are discovered in content. This behavior can be disabled via the
-    :class:`ramrod.UpdateOptions` class, or the ``--disable-remove-optionals``
-    flag if using the bundled ``ramrod_update.py`` script.
+CybOX 2.1. Empty instances of these fields will be stripped during the update
+process.
 
 * ``cyboxCommon:Tool_Configuration``
 * ``DiskPartitionObj:Partition_ID``
@@ -142,3 +128,5 @@ CybOX 2.1.
 * ``WinFileObj:Size_In_Bytes``
 * ``WinNetworkShareObj:Netname``
 * ``WinPrefetchObj:VolumeItem``, ``WinPrefetchObj:DeviceItem``
+
+.. include:: /_includes/note_remove_empty_optionals_updates.rst

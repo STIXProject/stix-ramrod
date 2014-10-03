@@ -4,6 +4,8 @@ Updates to CybOX Content
 The following sections detail the changes that **stix-ramrod** makes when
 upgrading CybOX content.
 
+.. contents::
+    :depth: 3
 
 CybOX v2.0.1 to 2.1
 -------------------

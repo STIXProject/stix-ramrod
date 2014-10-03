@@ -1,5 +1,5 @@
-CybOX v2.0.1 was a bugfix release made to CybOX v2.0. As such, the change set
-is small and translation is a simple process.
+CybOX v2.0.1 was a bugfix release made to CybOX v2.0. The number of changes
+made to the schema were minimal.
 
 General Updates
 ^^^^^^^^^^^^^^^
@@ -7,17 +7,24 @@ General Updates
 The following general changes are made to CybOX 2.0 content when updating to
 CybOX 2.0.1:
 
-* ``xsi:schemaLocation`` attribute updated to refer to CybOX 2.0.1 schemas,
+* The ``xsi:schemaLocation`` attribute updated to refer to CybOX 2.0.1 schemas,
   hosted at http://cybox.mitre.org/.
 
-* ``cybox_major_version`` attribute set to ``2``.
-* ``cybox_minor_version`` attribute set to ``0``.
-* ``cybox_minor_version`` attribute added to ``ObservablesType``
+* The ``cybox_major_version`` attribute on ``ObservableType``
+  instances set to ``2``.
+* The ``cybox_minor_version`` attribute on ``ObservableType`` instances
+  set to ``0``.
+* The ``cybox_minor_version`` attribute added to ``ObservablesType``
   instances and set to ``1``.
 
 
 Controlled Vocabulary Updates
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+At a minimum, controlled vocabulary updates include updates to the
+``vocab_name``, ``vocab_reference``, and ``xsi:type`` attributes to refer
+to new data type names and versions. Instance values may be updated if
+typos were fixed in new versions.
 
 The following updates were made to default CybOX controlled vocabularies,
 defined by the ``cybox_default_vocabularies.xsd`` schema.
@@ -26,15 +33,11 @@ defined by the ``cybox_default_vocabularies.xsd`` schema.
 
   -  Fixed typo: ``"Anomoly Events" => "Anomaly Events"``
 
-Datatype and Structural Changes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The update from CybOX 2.0 to 2.0.1 does not require any structures to be
-translated. As a result, the **stix-ramrod** library does not perform and
-field translations when updating from CybOX 2.0 to 2.0.1.
+.. include:: /_includes/note_controlled_vocabulary_updates.rst
 
 
-Empty Fields Removed
-^^^^^^^^^^^^^^^^^^^^
+
+Empty Optional Fields Removed
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 No existing fields were made optional in CybOX 2.0.1.
