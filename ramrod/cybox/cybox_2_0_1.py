@@ -196,7 +196,7 @@ class TransNetPacketProtoAddrSize(_RenamedField):
 
 
 class TransNetPacketEncapsulatingSecurityPayload(_RenamedField):
-    XPATH_NODE = ".//PacketObj:Excapulating_Security_Payload"
+    XPATH_NODE = ".//PacketObj:Excapsulating_Security_Payload"
     NEW_TAG = "{http://cybox.mitre.org/objects#PacketObject-2}Encapsulating_Security_Payload"
 
 
