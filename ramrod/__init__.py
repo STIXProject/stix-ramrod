@@ -177,7 +177,7 @@ class _TranslatableField(object):
     def _translate_value(cls, old, new):
         xpath, nsmap = cls.XPATH_VALUE, cls.NSMAP
         if xpath:
-            value = old.xpath(xpath, namespaces=nsmap)
+            value = old.xpath(xpath, namespaces=nsmap)[0]
             new.text = value.text
         else:
             # Used when the fields are the same datatype, just different names
@@ -198,7 +198,7 @@ class _TranslatableField(object):
         xpath, nsmap = cls.XPATH_VALUE, cls.NSMAP
 
         if xpath:
-            source = old.xpath(xpath, namespaces=nsmap)
+            source = old.xpath(xpath, namespaces=nsmap)[0]
         else:
             source = old
 
