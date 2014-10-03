@@ -21,6 +21,8 @@ Contents
 
    installation
    getting_started
+   what_gets_updated
+
 
 
 API Reference

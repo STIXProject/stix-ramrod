@@ -148,7 +148,7 @@ class TransTTPExploitTargets(_TranslatableField):
 
     @classmethod
     def _translate_fields(cls, node):
-        """The TTP.Exploit_Targets field became a GenericRelationshipListType
+        """The TTP:Exploit_Targets field became a GenericRelationshipListType
         in STIX 1.1.
 
         <ttp:Exploit_Targets>
@@ -184,7 +184,7 @@ class TransCommonContributors(_TranslatableField):
 
     @classmethod
     def _translate_fields(cls, node):
-        """This changes instances of stixCommon:ContributorsType to instances
+        """This updates instances of stixCommon:ContributorsType to instances
         of stixCommon:ContributingSourcesType.
 
         The STIX v1.0.1 ContributorsType contains a list of `Contributor`
@@ -266,7 +266,7 @@ class STIX_1_0_1_Updater(_STIXUpdater):
     The following fields and types **cannot** be translated:
 
     * MAEC 4.0.1 Malware extension
-    * CAPEC 2.6 Attack Pattern extension
+    * CAPEC 2.6.1 Attack Pattern extension
     * ``TTP:Malware`` nodes that contain only MAEC Malware_Instance children
     * ``TTP:Attack_Patterns`` nodes that contain only CAPEC Attack Pattern
       instance children
