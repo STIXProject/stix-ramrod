@@ -2,13 +2,15 @@ Example Code
 ============
 
 The following sections demonstrate how to use the **stix-ramrod** library to
-update STIX content.
+update STIX content. For more details about the **stix-ramrod** API, see the
+:doc:`/api/index` page.
 
 Import stix-ramrod
 ^^^^^^^^^^^^^^^^^^
 
-To use **stix-ramrod** for basic updates, all you need to import is the
-:mod:`ramrod` module.
+To use **stix-ramrod** for updating STIX and CybOX content, you must import
+the ``ramrod`` module There are lots of functions, classes, and submodules
+under ``ramrod``, but the top-level module is all you need for most updates!
 
 .. code-block:: python
 
@@ -17,9 +19,9 @@ To use **stix-ramrod** for basic updates, all you need to import is the
 Calling the ramrod.update() Function
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Once the imports are taken care of and the content is parsed, you only need to
-call the :meth:`ramrod.update` method, which returns an instance of
-:class:`ramrod.UpdateResults`, a ``namedtuple`` instance.
+Once the imports are taken care of you only need to call the
+:meth:`ramrod.update` method, which parses the content, updates it, and
+returns an instance of :class:`ramrod.UpdateResults`.
 
 .. code-block:: python
 
