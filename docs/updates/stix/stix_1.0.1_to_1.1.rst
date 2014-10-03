@@ -147,8 +147,8 @@ At a minimum, controlled vocabulary updates include updates to the
 to new data type names and versions. Instance values may be updated if
 typos were fixed in new versions.
 
-The following updates were made to default CybOX controlled vocabularies,
-defined by the ``cybox_default_vocabularies.xsd`` schema.
+The following updates were made to default STIX controlled vocabularies,
+defined by the ``stix_default_vocabularies.xsd`` schema.
 
 * ``MotivationVocab-1.0.1`` updated to ``MotivationVocab-1.1``.
 
