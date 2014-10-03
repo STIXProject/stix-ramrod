@@ -118,7 +118,7 @@ or that were lost in translation can be retrieved from the returned
     import ramrod
 
     # Force-update the document
-    updated = ramrod.update('untranslatable-stix_content.xml', force=True)
+    updated = ramrod.update('untranslatable-stix-content.xml', force=True)
 
     # Iterate over the items which were lost in translation
     for node in updated.removed:
