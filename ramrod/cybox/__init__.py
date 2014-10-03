@@ -19,7 +19,7 @@ class _CyboxUpdater(_BaseUpdater):
     CybOX-specific xpaths and namespaces.
 
     """
-    DEFAULT_VOCAB_NAMESPACE = 'http://cybox.mitre.org/default_vocabularies-1'
+    DEFAULT_VOCAB_NAMESPACE = 'http://cybox.mitre.org/default_vocabularies-2'
     XPATH_VERSIONED_NODES = "//cybox:Observables"
     XPATH_ROOT_NODES = "//cybox:Observables"
     XPATH_OBJECT_PROPS = "//cybox:Object/cybox:Properties"
