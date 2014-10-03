@@ -1,5 +1,7 @@
-CybOX v2.0.1 was a bugfix release made to CybOX v2.0. The number of changes
-made to the schema were minimal.
+CybOX v2.0.1 was a bugfix release made to CybOX v2.0.1.
+
+The sections below describe the changes **stix-ramrod** performs during an
+upgrade from CybOX 2.0 to CybOX 2.0.1.
 
 General Updates
 ^^^^^^^^^^^^^^^
