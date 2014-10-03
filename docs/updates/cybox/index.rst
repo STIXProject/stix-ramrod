@@ -11,13 +11,9 @@ upgrading CybOX content.
     addition of new CybOX Objects or controlled vocabulary terms do not require
     any changes to be made to the source content during an update.
 
-    The **stix-ramrod** documentation only describes updates to content which
-    **must** or **should** be made in order to render a well-formed,
-    schema-valid, properly-versioned CybOX document.
-
-    To see a complete list of changes made to CybOX, see the `Release Notes`
-    section of a `CybOX Language Release <http://cybox.mitre.org/language/>`_
-    page.
+    To see a complete list of changes made to CybOX, check out the
+    `Release Notes` section of a
+    `CybOX Language Release <http://cybox.mitre.org/language/>`_ page.
 
 .. contents::
     :depth: 3
