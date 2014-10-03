@@ -171,3 +171,23 @@ def new_id(node):
     node.attrib['id'] = unique_id
     return node
 
+
+def update_nsmap(root, nsmap):
+    """Updates the ``nsmap`` attribute found on `root` to `nsmap`.
+
+    The lxml API does not allow in-place modification of the ``nsmap``
+    dictionary. Instead, a copy of the node must be created and initialized with
+    an updated ``nsmap`` attribute.
+
+    Returns:
+        A copy of `root` with its ``nsmap`` attribute updated to include the
+        values defined by the `nsmap` parameter.
+
+    """
+    new_root  = etree.Element(root.tag, nsmap=nsmap)
+    new_root.attrib.update(root.attrib)
+    new_root[:] = root[:]
+
+    return new_root
+
+

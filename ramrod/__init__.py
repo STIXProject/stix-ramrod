@@ -5,7 +5,7 @@ from lxml import etree
 from lxml.etree import QName
 from ramrod.utils import (ignored, get_ext_namespace, get_type_info,
     get_typed_nodes, replace_xml_element, remove_xml_attribute,
-    get_etree_root, new_id)
+    get_etree_root, new_id, update_nsmap)
 
 __version__ = "1.0a1"
 
@@ -776,10 +776,7 @@ class _BaseUpdater(object):
 
         """
         remapped = self._remap_namespaces(root)
-        updated = etree.Element(root.tag, nsmap=remapped)
-        updated.attrib.update(root.attrib)
-        updated[:] = root[:]
-
+        updated = update_nsmap(root, remapped)
         return updated
 
 
