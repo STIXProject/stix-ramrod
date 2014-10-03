@@ -50,7 +50,7 @@ HTTP Session Object
   ``URIObj:URIObjectType`` to ``cyboxCommon:StringObjectPropertyType``.
 * ``HTTPSessionObj:Refresh`` updated from
   ``cyboxCommon:IntegerObjectPropertyType`` to
-  ``cyboxCommon:StringObjectPropertyType`
+  ``cyboxCommon:StringObjectPropertyType``
 
 Network Packet Object
 ~~~~~~~~~~~~~~~~~~~~~
