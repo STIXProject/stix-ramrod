@@ -1,6 +1,7 @@
 <cybox:Observables xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:cybox="http://cybox.mitre.org/cybox-2" 
     xmlns:cyboxCommon="http://cybox.mitre.org/common-2"
+    xmlns:cyboxVocabs="http://cybox.mitre.org/default_vocabularies-2"
     xmlns:URIObject="http://cybox.mitre.org/objects#URIObject-2"
     xmlns:AddressObj="http://cybox.mitre.org/objects#AddressObject-2"
     xmlns:PortObj="http://cybox.mitre.org/objects#PortObject-2"
@@ -9,40 +10,76 @@
     xmlns:HTTPSessionObj="http://cybox.mitre.org/objects#HTTPSessionObject-2"
     xmlns:WinMailslotObj="http://cybox.mitre.org/objects#WinMailslotObject-2"
     xmlns:WinHandleObj="http://cybox.mitre.org/objects#WinHandleObject-2"
+    xmlns:WinDriverObj="http://cybox.mitre.org/objects#WinDriverObject-2"
+    xmlns:PacketObj='http://cybox.mitre.org/objects#PacketObject-2'
     xmlns:example="http://example.com/"
-    xsi:schemaLocation="http://cybox.mitre.org/cybox-2 http://cybox.mitre.org/XMLSchema/core/2.0.1/cybox_core.xsd http://cybox.mitre.org/objects#WinHandleObject-2  http://cybox.mitre.org/XMLSchema/objects/Win_Handle/2.1/Win_Handle_Object.xsd  http://cybox.mitre.org/objects#WinMailslotObject-2 http://cybox.mitre.org/XMLSchema/objects/Win_Mailslot/2.0.1/Win_Mailslot_Object.xsd    http://cybox.mitre.org/objects#URIObject-2 http://cybox.mitre.org/XMLSchema/objects/URI/2.0.1/URI_Object.xsd http://cybox.mitre.org/objects#NetworkConnectionObject-2 http://cybox.mitre.org/XMLSchema/objects/Network_Connection/2.0.1/Network_Connection_Object.xsd     "
+    xsi:schemaLocation="
+    http://cybox.mitre.org/cybox-2 http://cybox.mitre.org/XMLSchema/core/2.0.1/cybox_core.xsd 
+    http://cybox.mitre.org/common-2 http://cybox.mitre.org/XMLSchema/common/2.0.1/cybox_common.xsd
+    http://cybox.mitre.org/default_vocabularies-2 http://cybox.mitre.org/XMLSchema/default_vocabularies/2.0.1/cybox_default_vocabularies.xsd
+    http://cybox.mitre.org/objects#WinHandleObject-2  http://cybox.mitre.org/XMLSchema/objects/Win_Handle/2.1/Win_Handle_Object.xsd  
+    http://cybox.mitre.org/objects#WinMailslotObject-2 http://cybox.mitre.org/XMLSchema/objects/Win_Mailslot/2.0.1/Win_Mailslot_Object.xsd    
+    http://cybox.mitre.org/objects#URIObject-2 http://cybox.mitre.org/XMLSchema/objects/URI/2.0.1/URI_Object.xsd 
+    http://cybox.mitre.org/objects#NetworkConnectionObject-2 http://cybox.mitre.org/XMLSchema/objects/Network_Connection/2.0.1/Network_Connection_Object.xsd
+    http://cybox.mitre.org/objects#PacketObject-2 http://cybox.mitre.org/XMLSchema/objects/Network_Packet/2.0.1/Network_Packet_Object.xsd
+    http://cybox.mitre.org/objects#WinDriverObject-2 http://cybox.mitre.org/XMLSchema/objects/Win_Driver/2.0/Win_Driver_Object.xsd
+    "
     cybox_major_version="2" cybox_minor_version="0" cybox_update_version="1">
     <cybox:Observable id="example:Observable-1b427720-98d7-4735-b125-754c7e08f285">
-        <cybox:Description>
-            This Observable specifies an example pattern written against a Network Connection Object
-            with an HTTP Session, specifically the Network Protocols, Destination Socket IP Address and Port,
-            and HTTP Request Method and Value.
-        </cybox:Description>
-        <cybox:Object id="example:Object-d1fdd983-530b-489f-9ab8-ed3cb5212c35">
-            <cybox:Properties xsi:type="NetworkConnectionObj:NetworkConnectionObjectType">
-                <NetworkConnectionObj:Layer3_Protocol datatype="string" condition="Equals">IPv4</NetworkConnectionObj:Layer3_Protocol>
-                <NetworkConnectionObj:Layer4_Protocol datatype="string" condition="Equals">TCP</NetworkConnectionObj:Layer4_Protocol>
-                <NetworkConnectionObj:Layer7_Protocol datatype="string" condition="Equals">HTTP</NetworkConnectionObj:Layer7_Protocol>
-                <NetworkConnectionObj:Destination_Socket_Address>
-                    <SocketAddressObj:IP_Address>
-                        <AddressObj:Address_Value datatype="string" condition="StartsWith">198.49</AddressObj:Address_Value>
-                    </SocketAddressObj:IP_Address>
-                    <SocketAddressObj:Port>
-                        <PortObj:Port_Value condition="Equals">80</PortObj:Port_Value>
-                    </SocketAddressObj:Port>
-                </NetworkConnectionObj:Destination_Socket_Address>
-                <NetworkConnectionObj:Layer7_Connections>
-                    <NetworkConnectionObj:HTTP_Session>
-                        <HTTPSessionObj:HTTP_Request_Response>
-                            <HTTPSessionObj:HTTP_Client_Request>
-                                <HTTPSessionObj:HTTP_Request_Line>
-                                    <HTTPSessionObj:HTTP_Method datatype="string" condition="Equals">GET</HTTPSessionObj:HTTP_Method>
-                                    <HTTPSessionObj:Value condition="Contains">.asp</HTTPSessionObj:Value>
-                                </HTTPSessionObj:HTTP_Request_Line>
-                            </HTTPSessionObj:HTTP_Client_Request>
-                        </HTTPSessionObj:HTTP_Request_Response>
-                    </NetworkConnectionObj:HTTP_Session>
-                </NetworkConnectionObj:Layer7_Connections>
+        <cybox:Description>Test Controlled Vocabulary updates</cybox:Description>
+        <cybox:Observable_Source>
+            <!-- Should update A/V to AV -->
+            <cyboxCommon:Tool_Type xsi:type="cyboxVocabs:ToolTypeVocab-1.0">A/V</cyboxCommon:Tool_Type>
+        </cybox:Observable_Source>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Tests ActionNameVocab-1.0 to 1.1 update</cybox:Description>
+        <cybox:Event>
+            <cybox:Actions>
+                <cybox:Action>
+                    <cybox:Name xsi:type="cyboxVocabs:ActionNameVocab-1.0">Accept Socket Connection</cybox:Name>
+                </cybox:Action>
+            </cybox:Actions>
+        </cybox:Event>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test Windows Driver Object translation</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="WinDriverObj:WindowsDriverObjectType">
+                <WinDriverObj:Driver_Name>Test</WinDriverObj:Driver_Name>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test Network Packet Object translations</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Link_Layer>
+                    <PacketObj:Logical_Protocols>
+                        <PacketObj:ARP_RARP>
+                            <PacketObj:Protol_Addr_Size>This elemnt should be renamed to Proto_Addr_Size</PacketObj:Protol_Addr_Size>
+                        </PacketObj:ARP_RARP>
+                    </PacketObj:Logical_Protocols>
+                </PacketObj:Link_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test Network Packet Object translations</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Internet_Layer>
+                    <PacketObj:IPv6>
+                        <PacketObj:Ext_Headers>
+                            <!-- This should get renamed to Encapsulating_Security_Payload -->
+                            <PacketObj:Excapsulating_Security_Payload>
+                                <PacketObj:Sequence_Number>1</PacketObj:Sequence_Number>
+                                <!-- This should get renamed to Authentication_Data -->
+                                <PacketObj:Authenication_Data>0xff</PacketObj:Authenication_Data>
+                            </PacketObj:Excapsulating_Security_Payload>
+                        </PacketObj:Ext_Headers>
+                    </PacketObj:IPv6>
+                </PacketObj:Internet_Layer>
             </cybox:Properties>
         </cybox:Object>
     </cybox:Observable>
@@ -76,10 +113,18 @@
         </cybox:Object>
     </cybox:Observable>
     <cybox:Observable id="example:Observable-1c9af310-0d5a-4c44-bdd7-aea3d99f13b9">
-        <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19d3   ">
+        <cybox:Description>Test HTTP Session Object translations</cybox:Description>
+        <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19d3">
             <cybox:Properties xsi:type="HTTPSessionObj:HTTPSessionObjectType">
                 <HTTPSessionObj:HTTP_Request_Response>
                     <HTTPSessionObj:HTTP_Client_Request>
+                        <HTTPSessionObj:HTTP_Request_Header>
+                            <HTTPSessionObj:Parsed_Header>
+                                <HTTPSessionObj:DNT>
+                                    <URIObject:Value>Translate to StringObjectPropertyType Field</URIObject:Value>
+                                </HTTPSessionObj:DNT>
+                            </HTTPSessionObj:Parsed_Header>
+                        </HTTPSessionObj:HTTP_Request_Header>
                         <HTTPSessionObj:HTTP_Message_Body>
                             <HTTPSessionObj:Length>1024</HTTPSessionObj:Length>
                             <!--Message_Body is not optional in CybOX 2.0.1 and will be removed
@@ -87,8 +132,24 @@
                             <HTTPSessionObj:Message_Body></HTTPSessionObj:Message_Body>
                         </HTTPSessionObj:HTTP_Message_Body>
                     </HTTPSessionObj:HTTP_Client_Request>
+                    <HTTPSessionObj:HTTP_Server_Response>
+                        <HTTPSessionObj:HTTP_Response_Header>
+                            <HTTPSessionObj:Parsed_Header>
+                                <HTTPSessionObj:Refresh datatype="int">This should change the datatype field to 'string'</HTTPSessionObj:Refresh>
+                                <HTTPSessionObj:Vary>
+                                    <URIObject:Value>This should translate to a StringObjectPropertyType field</URIObject:Value>
+                                </HTTPSessionObj:Vary>
+                            </HTTPSessionObj:Parsed_Header>
+                        </HTTPSessionObj:HTTP_Response_Header>
+                    </HTTPSessionObj:HTTP_Server_Response>
                 </HTTPSessionObj:HTTP_Request_Response>
             </cybox:Properties>
+            <cybox:Related_Objects>
+                <cybox:Related_Object idref="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19d0">
+                    <!-- Should update to ObjectRelationshipVocab-1.1 -->
+                    <cybox:Relationship xsi:type="cyboxVocabs:ObjectRelationshipVocab-1.0">Allocated</cybox:Relationship>
+                </cybox:Related_Object>
+            </cybox:Related_Objects>
         </cybox:Object>
     </cybox:Observable>
 </cybox:Observables>

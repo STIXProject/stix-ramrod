@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <cybox:Observables 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xmlns:cybox="http://cybox.mitre.org/cybox-2" 
@@ -21,12 +20,19 @@
             <cybox:Properties xsi:type="EmailMessageObj:EmailMessageObjectType">
                 <EmailMessageObj:Header>
                     <EmailMessageObj:From category="e-mail">
+                        <!-- Test the conversion of 2.0 ',' separator to 2.0.1 '##comma##' separator -->
                         <AddrObj:Address_Value condition="Equals" apply_condition="ANY">attacker@example.com,attacker1@example.com,attacker@bad.example.com</AddrObj:Address_Value>
                     </EmailMessageObj:From>
                     <!-- A comment to test out the lxml iterdescendants() method -->
-                    <EmailMessageObj:Subject condition="Equals" apply_condition="ANY">New modifications to the specification<![CDATA[&comma;]]>Brad,Free Enlargement Pills!</EmailMessageObj:Subject>
+                    <EmailMessageObj:Subject condition="Equals" apply_condition="ANY">New modifications to the specification<![CDATA[&comma;]]>Brad,Free Face Enlargement Pills!</EmailMessageObj:Subject>
                 </EmailMessageObj:Header>
             </cybox:Properties>
         </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Event>
+            <!-- "Anomoly Events" => "Anomaly Events" -->
+            <cybox:Type xsi:type="cyboxVocabs:EventTypeVocab-1.0">Anomoly Events</cybox:Type>
+        </cybox:Event>
     </cybox:Observable>
 </cybox:Observables>
