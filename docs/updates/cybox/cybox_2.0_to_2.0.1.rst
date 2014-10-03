@@ -19,6 +19,51 @@ CybOX 2.0.1:
 * The ``cybox_minor_version`` attribute added to ``ObservablesType``
   instances and set to ``1``.
 
+List Delimiters
+~~~~~~~~~~~~~~~
+
+CybOX 2.0 allows for the definition of multiple Object Property field values
+through the use of reserved list delimiter, which is defined to be ``','``
+(a comma). Grammatical commas were expressed as ``<![CDATA[&comma;]]>``.
+
+CybOX 2.0.1 changed the reserved list delimiter to be ``'##comma##'``, allowing
+for grammatical commas to be expressed without special syntax or ``CDATA``
+wrappers.
+
+Example CybOX 2.0 List
+``````````````````````
+.. code-block:: xml
+
+    <!-- Describes two email subjects: 'Foo' and 'Bar' -->
+    <EmailObj:Subject>Foo,Bar</EmailObj:Subject>
+
+Example CybOX 2.0 Grammatical Comma
+```````````````````````````````````
+
+.. code-block:: xml
+
+    <!-- Use of a grammatical comma -->
+    <EmailObj:Subject>Et tu<![CDATA[&comma;]]> Brute?</EmailObj:Subject>
+
+
+CybOX 2.0.1 changed the default list delimiter to be ``'##comma##'``, allowing
+for grammatical commas to be used naturally.
+
+Example CybOX 2.0.1 List
+````````````````````````
+.. code-block:: xml
+
+    <!-- Describes two email subjects: 'Foo' and 'Bar' -->
+    <EmailObj:Subject>Foo##comma##Bar</EmailObj:Subject>
+
+Example CybOX 2.0.1 Grammatical Comma
+`````````````````````````````````````
+
+.. code-block:: xml
+
+    <!-- Use of a grammatical comma -->
+    <EmailObj:Subject>Et tu, Brute?</EmailObj:Subject>
+
 
 Controlled Vocabulary Updates
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
