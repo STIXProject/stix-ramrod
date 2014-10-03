@@ -179,6 +179,10 @@ def update_nsmap(root, nsmap):
     dictionary. Instead, a copy of the node must be created and initialized with
     an updated ``nsmap`` attribute.
 
+    Args:
+        root (lxml.etree._Element): The top-level node of the XML document.
+        nsmap: A ``namspace alias => namespace`` dictionary.
+
     Returns:
         A copy of `root` with its ``nsmap`` attribute set to `nsmap`.
 
