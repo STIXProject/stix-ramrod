@@ -23,7 +23,7 @@ List Delimiters
 ~~~~~~~~~~~~~~~
 
 CybOX 2.0 allows for the definition of multiple Object Property field values
-through the use of reserved list delimiter, which is defined to be ``','``
+through the use of a reserved list delimiter, which is defined to be ``','``
 (a comma). Grammatical commas were expressed as ``<![CDATA[&comma;]]>``.
 
 CybOX 2.0.1 changed the reserved list delimiter to be ``'##comma##'``, allowing
@@ -63,6 +63,20 @@ Example CybOX 2.0.1 Grammatical Comma
 
     <!-- Use of a grammatical comma -->
     <EmailObj:Subject>Et tu, Brute?</EmailObj:Subject>
+
+
+Untranslatable Fields
+^^^^^^^^^^^^^^^^^^^^^
+
+All CybOX 2.0 fields can be translated to 2.0.1. There should not be any need
+to perform a **forced** update.
+
+
+Object Updates
+^^^^^^^^^^^^^^
+
+All CybOX 2.0 Object content can be updated to 2.0.1 without any
+structural transformations or content translations.
 
 
 Controlled Vocabulary Updates
