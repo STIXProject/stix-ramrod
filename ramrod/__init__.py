@@ -35,8 +35,18 @@ class UpdateOptions(object):
             expects. If ``False`` no version check operations will be performed.
             Default value is ``True``.
         new_id_func: A function for setting new IDs on an ``etree._Element``
-            node. The function must accept one parameter and set a new, unique
-            ID. Default value is :meth:`ramrod.utils.new_id` function.
+            node. The function must accept one ``etree._Element`` instance
+            argument and assign it a new, unique ``id`` attribute value.
+            Default value is :meth:`ramrod.utils.new_id` function.
+
+            Example:
+                >>> def my_id_func(node):
+                >>>     new_id = my_generate_unique_id()
+                >>>     node.attrib['id'] = new_id
+                >>>
+                >>> options = ramrod.UpdateOptions()
+                >>> options.new_id_func = my_id_func
+
         update_vocabularies: If ``True``, default controlled vocabulary
             instances will be updated and typos will be fixed. If ``False``,
             no updates will be performed against controlled vocabulary
