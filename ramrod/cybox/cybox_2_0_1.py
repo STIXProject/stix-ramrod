@@ -82,10 +82,6 @@ class DisallowedHTTPSession(_DisallowedFields):
     XPATH = ".//HTTPSessionObj:X_Forwarded_Proto"
 
 
-class OptionalCommonFields(_OptionalElements):
-    XPATH = ".//cyboxCommon:Tool_Configuration"
-
-
 class OptionalDNSCacheFields(_OptionalElements):
     XPATH = ".//DNSCacheObj:DNS_Entry"
 
@@ -378,7 +374,6 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
     )
 
     OPTIONAL_ELEMENTS = (
-        OptionalCommonFields,
         OptionalDiskPartitionFields,
         OptionalDNSCacheFields,
         OptionalDNSQueryFields,

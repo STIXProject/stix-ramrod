@@ -100,7 +100,6 @@ The following elements were required in CybOX 2.0.1 but became optional in
 CybOX 2.1. Empty instances of these fields will be stripped during the update
 process.
 
-* ``cyboxCommon:Tool_Configuration``
 * ``DiskPartitionObj:Partition_ID``
 * ``DNSCacheObj:DNS_Entry``
 * ``DNSQueryObj:QName``
