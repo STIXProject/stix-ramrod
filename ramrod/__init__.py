@@ -422,6 +422,17 @@ class _OptionalElements(_DisallowedFields):
     def __init__(self):
         super(_OptionalElements, self).__init__()
 
+    @classmethod
+    def _is_empty(cls, node):
+        if any((node.attrib, node.text)):
+            return False
+
+        for child in node:
+            if not cls._is_empty(child):
+                return False
+
+        return True
+
 
     @classmethod
     def _interrogate(cls, nodes):
@@ -438,8 +449,8 @@ class _OptionalElements(_DisallowedFields):
         """
         contraband = []
         for node in nodes:
-            if all((node.text is None, len(node) == 0, not(node.attrib))):
-                contraband.append(node)
+           if cls._is_empty(node):
+            contraband.append(node)
 
         return contraband
 
@@ -813,8 +824,8 @@ class _BaseUpdater(object):
         """Updates the ``nsmap`` attribute found on `node` to `nsmap`.
 
         The lxml API does not allow in-place modification of the ``nsmap``
-        dictionary. Instead, a copy of the node must be created and initialized with
-        an updated ``nsmap`` attribute.
+        dictionary. Instead, a copy of the node must be created and initialized
+        with an updated ``nsmap`` attribute.
 
         Args:
             node (lxml.etree._Element): An XML element
@@ -851,7 +862,7 @@ class _BaseUpdater(object):
             A copy of the root document with an update ``nsmap`` attribute.
 
         """
-        def _local_update_namespaces(node, nsmap):
+        def _local_update_namespaces(node):
             """Recursively descends into `node`, updating namespace dictionaries
             and element tags to align with ``UPDATE_NS_MAP`` along the way.
 
@@ -877,16 +888,16 @@ class _BaseUpdater(object):
                 return
 
             for child in node:
-                _local_update_namespaces(child, nsmap)
+                _local_update_namespaces(child)
 
-            new_node = self._update_nsmap(node, nsmap)
+            new_node = self._update_nsmap(node, remapped)
             replace_xml_element(node, new_node)
             return new_node
 
 
         remapped = self._remap_namespaces(root)
         possible_namespaces = remapped.values() + self.UPDATE_NS_MAP.keys()
-        updated = _local_update_namespaces(root, remapped)
+        updated = _local_update_namespaces(root)
 
         return updated
 

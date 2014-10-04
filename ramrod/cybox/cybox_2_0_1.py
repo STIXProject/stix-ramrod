@@ -111,7 +111,7 @@ class OptionalLinkPackageFields(_OptionalElements):
 
 class OptionalNetworkPacketFields(_OptionalElements):
     ELEMENTS = (
-        'Error_Msg', 'Info_Msg', 'Traceroute', 'Destination_Unreachable',
+        'Destination_Unreachable', 'Error_Msg', 'Info_Msg', 'Traceroute',
         'Source_Quench', 'Redirect_Message', 'Time_Exceeded', 'Echo_Reply',
         'Echo_Request', 'Timestamp_Request', 'Timestamp_Reply', 'Address_Mask',
         'Outbound_Packet_Forward_Success', 'Outbound_Packet_no_Route',
