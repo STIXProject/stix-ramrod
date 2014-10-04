@@ -75,36 +75,34 @@ an instance of ``IdentityType``, we can perform the following transformation:
 
 .. code-block:: xml
 
-    <stix:Information_Source>
-        <stixCommon:Contributors>
-            <stixCommon:Contributor>
-                <stixCommon:Name>Example</stixCommon:Name>
-            </stixCommon:Contributor>
-            <stixCommon:Contributor>
-                <stixCommon:Name>Another</stixCommon:Name>
-            </stixCommon:Contributor>
-        </stixCommon:Contributors>
-    </stix:Information_Source>
+    <stixCommon:Contributors>
+        <stixCommon:Contributor>
+            <stixCommon:Name>Example</stixCommon:Name>
+        </stixCommon:Contributor>
+        <stixCommon:Contributor>
+            <stixCommon:Name>Another</stixCommon:Name>
+        </stixCommon:Contributor>
+    </stixCommon:Contributors>
+
 
 
 **Example:** A STIX v1.1 ``ContributingSourceType`` instance.
 
 .. code-block:: xml
 
-    <stix:Information_Source>
-        <stixCommon:Contributing_Sources>
-            <stixCommon:Source>
-                <stixCommon:Identity>
-                    <stixCommon:Name>Example</stixCommon:Name>
-                </stixCommon:Identity>
-            </stixCommon:Source>
-            <stixCommon:Source>
-                <stixCommon:Identity>
-                    <stixCommon:Name>Another</stixCommon:Name>
-                </stixCommon:Identity>
-            </stixCommon:Source>
-        </stixCommon:Contributing_Sources>
-    </stix:Information_Source>
+    <stixCommon:Contributing_Sources>
+        <stixCommon:Source>
+            <stixCommon:Identity>
+                <stixCommon:Name>Example</stixCommon:Name>
+            </stixCommon:Identity>
+        </stixCommon:Source>
+        <stixCommon:Source>
+            <stixCommon:Identity>
+                <stixCommon:Name>Another</stixCommon:Name>
+            </stixCommon:Identity>
+        </stixCommon:Source>
+    </stixCommon:Contributing_Sources>
+
 
 
 ttp:Exploit_Targets
