@@ -242,7 +242,6 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
     Empty instances of the following optional elements are removed:
 
-    * ``cyboxCommon:Tool_Configuration``
     * ``DiskPartitionObj:Partition_ID``
     * ``DNSCacheObj:DNS_Entry``
     * ``DNSQueryObj:QName``
