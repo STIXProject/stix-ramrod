@@ -72,6 +72,57 @@ Windows Driver Object
   ``'http://cybox.mitre.org/objects#WinDriverObject-3``.
 
 
+Windows Mailslot Object
+~~~~~~~~~~~~~~~~~~~~~~~
+* The top-level ``WinMailslotObj:Handle`` container is removed, causing
+  ``Handle`` child to take it its place. This can only be done if there
+  is one ``Handle`` child. If more than one child ``Handle`` element is
+  present, the top-level ``WinMailslotObj:Handle`` container is considered
+  untranslatable.
+
+  **Example CybOX 2.0.1 WinMailslotObj:Handle**
+
+  .. code-block:: xml
+
+    <cybox:Object>
+        <cybox:Properties xsi:type="WinMailslotObj:WindowsMailslotObjectType">
+            <WinMailslotObj:Handle>
+                <WinHandleObj:Handle>
+                    <WinHandleObj:Name>Test</WinHandleObj:Name>
+                </WinHandleObj:Handle>
+            </WinMailslotObj:Handle>
+        </cybox:Properties>
+    </cybox:Object>
+
+  **Example CybOX 2.1 WinMailslotObj:Handle**
+
+  .. code-block:: xml
+
+    <cybox:Object>
+        <cybox:Properties xsi:type="WinMailslotObj:WindowsMailslotObjectType">
+            <WinHandleObj:Handle>
+                <WinHandleObj:Name>Test</WinHandleObj:Name>
+            </WinHandleObj:Handle>
+        </cybox:Properties>
+    </cybox:Object>
+
+  **Example Untranslatable CybOX 2.0.1 WinMailslotObj:Handle**
+
+  .. code-block:: xml
+
+    <cybox:Object>
+        <cybox:Properties xsi:type="WinMailslotObj:WindowsMailslotObjectType">
+            <WinMailslotObj:Handle>
+                <WinHandleObj:Handle>
+                    <WinHandleObj:Name>One Child</WinHandleObj:Name>
+                </WinHandleObj:Handle>
+                <WinHandleObj:Handle>
+                    <WinHandleObj:Name>Cannot translate! Two Handle children present.</WinHandleObj:Name>
+                </WinHandleObj:Handle>
+            </WinMailslotObj:Handle>
+        </cybox:Properties>
+    </cybox:Object>
+
 Controlled Vocabulary Updates
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
