@@ -173,7 +173,7 @@ class TransSightingsSource(_TranslatableField):
 
 class TransIndicatorRelatedCampaign(_TranslatableField):
     XPATH_NODE = ".//indicator:Related_Campaigns/indicator:Related_Campaign"
-    NEW_TAG =  "{http://stix.mitre.org/Campaign-1}Campaign"
+    NEW_TAG =  "{http://stix.mitre.org/common-1}Campaign"
 
     @classmethod
     def _translate_fields(cls, node):
@@ -206,7 +206,9 @@ class TransIndicatorRelatedCampaign(_TranslatableField):
 
         """
         dup = copy_xml_element(node, tag=cls.NEW_TAG)
-        wrapper = etree.Element("{http://stix.mitre.org/Campaign-1}Related_Campaign")
+        wrapper = etree.Element(
+            "{http://stix.mitre.org/Indicator-2}Related_Campaign"
+        )
         wrapper.append(dup)
         return wrapper
 
