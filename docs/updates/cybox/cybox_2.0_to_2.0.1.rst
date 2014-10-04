@@ -92,7 +92,7 @@ defined by the ``cybox_default_vocabularies.xsd`` schema.
 
 * ``EventTypeVocab-1.0`` updated to ``EventTypeVocab-1.0.1``
 
-  -  Fixed typo: ``"Anomoly Events" => "Anomaly Events"``
+  -  Term ``'Anomoly Events'`` changed to ``'Anomaly Events'``
 
 .. include:: /_includes/note_controlled_vocabulary_updates.rst
 
