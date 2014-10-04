@@ -45,16 +45,34 @@
             </indicator:Test_Mechanisms>
             <indicator:Producer>
                 <stixCommon:Contributing_Sources>
-                    <stixCommon:Source><stixCommon:Identity>
+                    <stixCommon:Source>
+                        <stixCommon:Identity>
                             <stixCommon:Name>Example</stixCommon:Name>
                         </stixCommon:Identity>
                     </stixCommon:Source>
-                    <stixCommon:Source><stixCommon:Identity>
+                    <stixCommon:Source>
+                        <stixCommon:Identity>
                             <stixCommon:Name>Another</stixCommon:Name>
                         </stixCommon:Identity>
                     </stixCommon:Source>
                 </stixCommon:Contributing_Sources>
             </indicator:Producer>
+        </stix:Indicator>
+        <stix:Indicator xsi:type="indicator:IndicatorType">
+            <indicator:Title>Demonstrates translation of Related_Campaigns</indicator:Title>
+            <indicator:Related_Campaigns>
+                <indicator:Related_Campaign>
+                    <stixCommon:Names>
+                        <stixCommon:Name>Example #1</stixCommon:Name>
+                    </stixCommon:Names>
+                </indicator:Related_Campaign>
+                <indicator:Related_Campaign>
+                    <stixCommon:Names>
+                        <stixCommon:Name>Example #2</stixCommon:Name>
+                    </stixCommon:Names>
+                </indicator:Related_Campaign>
+                <indicator:Related_Campaign idref="example:campaign-test-1"/>
+            </indicator:Related_Campaigns>
         </stix:Indicator>
         <stix:Indicator xsi:type="indicator:IndicatorType">
             <indicator:Title>Demonstrates translation of Sighting/Source</indicator:Title>
