@@ -175,6 +175,33 @@
         </cybox:Observable_Source>
     </cybox:Observable>
     <cybox:Observable>
+        <cybox:Description>Test optional WinPrefetchObj element removal</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="WinPrefetchObj:WindowsPrefetchObjectType">
+                <WinPrefetchObj:Application_File_Name>Test</WinPrefetchObj:Application_File_Name>
+                <WinPrefetchObj:Volume>
+                    <WinPrefetchObj:VolumeItem/>
+                    <WinPrefetchObj:VolumeItem>
+                        <VolumeObj:Name>Not Empty</VolumeObj:Name>
+                    </WinPrefetchObj:VolumeItem>
+                    <WinPrefetchObj:DeviceItem/>
+                    <WinPrefetchObj:DeviceItem>
+                        <DeviceObj:Description>Not Empty</DeviceObj:Description>
+                    </WinPrefetchObj:DeviceItem>
+                </WinPrefetchObj:Volume>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test optional WinNetworkShareObj Netname element removal</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="WinNetworkShareObj:WindowsNetworkShareObjectType">
+                <WinNetworkShareObj:Current_Uses>0</WinNetworkShareObj:Current_Uses>
+                <WinNetworkShareObj:Netname/>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
         <cybox:Description>Test Optional Partition_ID Removal</cybox:Description>
         <cybox:Object>
             <cybox:Properties xsi:type="DiskPartitionObj:DiskPartitionObjectType">
@@ -193,6 +220,21 @@
                     </WinComputerAccountObj:Delegation>
                     <WinComputerAccountObj:Ticket>1</WinComputerAccountObj:Ticket>
                 </WinComputerAccountObj:Kerberos>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test WinFileObject Size_In_Bytes element removal.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="WinFileObj:WindowsFileObjectType">
+                <WinFileObj:Security_ID>TEST</WinFileObj:Security_ID>
+                <WinFileObj:Stream_List>
+                    <WinFileObj:Stream>
+                        <cyboxCommon:Hash/>
+                        <WinFileObj:Name>Test</WinFileObj:Name>
+                        <WinFileObj:Size_In_Bytes/>
+                    </WinFileObj:Stream>
+                </WinFileObj:Stream_List>
             </cybox:Properties>
         </cybox:Object>
     </cybox:Observable>
