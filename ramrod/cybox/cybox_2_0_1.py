@@ -374,6 +374,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
     )
 
     OPTIONAL_ELEMENTS = (
+        OptionalURIFields,
         OptionalDiskPartitionFields,
         OptionalDNSCacheFields,
         OptionalDNSQueryFields,
@@ -383,7 +384,6 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         OptionalNetworkPacketFields,
         OptionalProductFields,
         OptionalSystemFields,
-        OptionalURIFields,
         OptionalWinComputerAccountFields,
         OptionalWinFileFields,
         OptionalWinNetworkShareFields,
