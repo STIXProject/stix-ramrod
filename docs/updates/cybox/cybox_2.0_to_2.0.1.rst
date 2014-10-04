@@ -35,7 +35,7 @@ Example CybOX 2.0 List
 .. code-block:: xml
 
     <!-- Describes two email subjects: 'Foo' and 'Bar' -->
-    <EmailObj:Subject>Foo,Bar</EmailObj:Subject>
+    <EmailObj:Subject condition="Equals" apply_condition="ANY">Foo,Bar</EmailObj:Subject>
 
 Example CybOX 2.0 Grammatical Comma
 ```````````````````````````````````
@@ -54,7 +54,7 @@ Example CybOX 2.0.1 List
 .. code-block:: xml
 
     <!-- Describes two email subjects: 'Foo' and 'Bar' -->
-    <EmailObj:Subject>Foo##comma##Bar</EmailObj:Subject>
+    <EmailObj:Subject condition="Equals" apply_condition="ANY">Foo##comma##Bar</EmailObj:Subject>
 
 Example CybOX 2.0.1 Grammatical Comma
 `````````````````````````````````````
