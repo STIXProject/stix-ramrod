@@ -183,6 +183,20 @@
         </cybox:Object>
     </cybox:Observable>
     <cybox:Observable>
+        <cybox:Description>Test Optional WinComputerAccountObj element removal.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="WinComputerAccountObj:WindowsComputerAccountObjectType">
+                <WinComputerAccountObj:Kerberos>
+                    <WinComputerAccountObj:Delegation>
+                        <WinComputerAccountObj:Bitmask/>
+                        <WinComputerAccountObj:Service/>
+                    </WinComputerAccountObj:Delegation>
+                    <WinComputerAccountObj:Ticket>1</WinComputerAccountObj:Ticket>
+                </WinComputerAccountObj:Kerberos>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
         <cybox:Description>Test Optional DNS_Entry Removal.</cybox:Description>
         <cybox:Object>
             <cybox:Properties xsi:type="DNSCacheObj:DNSCacheObjectType">
