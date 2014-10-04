@@ -59,15 +59,19 @@ def get_etree_root(doc):
 def replace_xml_element(old, new):
     """Replaces `old` node with `new` in the document which `old` exists."""
     parent = old.getparent()
-    idx = parent.index(old)
-    parent.insert(idx, new)
-    parent.remove(old)
+
+    if parent is not None:
+        idx = parent.index(old)
+        parent.insert(idx, new)
+        parent.remove(old)
 
 
 def remove_xml_element(node):
     """Removes `node` from the parent of `node`."""
     parent = node.getparent()
-    parent.remove(node)
+
+    if parent is not None:
+        parent.remove(node)
 
 
 def remove_xml_elements(nodes):
@@ -175,25 +179,23 @@ def new_id(node):
     return node
 
 
-def update_nsmap(root, nsmap):
-    """Updates the ``nsmap`` attribute found on `root` to `nsmap`.
-
-    The lxml API does not allow in-place modification of the ``nsmap``
-    dictionary. Instead, a copy of the node must be created and initialized with
-    an updated ``nsmap`` attribute.
-
-    Args:
-        root (lxml.etree._Element): The top-level node of the XML document.
-        nsmap: A ``namspace alias => namespace`` dictionary.
+def get_node_text(node):
+    """Returns the text for a etree _Element `node`. If the node contains
+    CDATA information, the text will be wrapped in an ``etree.CDATA`` instance.
 
     Returns:
-        A copy of `root` with its ``nsmap`` attribute set to `nsmap`.
+        If the `node` contains a ``<![CDATA[]]>`` block, a ``etree.CDATA``
+        instance will be returned. If the node contains children, ``None``.
+        The `node` ``text`` value otherwise.
 
     """
-    new_root  = etree.Element(root.tag, nsmap=nsmap)
-    new_root.attrib.update(root.attrib)
-    new_root[:] = root[:]
+    if len(node) > 0:
+        return None
 
-    return new_root
+    if "<![CDATA[" in etree.tostring(node):
+            return etree.CDATA(node.text)
+
+    return node.text
+
 
 

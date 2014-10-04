@@ -104,7 +104,7 @@ process.
 * ``DNSCacheObj:DNS_Entry``
 * ``DNSQueryObj:QName``
 * ``FileObj:Depth``
-* ``HTTPSessionObj:Message_Bod``, ``HTTPSessionObj:Domain_Name``
+* ``HTTPSessionObj:Message_Body``, ``HTTPSessionObj:Domain_Name``
 * ``PacketObj:Address_Mask``, ``PacketObj:Address_Mask_Reply``,
   ``PacketObj:Address_Mask_Request``, ``PacketObj:Destination_Unreachable``,
   ``PacketObj:Echo_Reply``, ``PacketObj:Echo_Request``,

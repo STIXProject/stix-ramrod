@@ -1,14 +1,14 @@
 # Copyright (c) 2014, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
+import itertools
 from distutils.version import StrictVersion
 from collections import defaultdict, namedtuple
-from itertools import izip
 from lxml import etree
 from lxml.etree import QName
 from ramrod.utils import (ignored, get_ext_namespace, get_type_info,
     get_typed_nodes, replace_xml_element, remove_xml_attribute,
-    get_etree_root, new_id, update_nsmap)
+    get_etree_root, new_id, get_node_text)
 
 __version__ = "1.0a1"
 
@@ -729,7 +729,7 @@ class _BaseUpdater(object):
             return
 
         l = schemalocs.split()
-        pairs = izip(l[::2], l[1::2])
+        pairs = itertools.izip(l[::2], l[1::2])
 
         cleaned = self._clean_schemalocs(pairs)
         remapped = self._remap_schemalocs(cleaned)
@@ -780,11 +780,51 @@ class _BaseUpdater(object):
 
         return remapped
 
+    def _get_remapped_tag(self, node):
+        qname = QName(node)
+        namespace, localname = qname.namespace, qname.localname
+        updated_ns = self.UPDATE_NS_MAP.get(namespace, namespace)
+
+        return "{%s}%s" % (updated_ns, localname)
+
+
+    def _update_tag(self, node):
+        node.tag = self._get_remapped_tag(node)
+        return node
+
+
+    def _update_nsmap(self, node, nsmap):
+        """Updates the ``nsmap`` attribute found on `node` to `nsmap`.
+
+        The lxml API does not allow in-place modification of the ``nsmap``
+        dictionary. Instead, a copy of the node must be created and initialized with
+        an updated ``nsmap`` attribute.
+
+        Args:
+            node (lxml.etree._Element): An XML element
+            nsmap: A ``namspace alias => namespace`` dictionary.
+
+        Returns:
+            A copy of `root` with its ``nsmap`` attribute set to `nsmap`.
+
+        """
+        tag = self._get_remapped_tag(node)
+        new  = etree.Element(tag, nsmap=nsmap)
+        new.attrib.update(node.attrib)
+        new.text  = get_node_text(node)
+        new[:] = node[:]
+
+        return new
+
 
     def _update_namespaces(self, root):
         """Updates the namespaces in the instance document to align with
         with the updated schema. This will also remove any disallowed
         namespaces if found in the instance document.
+
+        Note:
+            Only nodes that exist within the namespaces defined by
+            ``UPDATE_NS_MAP`` and ``NS_MAP`` will be updated.
 
         Note:
             The lxml library does not allow you to modify the ``nsmap``
@@ -795,9 +835,43 @@ class _BaseUpdater(object):
             A copy of the root document with an update ``nsmap`` attribute.
 
         """
+        def _local_update_namespaces(node, nsmap):
+            """Recursively descends into `node`, updating namespace dictionaries
+            and element tags to align with ``UPDATE_NS_MAP`` along the way.
+
+            This fixes issues that arise when namespace definitions appear
+            inside the document and not just at the root level.
+
+            Note:
+                This will only descend into elements which exist in the STIX
+                and CybOX namespaces.
+
+            Returns:
+                A copy of `node` with its tag and namesapce dictionary updated
+                to align with ``UPDATE_NS_MAP``.
+
+            """
+            try:
+                ns = QName(node).namespace
+            except ValueError:
+                # The `node` was probably an XML comment
+                return
+
+            if ns not in possible_namespaces:
+                return
+
+            for child in node:
+                _local_update_namespaces(child, nsmap)
+
+            new_node = self._update_nsmap(node, nsmap)
+            replace_xml_element(node, new_node)
+            return new_node
+
+
         remapped = self._remap_namespaces(root)
-        updated = update_nsmap(root, remapped)
-        self._apply_namespace_updates(updated)
+        possible_namespaces = remapped.values() + self.UPDATE_NS_MAP.keys()
+        updated = _local_update_namespaces(root, remapped)
+
         return updated
 
 
@@ -994,7 +1068,10 @@ def update(doc, from_=None, to_=None, options=None, force=False):
         from_ = from_ or _get_version(root)  # _get_version raises KeyError
         func = update_methods[name]
     except KeyError:
-        error = "Document root node must be one of %s" % (update_methods.keys(),)
+        error = (
+            "Document root node must be one of %s. Found: '%s'" %
+            (update_methods.keys(), name)
+        )
         raise UpdateError(error)
 
     updated = func(root, from_, to_, options, force)

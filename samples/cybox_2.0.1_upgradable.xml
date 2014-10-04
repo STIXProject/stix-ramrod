@@ -206,6 +206,21 @@
         </cybox:Object>
     </cybox:Observable>
     <cybox:Observable>
+        <cybox:Description>Test optional Depth element removal.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="FileObj:FileObjectType">
+                <FileObj:Packer_List>
+                    <FileObj:Packer>
+                        <FileObj:EP_Jump_Codes>
+                            <FileObj:Depth/>
+                            <FileObj:Opcodes>Test</FileObj:Opcodes>
+                        </FileObj:EP_Jump_Codes>
+                    </FileObj:Packer>
+                </FileObj:Packer_List>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
         <cybox:Description>Tests ActionNameVocab-1.0 to 1.1 update</cybox:Description>
         <cybox:Event>
             <cybox:Actions>
@@ -218,7 +233,8 @@
     <cybox:Observable>
         <cybox:Description>Test Windows Driver Object translation</cybox:Description>
         <cybox:Object>
-            <cybox:Properties xsi:type="WinDriverObj:WindowsDriverObjectType" xmlns:cybox="http://cybox.mitre.org/cybox-2"  xmlns:WinDriverObj="http://cybox.mitre.org/objects#WinDriverObject-2">
+            <!-- Redfined the WinDriverObj xmlns alias here to test that it gets updated properly -->
+            <cybox:Properties xsi:type="WinDriverObj:WindowsDriverObjectType" xmlns:WinDriverObj="http://cybox.mitre.org/objects#WinDriverObject-2">
                 <WinDriverObj:Driver_Name>Test</WinDriverObj:Driver_Name>
             </cybox:Properties>
         </cybox:Object>
@@ -234,6 +250,156 @@
                         </PacketObj:ARP_RARP>
                     </PacketObj:Logical_Protocols>
                 </PacketObj:Link_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test removal of optinonal Network Packet Object fields.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Internet_Layer>
+                    <PacketObj:ICMPv4>
+                        <PacketObj:Info_Msg>
+                            <PacketObj:Echo_Reply/>
+                        </PacketObj:Info_Msg>
+                    </PacketObj:ICMPv4>
+                </PacketObj:Internet_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test removal of optinonal Network Packet Object fields.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Internet_Layer>
+                    <PacketObj:ICMPv4>
+                        <PacketObj:Info_Msg>
+                            <PacketObj:Echo_Request/>
+                        </PacketObj:Info_Msg>
+                    </PacketObj:ICMPv4>
+                </PacketObj:Internet_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test removal of optinonal Network Packet Object fields.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Internet_Layer>
+                    <PacketObj:ICMPv4>
+                        <PacketObj:Info_Msg>
+                            <PacketObj:Timestamp_Request/>
+                        </PacketObj:Info_Msg>
+                    </PacketObj:ICMPv4>
+                </PacketObj:Internet_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test removal of optinonal Network Packet Object fields.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Internet_Layer>
+                    <PacketObj:ICMPv4>
+                        <PacketObj:Info_Msg>
+                            <PacketObj:Timestamp_Reply/>
+                        </PacketObj:Info_Msg>
+                    </PacketObj:ICMPv4>
+                </PacketObj:Internet_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test removal of optinonal Network Packet Object fields.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Internet_Layer>
+                    <PacketObj:ICMPv4>
+                        <PacketObj:Error_Msg/>
+                    </PacketObj:ICMPv4>
+                </PacketObj:Internet_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test removal of optinonal Network Packet Object fields.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Internet_Layer>
+                    <PacketObj:ICMPv4>
+                        <PacketObj:Error_Msg>
+                            <PacketObj:Error_Msg_Content/>
+                        </PacketObj:Error_Msg>
+                    </PacketObj:ICMPv4>
+                </PacketObj:Internet_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test removal of optinonal Network Packet Object fields.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Internet_Layer>
+                    <PacketObj:ICMPv4>
+                        <PacketObj:Error_Msg>
+                            <PacketObj:Destination_Unreachable/>
+                        </PacketObj:Error_Msg>
+                    </PacketObj:ICMPv4>
+                </PacketObj:Internet_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test removal of optinonal Network Packet Object fields.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Internet_Layer>
+                    <PacketObj:ICMPv4>
+                        <PacketObj:Error_Msg>
+                            <PacketObj:Redirect_Message/>
+                        </PacketObj:Error_Msg>
+                    </PacketObj:ICMPv4>
+                </PacketObj:Internet_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test removal of optinonal Network Packet Object fields.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Internet_Layer>
+                    <PacketObj:ICMPv4>
+                        <PacketObj:Error_Msg>
+                            <PacketObj:Source_Quench/>
+                        </PacketObj:Error_Msg>
+                    </PacketObj:ICMPv4>
+                </PacketObj:Internet_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test removal of optinonal Network Packet Object fields.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Internet_Layer>
+                    <PacketObj:ICMPv4>
+                        <PacketObj:Traceroute/>
+                    </PacketObj:ICMPv4>
+                </PacketObj:Internet_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test removal of optinonal Network Packet Object fields.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Internet_Layer>
+                    <PacketObj:ICMPv4>
+                        <PacketObj:Info_Msg>
+                            <PacketObj:Address_Mask_Reply/>
+                        </PacketObj:Info_Msg>
+                    </PacketObj:ICMPv4>
+                </PacketObj:Internet_Layer>
             </cybox:Properties>
         </cybox:Object>
     </cybox:Observable>
@@ -293,6 +459,12 @@
                     <HTTPSessionObj:HTTP_Client_Request>
                         <HTTPSessionObj:HTTP_Request_Header>
                             <HTTPSessionObj:Parsed_Header>
+                                <HTTPSessionObj:Host>
+                                    <!-- Test removal of optional Domain Name. URIObj:Value will be removed too -->
+                                    <HTTPSessionObj:Domain_Name>
+                                        <URIObj:Value></URIObj:Value>
+                                    </HTTPSessionObj:Domain_Name>
+                                </HTTPSessionObj:Host>
                                 <HTTPSessionObj:DNT>
                                     <URIObj:Value>Translate to StringObjectPropertyType Field</URIObj:Value>
                                 </HTTPSessionObj:DNT>
@@ -300,9 +472,8 @@
                         </HTTPSessionObj:HTTP_Request_Header>
                         <HTTPSessionObj:HTTP_Message_Body>
                             <HTTPSessionObj:Length>1024</HTTPSessionObj:Length>
-                            <!--Message_Body is not optional in CybOX 2.0.1 and will be removed
-                                in the update process-->
-                            <HTTPSessionObj:Message_Body></HTTPSessionObj:Message_Body>
+                            <!--Message_Body is not optional in CybOX 2.0.1 and will be removed in the update process-->
+                            <HTTPSessionObj:Message_Body/>
                         </HTTPSessionObj:HTTP_Message_Body>
                     </HTTPSessionObj:HTTP_Client_Request>
                     <HTTPSessionObj:HTTP_Server_Response>
