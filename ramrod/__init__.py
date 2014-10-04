@@ -422,6 +422,7 @@ class _OptionalElements(_DisallowedFields):
     def __init__(self):
         super(_OptionalElements, self).__init__()
 
+
     @classmethod
     def _is_empty(cls, node):
         if any((node.attrib, node.text)):
@@ -440,8 +441,8 @@ class _OptionalElements(_DisallowedFields):
 
         Note:
             A node is considered to be emtpy if it has no attributes, no text
-            value, and no children. These criterion may be overridden by
-            implementations of this class.
+            value, and no children with content (attribs or text content).
+            These criterion may be overridden by implementations of this class.
 
         Returns:
             A list of nodes that are empty.

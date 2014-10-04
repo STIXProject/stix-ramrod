@@ -206,6 +206,23 @@
         </cybox:Object>
     </cybox:Observable>
     <cybox:Observable>
+        <cybox:Description>Tests SystemObj IP_Address removal.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="SystemObj:SystemObjectType">
+                <SystemObj:Network_Interface_List>
+                    <SystemObj:Network_Interface>
+                        <SystemObj:IP_List>
+                            <SystemObj:IP_Info>
+                                <SystemObj:IP_Address/>
+                                <SystemObj:Subnet_Mask/>
+                            </SystemObj:IP_Info>
+                        </SystemObj:IP_List>
+                    </SystemObj:Network_Interface>
+                </SystemObj:Network_Interface_List>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
         <cybox:Description>Test optional Depth element removal.</cybox:Description>
         <cybox:Object>
             <cybox:Properties xsi:type="FileObj:FileObjectType">
@@ -303,6 +320,22 @@
                     <PacketObj:ICMPv4>
                         <PacketObj:Info_Msg>
                             <PacketObj:Timestamp_Reply/>
+                        </PacketObj:Info_Msg>
+                    </PacketObj:ICMPv4>
+                </PacketObj:Internet_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test removal of optinonal Network Packet Object fields.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Internet_Layer>
+                    <PacketObj:ICMPv4>
+                        <PacketObj:Info_Msg>
+                            <PacketObj:Timestamp_Reply>
+                                <PacketObj:Timestamp_Reply>true</PacketObj:Timestamp_Reply>
+                            </PacketObj:Timestamp_Reply>
                         </PacketObj:Info_Msg>
                     </PacketObj:ICMPv4>
                 </PacketObj:Internet_Layer>
