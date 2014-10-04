@@ -781,6 +781,14 @@ class _BaseUpdater(object):
         return remapped
 
     def _get_remapped_tag(self, node):
+        """Returns a new tag for `node` which includes an updated namespace
+        portion of the tag. This is determined by looking up the tag
+        namespace in the ``UPDATE_NS_MAP`` class dictionary.
+
+        Returns:
+            A new tag for `node` which contains an updated namespace.
+
+        """
         qname = QName(node)
         namespace, localname = qname.namespace, qname.localname
         updated_ns = self.UPDATE_NS_MAP.get(namespace, namespace)
@@ -789,6 +797,14 @@ class _BaseUpdater(object):
 
 
     def _update_tag(self, node):
+        """Updates the tag for `node` which a tag that includes an updated
+        namespace. This is driven by the ``UPDATE_NS_MAP`` class attribute.
+
+        Returns:
+            `node` with an updated tag that includes a new namespace if the
+            original namespace existed in ``UPDATE_NS_MAP``.
+
+        """
         node.tag = self._get_remapped_tag(node)
         return node
 
