@@ -848,7 +848,7 @@ class _BaseUpdater(object):
 
 
     def _update_namespaces(self, node):
-        """Updates the namespaces in the instance document to align with
+        """Updates the namespaces in the instance `node` to align with
         with the updated schema. This will also remove any disallowed
         namespaces if found in the instance document.
 
@@ -862,7 +862,9 @@ class _BaseUpdater(object):
             A copy of `root` must be made with a new initial ``nsmap``.
 
         Returns:
-            A copy of the root document with an update ``nsmap`` attribute.
+            A copy of the `node` with an updated ``nsmap`` attribute. Each
+            of its descendants which belong to known namespaces are updated
+            as well.
 
         """
 
