@@ -878,7 +878,8 @@ class _BaseUpdater(object):
             # The `node` was probably an XML comment
             return node
 
-        if ns not in self.NSMAP.itervalues():
+        namespaces = self.NSMAP.itervalues()
+        if ns not in namespaces:
             return node
 
         for child in node:
@@ -886,7 +887,6 @@ class _BaseUpdater(object):
 
         new_node = self._update_nsmap(node)
         replace_xml_element(node, new_node)
-
         return new_node
 
 

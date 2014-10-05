@@ -58,8 +58,10 @@ def get_etree_root(doc):
 
 def replace_xml_element(old, new):
     """Replaces `old` node with `new` in the document which `old` exists."""
-    parent = old.getparent()
+    if old is new:
+        return old
 
+    parent = old.getparent()
     if parent is not None:
         idx = parent.index(old)
         parent.insert(idx, new)
