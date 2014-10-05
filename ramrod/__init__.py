@@ -866,6 +866,10 @@ class _BaseUpdater(object):
             of its descendants which belong to known namespaces are updated
             as well.
 
+            If `node` is not an ``etree._Element`` (e.g, a comment node),
+            or it does not belong to any namespace defined in the class-level
+            ``NSMAP``, then this function returns `node` itself.
+
         """
 
         try:
