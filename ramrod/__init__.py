@@ -767,30 +767,31 @@ class _BaseUpdater(object):
             node.tag = node.tag.replace(node_ns, updated_ns)
 
 
-    def _remap_namespaces(self, root):
-        """Remaps the namespaces found on the input `root` document to
-        namespaces defined by the ``UPDATE_NS_MAP``. If a namespace for
-        a disallowed field/type is discovered, it is removed.
+    def _remap_namespaces(self, node):
+        """Remaps the namespaces found on the input `node` to namespaces
+        defined by the ``UPDATE_NS_MAP``. If a namespace for a disallowed
+        field/type is discovered, it is removed.
 
         Note:
             Disallowed namespaces are defined by the ``DISALLOWED_NAMESPACES``
             class-level attribute.
 
         Args:
-            root (lxml.etree._Element): The top-level node for this document.
+            node (lxml.etree._Element): An ``etree`` XML node..
 
         Returns:
             A dictionary of aliases to namespaces.
 
         """
         remapped = {}
-        for alias, ns in root.nsmap.iteritems():
+        for alias, ns in node.nsmap.iteritems():
             if ns in self.DISALLOWED_NAMESPACES:
                 continue
 
             remapped[alias] = self.UPDATE_NS_MAP.get(ns, ns)
 
         return remapped
+
 
     def _get_remapped_tag(self, node):
         """Returns a new tag for `node` which includes an updated namespace
@@ -821,7 +822,7 @@ class _BaseUpdater(object):
         return node
 
 
-    def _update_nsmap(self, node, nsmap):
+    def _update_nsmap(self, node):
         """Updates the ``nsmap`` attribute found on `node` to `nsmap`.
 
         The lxml API does not allow in-place modification of the ``nsmap``
@@ -837,7 +838,8 @@ class _BaseUpdater(object):
 
         """
         tag = self._get_remapped_tag(node)
-        new  = etree.Element(tag, nsmap=nsmap)
+        updated_nsmap = self._remap_namespaces(node)
+        new  = etree.Element(tag, nsmap=updated_nsmap)
         new.attrib.update(node.attrib)
         new.text  = get_node_text(node)
         new[:] = node[:]
@@ -845,14 +847,14 @@ class _BaseUpdater(object):
         return new
 
 
-    def _update_namespaces(self, root):
+    def _update_namespaces(self, node):
         """Updates the namespaces in the instance document to align with
         with the updated schema. This will also remove any disallowed
         namespaces if found in the instance document.
 
         Note:
             Only nodes that exist within the namespaces defined by
-            ``UPDATE_NS_MAP`` and ``NS_MAP`` will be updated.
+            the ``NS_MAP`` class attribute will be updated.
 
         Note:
             The lxml library does not allow you to modify the ``nsmap``
@@ -863,44 +865,23 @@ class _BaseUpdater(object):
             A copy of the root document with an update ``nsmap`` attribute.
 
         """
-        def _local_update_namespaces(node):
-            """Recursively descends into `node`, updating namespace dictionaries
-            and element tags to align with ``UPDATE_NS_MAP`` along the way.
 
-            This fixes issues that arise when namespace definitions appear
-            inside the document and not just at the root level.
+        try:
+            ns = QName(node).namespace
+        except ValueError:
+            # The `node` was probably an XML comment
+            return node
 
-            Note:
-                This will only descend into elements which exist in the STIX
-                and CybOX namespaces.
+        if ns not in self.NSMAP.itervalues():
+            return node
 
-            Returns:
-                A copy of `node` with its tag and namesapce dictionary updated
-                to align with ``UPDATE_NS_MAP``.
+        for child in node:
+           self._update_namespaces(child)
 
-            """
-            try:
-                ns = QName(node).namespace
-            except ValueError:
-                # The `node` was probably an XML comment
-                return
+        new_node = self._update_nsmap(node)
+        replace_xml_element(node, new_node)
 
-            if ns not in possible_namespaces:
-                return
-
-            for child in node:
-                _local_update_namespaces(child)
-
-            new_node = self._update_nsmap(node, remapped)
-            replace_xml_element(node, new_node)
-            return new_node
-
-
-        remapped = self._remap_namespaces(root)
-        possible_namespaces = remapped.values() + self.UPDATE_NS_MAP.keys()
-        updated = _local_update_namespaces(root)
-
-        return updated
+        return new_node
 
 
     def clean(self, root, options=None):
