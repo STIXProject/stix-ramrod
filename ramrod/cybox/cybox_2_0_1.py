@@ -4,11 +4,9 @@
 import itertools
 from ramrod import (_Vocab, UpdateError, _DisallowedFields, _OptionalElements,
     _TranslatableField, _RenamedField, DEFAULT_UPDATE_OPTIONS)
-from ramrod.utils import (ignored, get_typed_nodes, copy_xml_element,
-    remove_xml_element, remove_xml_elements, remove_xml_attributes,
-    replace_xml_element)
 from ramrod.cybox import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
     TAG_CYBOX_UPDATE)
+import ramrod.utils as utils
 
 
 class ObjectRelationshipVocab(_Vocab):
@@ -208,8 +206,8 @@ class TransWinMailslotHandle(_TranslatableField):
     @classmethod
     def _replace(cls, node):
         parent = node.getparent()
-        dup = copy_xml_element(node, tag=cls.NEW_TAG)
-        replace_xml_element(parent, dup)
+        dup = utils.copy_xml_element(node, tag=cls.NEW_TAG)
+        utils.replace_xml_element(parent, dup)
 
     @classmethod
     def translate(cls, root):
@@ -527,7 +525,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
             attribs[TAG_CYBOX_MAJOR]  = '2'
             attribs[TAG_CYBOX_MINOR]  = '1'
 
-            with ignored(KeyError):
+            with utils.ignored(KeyError):
                 del attribs[TAG_CYBOX_UPDATE]
 
 
@@ -550,17 +548,17 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         optional_elements = self.OPTIONAL_ELEMENTS
         optional_attribs = self.OPTIONAL_ATTRIBUTES
 
-        typed_nodes = get_typed_nodes(root)
+        typed_nodes = utils.get_typed_nodes(root)
 
         for optional in optional_elements:
             found = optional.find(root, typed=typed_nodes)
-            remove_xml_elements(found)
+            utils.remove_xml_elements(found)
 
 
         for optional in optional_attribs:
             found = optional.find(root, typed=typed_nodes)
             for node in found:
-                remove_xml_attributes(node, optional.ATTRIBUTES)
+                utils.remove_xml_attributes(node, optional.ATTRIBUTES)
 
 
     def _get_disallowed(self, root):
@@ -594,8 +592,8 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         """
         removed = []
         for node in disallowed:
-            dup = copy_xml_element(node)
-            remove_xml_element(node)
+            dup = utils.copy_xml_element(node)
+            utils.remove_xml_element(node)
             removed.append(dup)
 
         return removed

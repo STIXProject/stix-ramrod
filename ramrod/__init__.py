@@ -6,9 +6,7 @@ from distutils.version import StrictVersion
 from collections import defaultdict, namedtuple
 from lxml import etree
 from lxml.etree import QName
-from ramrod.utils import (ignored, get_ext_namespace, get_type_info,
-    get_typed_nodes, replace_xml_element, remove_xml_attribute,
-    get_etree_root, new_id, get_node_text)
+import ramrod.utils as utils
 
 __version__ = "1.0a1"
 
@@ -62,7 +60,7 @@ class UpdateOptions(object):
     """
     def __init__(self):
         self.check_versions = True
-        self.new_id_func = new_id
+        self.new_id_func = utils.new_id
         self.update_vocabularies = True
         self.remove_optionals = True
 
@@ -248,7 +246,7 @@ class _TranslatableField(object):
         nodes = cls._find(root)
         for node in nodes:
             new_node = cls._translate_fields(node)
-            replace_xml_element(node, new_node) # this might cause problems
+            utils.replace_xml_element(node, new_node)
 
 
 
@@ -335,12 +333,12 @@ class _DisallowedFields(object):
             return (root,)
 
         if not typed:
-            typed = get_typed_nodes(root)
+            typed = utils.get_typed_nodes(root)
 
         contexts = []
         for node in typed:
-            alias, type_ = get_type_info(node)
-            ns = get_ext_namespace(node)
+            alias, type_ = utils.get_type_info(node)
+            ns = utils.get_ext_namespace(node)
 
             if ctx.get(type_) == ns:
                 contexts.append(node)
@@ -632,11 +630,11 @@ class _BaseUpdater(object):
         """
         default_vocab_ns = self.DEFAULT_VOCAB_NAMESPACE
         vocabs = self.UPDATE_VOCABS
-        typed_nodes = get_typed_nodes(root)
+        typed_nodes = utils.get_typed_nodes(root)
 
         for node in typed_nodes:
-            alias, type_ = get_type_info(node)
-            ext_ns = get_ext_namespace(node)
+            alias, type_ = utils.get_type_info(node)
+            ext_ns = utils.get_ext_namespace(node)
 
             if not all((ext_ns == default_vocab_ns, type_ in vocabs)):
                 continue
@@ -669,7 +667,7 @@ class _BaseUpdater(object):
 
     def _remove_schemalocations(self, root):
         """Removes the ``xsi:schemaLocation`` attribute from `root`."""
-        remove_xml_attribute(root, TAG_SCHEMALOCATION)
+        utils.remove_xml_attribute(root, TAG_SCHEMALOCATION)
 
 
     def _create_schemaloc_str(self, pairs):
@@ -839,7 +837,7 @@ class _BaseUpdater(object):
         updated_nsmap = self._remap_namespaces(node)
         new  = etree.Element(tag, nsmap=updated_nsmap)
         new.attrib.update(node.attrib)
-        new.text  = get_node_text(node)
+        new.text  = utils.get_node_text(node)
         new[:] = node[:]
 
         return new
@@ -884,7 +882,7 @@ class _BaseUpdater(object):
            self._update_namespaces(child)
 
         new_node = self._update_nsmap(node)
-        replace_xml_element(node, new_node)
+        utils.replace_xml_element(node, new_node)
         return new_node
 
 
@@ -1068,7 +1066,7 @@ def update(doc, from_=None, to_=None, options=None, force=False):
     import ramrod.stix as stix
     import ramrod.cybox as cybox
 
-    root = get_etree_root(doc)
+    root = utils.get_etree_root(doc)
     name = QName(root).localname
 
     update_methods = {

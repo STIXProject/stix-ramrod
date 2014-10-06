@@ -261,11 +261,12 @@ class Cybox_2_0_Updater(_CyboxUpdater):
     def check_update(self, root, options=None):
         """Removes disallowed elements from `root`.
 
-        Removed items can be retrieved via the `cleaned_fields` attribute:
+        Removed items can be retrieved via the `cleaned_fields` attribute.
 
-        >>> updated = updater.update(root, force=True)
-        >>> print updater.cleaned_fields
-        (<Element at 0xffdcf234>, <Element at 0xffdcf284>)
+        Example:
+            >>> updated = updater.update(root, force=True)
+            >>> print updater.cleaned_fields
+            (<Element at 0xffdcf234>, <Element at 0xffdcf284>)
 
 
         Note:

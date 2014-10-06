@@ -5,7 +5,7 @@ from lxml import etree
 from distutils.version import StrictVersion
 from ramrod import (_BaseUpdater, UnknownVersionError, InvalidVersionError,
      UpdateResults, _validate_versions)
-from ramrod.utils import get_etree_root
+import ramrod.utils as utils
 
 TAG_CYBOX_MAJOR  = "cybox_major_version"
 TAG_CYBOX_MINOR  = "cybox_minor_version"
@@ -88,7 +88,6 @@ class _CyboxUpdater(_BaseUpdater):
                 raise InvalidVersionError(node, expected, found)
 
 
-
 from .cybox_2_0 import Cybox_2_0_Updater
 from .cybox_2_0_1 import Cybox_2_0_1_Updater
 
@@ -130,7 +129,7 @@ def update(doc, from_=None, to_=None, options=None, force=False):
             version information and `force` is ``False``.
 
     """
-    root = get_etree_root(doc)
+    root = utils.get_etree_root(doc)
     from_ = from_ or _CyboxUpdater.get_version(root)
     to_ = to_ or CYBOX_VERSIONS[-1]  # The latest version if not specified
 

@@ -173,6 +173,15 @@ def new_id(node):
     """Assigns a new, unique ID to `node` by appending '-cleaned-' and a UUID4
     string to the end of the ``id`` attribute value of the node.
 
+    Example:
+        >>> e = etree.Element('test')
+        >>> e.attrib['id'] = 'example:non-unique-id'
+        >>> e.attrib['id']
+        'example:non-unique-id'
+        >>> e = new_id(e)
+        >>> e.attrib['id']
+        'example:non-unique-id-cleaned-92eaa185-48e2-433e-82ba-a58f692bac32'
+
     """
     orig_id = node.attrib['id']
     unique_id = create_new_id(orig_id)

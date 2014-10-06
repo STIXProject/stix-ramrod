@@ -7,9 +7,7 @@ from ramrod import (_Vocab, UpdateError, _DisallowedFields,  _OptionalElements,
     _TranslatableField, DEFAULT_UPDATE_OPTIONS)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_1_Updater
-from ramrod.utils import (get_typed_nodes, copy_xml_element,
-    remove_xml_element, remove_xml_elements)
-
+import ramrod.utils as utils
 
 class AvailabilityLossVocab(_Vocab):
     TYPE = "AvailabilityLossTypeVocab-1.1.1"
@@ -205,7 +203,7 @@ class TransIndicatorRelatedCampaign(_TranslatableField):
         </indicator:Related_Campaigns>
 
         """
-        dup = copy_xml_element(node, tag=cls.NEW_TAG)
+        dup = utils.copy_xml_element(node, tag=cls.NEW_TAG)
         wrapper = etree.Element(
             "{http://stix.mitre.org/Indicator-2}Related_Campaign"
         )
@@ -344,11 +342,11 @@ class STIX_1_1_Updater(_STIXUpdater):
 
         """
         optional_elements = self.OPTIONAL_ELEMENTS
-        typed_nodes = get_typed_nodes(root)
+        typed_nodes = utils.get_typed_nodes(root)
 
         for optional in optional_elements:
             found = optional.find(root, typed=typed_nodes)
-            remove_xml_elements(found)
+            utils.remove_xml_elements(found)
 
 
     def _get_disallowed(self, root):
@@ -417,8 +415,8 @@ class STIX_1_1_Updater(_STIXUpdater):
         """
         removed = []
         for node in disallowed:
-            dup = copy_xml_element(node)
-            remove_xml_element(node)
+            dup = utils.copy_xml_element(node)
+            utils.remove_xml_element(node)
             removed.append(dup)
 
         return removed

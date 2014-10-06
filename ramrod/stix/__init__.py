@@ -5,7 +5,7 @@ from lxml import etree
 from distutils.version import StrictVersion
 from ramrod import (_BaseUpdater, UnknownVersionError, InvalidVersionError,
      UpdateResults, _validate_versions)
-from ramrod.utils import get_etree_root
+import ramrod.utils as utils
 
 class _STIXUpdater(_BaseUpdater):
     """Base class for STIX updating code. Sets default values for
@@ -138,7 +138,7 @@ def update(doc, from_=None, to_=None, options=None, force=False):
             version information and `force` is ``False``.
 
     """
-    root = get_etree_root(doc)
+    root = utils.get_etree_root(doc)
     from_ = from_ or _STIXUpdater.get_version(root)
     to_ = to_ or STIX_VERSIONS[-1]  # The latest version if not specified
 

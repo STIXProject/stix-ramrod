@@ -7,8 +7,7 @@ from ramrod import (_Vocab, UpdateError, _DisallowedFields, _OptionalElements,
     _TranslatableField, TAG_XSI_TYPE, DEFAULT_UPDATE_OPTIONS)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_1_Updater
-from ramrod.utils import (get_typed_nodes, copy_xml_element,
-    remove_xml_element, remove_xml_elements, get_ext_namespace)
+import ramrod.utils as utils
 
 
 class MotivationVocab(_Vocab):
@@ -59,7 +58,7 @@ class DisallowedMalware(_DisallowedFields):
 
         """
         try:
-            namespaces = (get_ext_namespace(x) for x in node.findall("*"))
+            namespaces = (utils.get_ext_namespace(x) for x in node.findall("*"))
             return all(ns == cls.NS_MAEC_EXT for ns in namespaces)
         except KeyError as ex:
             # At least one node didn't contain an xsi:type attribute
@@ -97,7 +96,7 @@ class DisallowedAttackPatterns(_DisallowedFields):
 
         """
         try:
-            namespaces = (get_ext_namespace(x) for x in node.findall("*"))
+            namespaces = (utils.get_ext_namespace(x) for x in node.findall("*"))
             return all(ns == cls.NS_CAPEC_EXT for ns in namespaces)
         except KeyError as ex:
             # At least one node didn't contain an xsi:type attribute
@@ -175,7 +174,7 @@ class TransTTPExploitTargets(_TranslatableField):
 
         """
         tag = "{http://stix.mitre.org/TTP-1}Exploit_Target"
-        dup = copy_xml_element(node)
+        dup = utils.copy_xml_element(node)
         wrapper = etree.Element(tag)
         wrapper.append(dup)
 
@@ -240,7 +239,7 @@ class TransCommonContributors(_TranslatableField):
 
         contributing_sources = etree.Element(contributing_sources_tag)
         for contributor in node:
-            dup = copy_xml_element(contributor, tag=identity_tag)
+            dup = utils.copy_xml_element(contributor, tag=identity_tag)
             source = etree.Element(source_tag)
             source.append(dup)
             contributing_sources.append(source)
@@ -396,11 +395,11 @@ class STIX_1_0_1_Updater(_STIXUpdater):
 
         """
         optional_elements = self.OPTIONAL_ELEMENTS
-        typed_nodes = get_typed_nodes(root)
+        typed_nodes = utils.get_typed_nodes(root)
 
         for optional in optional_elements:
             found = optional.find(root, typed=typed_nodes)
-            remove_xml_elements(found)
+            utils.remove_xml_elements(found)
 
 
     def _get_disallowed(self, root):
@@ -482,8 +481,8 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         """
         removed = []
         for node in disallowed:
-            dup = copy_xml_element(node)
-            remove_xml_element(node)
+            dup = utils.copy_xml_element(node)
+            utils.remove_xml_element(node)
             removed.append(dup)
 
         return removed

@@ -4,10 +4,9 @@
 from lxml import etree
 from ramrod import (_Vocab, UpdateError, _DisallowedFields, TAG_XSI_TYPE,
     DEFAULT_UPDATE_OPTIONS)
-from ramrod.utils import (remove_xml_element, copy_xml_element, get_type_info,
-    get_ext_namespace)
 from ramrod.stix import _STIXUpdater
 from ramrod.cybox import Cybox_2_0_Updater
+import ramrod.utils as utils
 
 
 class MotivationVocab(_Vocab):
@@ -55,7 +54,7 @@ class DisallowedMalware(_DisallowedFields):
 
         """
         try:
-            namespaces = (get_ext_namespace(x) for x in node.findall("*"))
+            namespaces = (utils.get_ext_namespace(x) for x in node.findall("*"))
             return all(ns == cls.NS_MAEC_EXT for ns in namespaces)
         except KeyError as ex:
             # At least one node didn't contain an xsi:type attribute
@@ -94,7 +93,7 @@ class DisallowedAttackPatterns(_DisallowedFields):
 
         """
         try:
-            namespaces = (get_ext_namespace(x) for x in node.findall("*"))
+            namespaces = (utils.get_ext_namespace(x) for x in node.findall("*"))
             return all(ns == cls.NS_CAPEC_EXT for ns in namespaces)
         except KeyError as ex:
             # At least one node didn't contain an xsi:type attribute
@@ -296,8 +295,8 @@ class STIX_1_0_Updater(_STIXUpdater):
         disallowed = self._get_disallowed(root)
 
         for node in disallowed:
-            dup = copy_xml_element(node)
-            remove_xml_element(node)
+            dup = utils.copy_xml_element(node)
+            utils.remove_xml_element(node)
             removed.append(dup)
 
         self.cleaned_fields = tuple(removed)
