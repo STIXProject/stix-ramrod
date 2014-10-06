@@ -547,24 +547,22 @@ class _BaseUpdater(object):
 
         """
         namespaces = self.NSMAP.values()
-        roots = self._get_root_nodes(root)
         id_nodes = defaultdict(list)
 
-        for node in roots:
-            for child in node.iterdescendants():
-                try:
-                    ns = QName(child).namespace
-                except ValueError:
-                    continue
+        for child in root.iterdescendants():
+            try:
+                ns = QName(child).namespace
+            except ValueError:
+                continue
 
-                if ns not in namespaces:
-                    continue
+            if ns not in namespaces:
+                continue
 
-                if 'id' not in child.attrib:
-                    continue
+            if 'id' not in child.attrib:
+                continue
 
-                id_ = child.attrib['id']
-                id_nodes[id_].append(child)
+            id_ = child.attrib['id']
+            id_nodes[id_].append(child)
 
         return dict((id_, nodes) for id_, nodes in id_nodes.iteritems() if len(nodes) > 1)
 
