@@ -9,6 +9,8 @@ import ramrod.cybox
 import ramrod.utils as utils
 
 class Cybox_2_0_Test(unittest.TestCase):
+    UPDATER = ramrod.cybox.Cybox_2_0_Updater
+
     XML_VERSIONS = \
     """
      <cybox:Observables
@@ -18,24 +20,24 @@ class Cybox_2_0_Test(unittest.TestCase):
     </cybox:Observables>
     """
 
-    updater_klass = ramrod.cybox.Cybox_2_0_Updater
-
     @classmethod
     def setUpClass(cls):
         cls._versions = StringIO(cls.XML_VERSIONS)
 
     def test_get_version(self):
         root = utils.get_etree_root(self._versions)
-        version = self.updater_klass.get_version(root)
-        self.assertEqual(version, self.updater_klass.VERSION)
+        version = self.UPDATER.get_version(root)
+        self.assertEqual(version, self.UPDATER.VERSION)
 
     def test_update_version(self):
-        version_to = ('2.0.1', '2.1')
+        valid_versions = ramrod.cybox.CYBOX_VERSIONS
+        idx = valid_versions.index
+        version_to = valid_versions[idx(self.UPDATER.VERSION)+1:]
 
         for version in version_to:
             updated = ramrod.update(self._versions, to_=version)
             updated_root = updated.document.getroot()
-            updated_version = self.updater_klass.get_version(updated_root)
+            updated_version = self.UPDATER.get_version(updated_root)
             self.assertEqual(version, updated_version)
 
 
