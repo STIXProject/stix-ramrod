@@ -241,7 +241,7 @@ class Cybox_2_0_Updater(_CyboxUpdater):
 
         for prop in props:
             for child in prop.findall(".//*"):
-                if not self._is_leaf(child):
+                if not child.text:
                     continue
 
                 text = child.text
