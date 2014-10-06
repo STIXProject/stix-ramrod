@@ -85,7 +85,11 @@ class _CyboxUpdater(_BaseUpdater):
             found = self.get_version(node)
 
             if StrictVersion(expected) != StrictVersion(found):
-                raise InvalidVersionError(node, expected, found)
+                raise InvalidVersionError("Document version does not match "
+                                          "the expected version.",
+                                          node=node,
+                                          expected=expected,
+                                          found=found)
 
 
 from .cybox_2_0 import Cybox_2_0_Updater

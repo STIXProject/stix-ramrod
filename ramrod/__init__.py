@@ -81,6 +81,7 @@ class UpdateError(Exception):
     process..
 
     Attributes:
+        message: The error message.
         disallowed: A list of nodes found in the input document that
             cannot be translated during the update process.
         duplicates: A dictionary of nodes found in the input document
@@ -101,23 +102,20 @@ class InvalidVersionError(Exception):
     implementation.
 
     Attributes:
+        message: The error message.
         node: The node containing an incompatible version number.
         expected: The version that was expected.
         found: The version that was found on the `node`.
 
     """
-    def __init__(self, node=None, expected=None, found=None):
+    def __init__(self, message=None, node=None, expected=None, found=None):
+        super(InvalidVersionError, self).__init__(message)
         self.node = node
         self.expected = expected
         self.found = found
 
     def __str__(self):
-        if all(((self.node is not None), self.expected, self.found)):
-            return ("Line %s:Found '%s' but expected '%s'" %
-                    (self.node.sourceline, self.found, self.expected))
-        else:
-            return ("Instance version attribute value does not match expected "
-                   "version attribute value")
+        return ("InvalidVersionError: %s" % (self.message))
 
 
 class _Vocab(object):
@@ -1006,8 +1004,10 @@ def _validate_version(version, allowed):
         raise UpdateError("The version was `None` or could not be determined.")
 
     if version not in allowed:
-        raise UpdateError("The version '%s' is not valid. Must be one of '%s' "
-                          % (version, allowed,))
+        raise InvalidVersionError(
+            "The version '%s' is not valid. Must be one of '%s' " %
+            (version, allowed,)
+        )
 
 
 def _validate_versions(from_, to_, allowed):
@@ -1015,7 +1015,9 @@ def _validate_versions(from_, to_, allowed):
     _validate_version(to_, allowed)
 
     if StrictVersion(from_) >= StrictVersion(to_):
-        raise UpdateError("Cannot upgrade from '%s' to '%s'" % (from_, to_))
+        raise InvalidVersionError(
+            "Cannot upgrade from '%s' to '%s'" % (from_, to_),
+        )
 
 
 

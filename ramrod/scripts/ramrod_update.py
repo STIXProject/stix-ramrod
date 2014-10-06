@@ -7,6 +7,24 @@ import sys
 import argparse
 import ramrod
 
+
+def _print_error(fmt, *args):
+    """Writes a message to sys.stderr.
+
+    Example:
+        >>> msg = "invalid input"
+        >>> _print_error("error: %s", msg)
+        error: invalid input
+
+    Args:
+        fmt: A Python format string.
+        *args: Variable-length argument list for the format string.
+
+    """
+    msg = fmt % args
+    sys.stderr.write("%s\n" % (msg))
+
+
 def _write_xml(tree, outfn=None):
     """Writes the XML tree to an output stream. If `outfn` is ``None``,
     sys.stdout is written to.
@@ -32,14 +50,29 @@ def _print_update_error(err):
     duplicates = err.duplicates
 
     if disallowed:
-        print "[!] Found the following untranslatable items:"
+        _print_error("[!] Found the following untranslatable items:")
         for node in disallowed:
-            print "  Line %s: %s" % (node.sourceline, node.tag)
+           _print_error("  Line %s: %s", node.sourceline, node.tag)
 
     if duplicates:
         print "[!] Found items with duplicate ids:"
         for id_, nodes in duplicates.iteritems():
-            print "  '%s' on lines %s" %  (id_, [x.sourceline for x in nodes])
+            _print_error("  '%s' on lines %s", id_, [x.sourceline for x in nodes])
+
+
+def _print_invalid_version_error(err):
+    print "[!] %s" % (str(err))
+
+    node = err.node
+    expected_version = err.expected
+    found_version = err.found
+
+    if node:
+        _print_error("  Node: %s on line %s", node.tag, node.sourceline)
+    if expected_version:
+        _print_error("  Expected: '%s'", expected_version)
+    if found_version:
+        _print_error("  Found: '%s'", found_version)
 
 
 def _write_removed(removed):
@@ -158,6 +191,8 @@ def main():
         _write_remapped_ids(updated.remapped_ids)
     except ramrod.UpdateError as ex:
         _print_update_error(ex)
+    except ramrod.InvalidVersionError as ex:
+        _print_invalid_version_error(ex)
 
 
 if __name__ == "__main__":

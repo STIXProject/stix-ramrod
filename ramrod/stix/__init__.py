@@ -89,7 +89,12 @@ class _STIXUpdater(_BaseUpdater):
                 raise UnknownVersionError()
 
             if StrictVersion(found) != StrictVersion(expected):
-                raise InvalidVersionError(node, expected, found)
+                raise InvalidVersionError("Document version does not match "
+                                          "the expected version.",
+                                          node=node,
+                                          expected=expected,
+                                          found=found)
+
 
 
 from .stix_1_0 import STIX_1_0_Updater
