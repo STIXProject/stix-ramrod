@@ -20,7 +20,7 @@ def get_version():
         raise AttributeError("Package does not have a __version__")
 
 
-py_maj, py_minor = sys.version_info.major, sys.version_info.minor
+py_maj, py_minor = sys.version_info[:2]
 
 if py_maj != 2:
     raise Exception('stix-ramrod required Python 2.6/2.7')

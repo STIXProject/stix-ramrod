@@ -50,20 +50,28 @@ class STIXVersionTest(unittest.TestCase):
         cls._no_version = StringIO(cls.NO_VERSION_XML)
 
     def test_invalid_supplied_from_version(self):
-        with self.assertRaises(ramrod.InvalidVersionError):
-            ramrod.update(self._upgradable, from_=42)
+        self.assertRaises(
+            ramrod.InvalidVersionError,
+            ramrod.update, self._upgradable, from_=42
+        )
 
     def test_invalid_supplied_to_version(self):
-        with self.assertRaises(ramrod.InvalidVersionError):
-            ramrod.update(self._upgradable, to_=42)
+        self.assertRaises(
+            ramrod.InvalidVersionError,
+            ramrod.update, self._upgradable, to_=42
+        )
 
     def test_invalid_input_version(self):
-        with self.assertRaises(ramrod.InvalidVersionError):
-            ramrod.update(self._bad_version)
+        self.assertRaises(
+            ramrod.InvalidVersionError,
+            ramrod.update, self._bad_version
+        )
 
     def test_no_input_version(self):
-        with self.assertRaises(ramrod.UnknownVersionError):
-            ramrod.update(self._no_version)
+        self.assertRaises(
+            ramrod.UnknownVersionError,
+            ramrod.update, self._no_version
+        )
 
 
 class CYBOXVersionTest(unittest.TestCase):
@@ -102,20 +110,28 @@ class CYBOXVersionTest(unittest.TestCase):
         cls._no_version = StringIO(cls.NO_VERSION_XML)
 
     def test_invalid_supplied_from_version(self):
-        with self.assertRaises(ramrod.InvalidVersionError):
-            ramrod.update(self._upgradable, from_=42)
+        self.assertRaises(
+            ramrod.InvalidVersionError,
+            ramrod.update, self._upgradable, from_=42
+        )
 
     def test_invalid_supplied_to_version(self):
-        with self.assertRaises(ramrod.InvalidVersionError):
-            ramrod.update(self._upgradable, to_=42)
+        self.assertRaises(
+            ramrod.InvalidVersionError,
+            ramrod.update, self._upgradable, to_=42
+        )
 
     def test_invalid_input_version(self):
-        with self.assertRaises(ramrod.InvalidVersionError):
-            ramrod.update(self._bad_version)
+        self.assertRaises(
+            ramrod.InvalidVersionError,
+            ramrod.update, self._bad_version
+        )
 
     def test_no_input_version(self):
-        with self.assertRaises(ramrod.UnknownVersionError):
-            ramrod.update(self._no_version)
+        self.assertRaises(
+            ramrod.UnknownVersionError,
+            ramrod.update, self._no_version
+        )
 
 
 class DocumentTest(unittest.TestCase):
@@ -150,16 +166,18 @@ class DocumentTest(unittest.TestCase):
         cls._unknown = StringIO(cls.UNKNOWN_XML)
 
     def test_unknown(self):
-        with self.assertRaises(ramrod.UpdateError):
-            ramrod.update(self._unknown)
+        self.assertRaises(
+            ramrod.UpdateError,
+            ramrod.update, self._unknown
+        )
 
     def test_stix_package(self):
         updated = ramrod.update(self._stix_package)
-        self.assertIsNotNone(updated.document)
+        self.assertTrue(updated.document)
 
     def test_cybox_observables(self):
         updated = ramrod.update(self._cybox_observables)
-        self.assertIsNotNone(updated.document)
+        self.assertTrue(updated.document)
 
 
 if __name__ == "__main__":
