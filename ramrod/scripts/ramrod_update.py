@@ -189,10 +189,13 @@ def main():
         _write_xml(updated.document, args.outfile)
         _write_removed(updated.removed)
         _write_remapped_ids(updated.remapped_ids)
+
     except ramrod.UpdateError as ex:
         _print_update_error(ex)
     except ramrod.InvalidVersionError as ex:
         _print_invalid_version_error(ex)
+    except ramrod.UnknownVersionError as ex:
+        _print_error(str(ex))
 
 
 if __name__ == "__main__":

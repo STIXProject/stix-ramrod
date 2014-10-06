@@ -1001,7 +1001,8 @@ def _get_version(root):
 
 def _validate_version(version, allowed):
     if not version:
-        raise UpdateError("The version was `None` or could not be determined.")
+        raise UnknownVersionError("The version was `None` or could not be "
+                                  "determined.")
 
     if version not in allowed:
         raise InvalidVersionError(
