@@ -13,16 +13,25 @@ from ramrod.test import (_BaseVocab, _BaseDisallowed)
 UPDATER_MOD = ramrod.stix.stix_1_0
 UPDATER = UPDATER_MOD.STIX_1_0_Updater
 
+PACKAGE_TEMPLATE = \
+"""
+<stix:STIX_Package
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:stix="http://stix.mitre.org/stix-1"
+    xmlns:stixCommon="http://stix.mitre.org/common-1"
+    xmlns:indicator="http://stix.mitre.org/Indicator-2"
+    xmlns:ttp="http://stix.mitre.org/TTP-1"
+    xmlns:stixVocabs="http://stix.mitre.org/default_vocabularies-1"
+    xmlns:stix-capec="http://stix.mitre.org/extensions/AP#CAPEC2.5-1"
+    xmlns:stix-maec="http://stix.mitre.org/extensions/Malware#MAEC4.0-1"
+    xmlns:example="http://example.com/"
+    version="1.0">
+    %s
+</stix:STIX_Package>
+"""
+
 class STIX_1_0_Test(unittest.TestCase):
-    XML_VERSIONS = \
-    """
-    <stix:STIX_Package
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:stix="http://stix.mitre.org/stix-1"
-        id="example:STIXPackage-33fe3b22-0201-47cf-85d0-97c02164528d"
-        version="1.0">
-    </stix:STIX_Package>
-    """
+    XML_VERSIONS = PACKAGE_TEMPLATE % ""
 
     @classmethod
     def setUpClass(cls):
@@ -43,24 +52,6 @@ class STIX_1_0_Test(unittest.TestCase):
             updated_root = updated.document.getroot()
             updated_version = UPDATER.get_version(updated_root)
             self.assertEqual(version, updated_version)
-
-
-PACKAGE_TEMPLATE = \
-"""
-<stix:STIX_Package
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:stix="http://stix.mitre.org/stix-1"
-    xmlns:stixCommon="http://stix.mitre.org/common-1"
-    xmlns:indicator="http://stix.mitre.org/Indicator-2"
-    xmlns:ttp="http://stix.mitre.org/TTP-1"
-    xmlns:stixVocabs="http://stix.mitre.org/default_vocabularies-1"
-    xmlns:stix-capec="http://stix.mitre.org/extensions/AP#CAPEC2.5-1"
-    xmlns:stix-maec="http://stix.mitre.org/extensions/Malware#MAEC4.0-1"
-    xmlns:example="http://example.com/"
-    version="1.0">
-    %s
-</stix:STIX_Package>
-"""
 
 class MotivationVocab(_BaseVocab):
     UPDATER = UPDATER_MOD.STIX_1_0_Updater
@@ -172,6 +163,7 @@ class DisallowedAttackPatterns(_BaseDisallowed):
     </stix:TTPs>
     """
     XML = PACKAGE_TEMPLATE % (DISALLOWED_XML)
+
 
 if __name__ == "__main__":
     unittest.main()
