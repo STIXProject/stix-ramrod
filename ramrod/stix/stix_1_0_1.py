@@ -5,13 +5,17 @@ import itertools
 from lxml import etree
 from ramrod import (_Vocab, UpdateError, _DisallowedFields, _OptionalElements,
     _TranslatableField, TAG_XSI_TYPE, DEFAULT_UPDATE_OPTIONS)
-from ramrod.stix import _STIXUpdater
+from ramrod.stix import (_STIXUpdater, _STIXVocab)
 from ramrod.cybox import Cybox_2_0_1_Updater
 import ramrod.utils as utils
 
 
-class MotivationVocab(_Vocab):
-    TYPE = 'MotivationVocab-1.1'
+class MotivationVocab(_STIXVocab):
+    OLD_TYPES = (
+        'MotivationVocab-1.0',
+        'MotivationVocab-1.0.1'
+    )
+    NEW_TYPE = 'MotivationVocab-1.1'
     VOCAB_REFERENCE = 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.0/stix_default_vocabularies.xsd#MotivationVocab-1.1'
     VOCAB_NAME = 'STIX Default Motivation Vocabulary'
     TERMS = {
@@ -19,8 +23,9 @@ class MotivationVocab(_Vocab):
     }
 
 
-class IndicatorTypeVocab(_Vocab):
-    TYPE = "IndicatorTypeVocab-1.1"
+class IndicatorTypeVocab(_STIXVocab):
+    OLD_TYPES = ("IndicatorTypeVocab-1.0",)
+    NEW_TYPE = "IndicatorTypeVocab-1.1"
     VOCAB_NAME = "STIX Default Indicator Type Vocabulary"
     VOCAB_REFERENCE = "http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.0/stix_default_vocabularies.xsd#IndicatorTypeVocab-1.1"
 
@@ -339,10 +344,10 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         'http://stix.mitre.org/stix-1': 'http://stix.mitre.org/XMLSchema/core/1.1/stix_core.xsd',
     }
 
-    UPDATE_VOCABS = {
-        'MotivationVocab-1.0.1': MotivationVocab,
-        'IndicatorTypeVocab-1.0': IndicatorTypeVocab,
-    }
+    UPDATE_VOCABS = (
+        MotivationVocab,
+        IndicatorTypeVocab,
+    )
 
     DISALLOWED = (
         DisallowedMAEC,

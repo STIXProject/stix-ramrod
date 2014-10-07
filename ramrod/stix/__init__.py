@@ -3,8 +3,8 @@
 
 from lxml import etree
 from distutils.version import StrictVersion
-from ramrod import (_BaseUpdater, UnknownVersionError, InvalidVersionError,
-     UpdateResults, _validate_versions)
+from ramrod import (_BaseUpdater, _Vocab, UnknownVersionError,
+    InvalidVersionError, UpdateResults, _validate_versions)
 import ramrod.utils as utils
 
 class _STIXUpdater(_BaseUpdater):
@@ -95,6 +95,9 @@ class _STIXUpdater(_BaseUpdater):
                                           expected=expected,
                                           found=found)
 
+
+class _STIXVocab(_Vocab):
+    VOCAB_NAMESPACE = _STIXUpdater.DEFAULT_VOCAB_NAMESPACE
 
 
 from .stix_1_0 import STIX_1_0_Updater

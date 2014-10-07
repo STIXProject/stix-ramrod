@@ -1,12 +1,13 @@
 # Copyright (c) 2014, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
-from ramrod import (_Vocab, UpdateError, DEFAULT_UPDATE_OPTIONS)
-from ramrod.cybox import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
-    TAG_CYBOX_UPDATE)
+from ramrod import (UpdateError, DEFAULT_UPDATE_OPTIONS)
+from ramrod.cybox import (_CyboxUpdater, _CyboxVocab, TAG_CYBOX_MAJOR,
+    TAG_CYBOX_MINOR, TAG_CYBOX_UPDATE)
 
-class EventTypeVocab(_Vocab):
-    TYPE = 'EventTypeVocab-1.0.1'
+class EventTypeVocab(_CyboxVocab):
+    OLD_TYPES = ('EventTypeVocab-1.0',)
+    NEW_TYPE = 'EventTypeVocab-1.0.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.0.1/cybox_default_vocabularies.xsd#EventTypeVocab-1.0.1'
     VOCAB_NAME = 'CybOX Default Event Types'
     TERMS = {
@@ -199,9 +200,9 @@ class Cybox_2_0_Updater(_CyboxUpdater):
     }
 
 
-    UPDATE_VOCABS = {
-        'EventTypeVocab-1.0': EventTypeVocab
-    }
+    UPDATE_VOCABS = (
+        EventTypeVocab,
+    )
 
 
     def __init__(self):

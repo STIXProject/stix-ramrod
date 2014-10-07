@@ -4,19 +4,21 @@
 import itertools
 from ramrod import (_Vocab, UpdateError, _DisallowedFields, _OptionalElements,
     _TranslatableField, _RenamedField, DEFAULT_UPDATE_OPTIONS)
-from ramrod.cybox import (_CyboxUpdater, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
-    TAG_CYBOX_UPDATE)
+from ramrod.cybox import (_CyboxUpdater, _CyboxVocab, TAG_CYBOX_MAJOR,
+    TAG_CYBOX_MINOR, TAG_CYBOX_UPDATE)
 import ramrod.utils as utils
 
 
-class ObjectRelationshipVocab(_Vocab):
-    TYPE = 'ObjectRelationshipVocab-1.1'
+class ObjectRelationshipVocab(_CyboxVocab):
+    OLD_TYPES = ('ObjectRelationshipVocab-1.0',)
+    NEW_TYPE = 'ObjectRelationshipVocab-1.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#ObjectRelationshipVocab-1.1',
     VOCAB_NAME = 'CybOX Default Object-Object Relationships'
 
 
-class ToolTypeVocab(_Vocab):
-    TYPE = 'ToolTypeVocab-1.1'
+class ToolTypeVocab(_CyboxVocab):
+    OLD_TYPES = ('ToolTypeVocab-1.0',)
+    NEW_TYPE = 'ToolTypeVocab-1.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#ToolTypeVocab-1.1'
     VOCAB_NAME = 'CybOX Default Tool Types'
     TERMS = {
@@ -24,8 +26,9 @@ class ToolTypeVocab(_Vocab):
     }
 
 
-class ActionNameVocab(_Vocab):
-    TYPE = 'ActionNameVocab-1.1'
+class ActionNameVocab(_CyboxVocab):
+    OLD_TYPES = ('ActionNameVocab-1.0',)
+    NEW_TYPE = 'ActionNameVocab-1.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#DefinedActionNameVocab-1.1'
     VOCAB_NAME = 'CybOX Default Action Names'
 
@@ -502,11 +505,11 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
     }
 
 
-    UPDATE_VOCABS = {
-        'ObjectRelationshipVocab-1.0': ObjectRelationshipVocab,
-        'ToolTypeVocab-1.0': ToolTypeVocab,
-        'ActionNameVocab-1.0': ActionNameVocab
-    }
+    UPDATE_VOCABS = (
+        ObjectRelationshipVocab,
+        ToolTypeVocab,
+        ActionNameVocab,
+    )
 
 
     def __init__(self):

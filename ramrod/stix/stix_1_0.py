@@ -2,15 +2,16 @@
 # See LICENSE.txt for complete terms.
 
 from lxml import etree
-from ramrod import (_Vocab, UpdateError, _DisallowedFields, TAG_XSI_TYPE,
+from ramrod import (UpdateError, _DisallowedFields, TAG_XSI_TYPE,
     DEFAULT_UPDATE_OPTIONS)
-from ramrod.stix import _STIXUpdater
+from ramrod.stix import (_STIXUpdater, _STIXVocab)
 from ramrod.cybox import Cybox_2_0_Updater
 import ramrod.utils as utils
 
 
-class MotivationVocab(_Vocab):
-    TYPE = 'MotivationVocab-1.0.1'
+class MotivationVocab(_STIXVocab):
+    OLD_TYPES = ('MotivationVocab-1.0',)
+    NEW_TYPE = 'MotivationVocab-1.0.1'
     VOCAB_REFERENCE = 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd#MotivationVocab-1.0.1'
     VOCAB_NAME = 'STIX Default Motivation Vocabulary'
     TERMS = {
@@ -18,8 +19,9 @@ class MotivationVocab(_Vocab):
     }
 
 
-class PlanningAndOperationalSupportVocab(_Vocab):
-    TYPE = 'PlanningAndOperationalSupportVocab-1.0.1'
+class PlanningAndOperationalSupportVocab(_STIXVocab):
+    OLD_TYPES = ('PlanningAndOperationalSupportVocab-1.0',)
+    NEW_TYPE = 'PlanningAndOperationalSupportVocab-1.0.1'
     VOCAB_REFERENCE = 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd#PlanningAndOperationalSupportVocab-1.0.1',
     VOCAB_NAME = 'STIX Default Planning and Operational Support Vocabulary'
     TERMS = {
@@ -192,10 +194,10 @@ class STIX_1_0_Updater(_STIXUpdater):
         'http://stix.mitre.org/stix-1': 'http://stix.mitre.org/XMLSchema/core/1.0.1/stix_core.xsd',
     }
 
-    UPDATE_VOCABS = {
-        'MotivationVocab-1.0': MotivationVocab,
-        'PlanningAndOperationalSupportVocab-1.0': PlanningAndOperationalSupportVocab
-    }
+    UPDATE_VOCABS = (
+        MotivationVocab,
+        PlanningAndOperationalSupportVocab,
+    )
 
     def __init__(self):
         super(STIX_1_0_Updater, self).__init__()

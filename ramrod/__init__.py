@@ -124,17 +124,81 @@ class _Vocab(object):
     implementation classes.
 
     Attributes:
-        TYPE: The XSD type name for the updated controlled vocabulary
+        VOCAB_NAMESPACE: The namespace which contains the controlled vocabulary
+            definition.
+        OLD_TYPES: A tuple of XSD type names which when discovered will be
+            upgraded.
+        NEW_TYPE: The XSD type name for the updated controlled vocabulary
         VOCAB_REFERENCE: The ``vocab_reference`` xml attribute text.
         VOCAB_NAME: The ``vocab_name`` xml attribute text.
         TERMS (dict): A dictionary of vocabulary term mappings. This is useful
             for typo corrections between controlled vocabulary revisions.
 
     """
-    TYPE = None
+    VOCAB_NAMESPACE = None
+    OLD_TYPES = ()
+    NEW_TYPE = None
     VOCAB_REFERENCE = None
     VOCAB_NAME = None
     TERMS = {}
+
+    @classmethod
+    def find(cls, root, typed=None):
+        typed = typed or utils.get_typed_nodes(root)
+        vocab_ns = cls.VOCAB_NAMESPACE
+        old = cls.OLD_TYPES
+
+        found = []
+        for node in typed:
+            alias, type_ = utils.get_type_info(node)
+            ext_ns = utils.get_ext_namespace(node)
+
+            if all((ext_ns == vocab_ns, type_ in old)):
+                found.append(node)
+
+        return found
+
+
+    @classmethod
+    def update(cls, root, typed=None):
+        """Updates controlled vocabularies found under the `root` document.
+
+        This performs the following updates:
+        * Updates ``xsi:type`` attribute to refer to the new type name.
+        * Updates terms to align with new vocabulary in the case of typo fixes.
+        * Updates ``vocab_name`` attribute value if present.
+        * Updates ``vocab_reference`` attribute value if present.
+
+        """
+        typed = typed or utils.get_typed_nodes(root)
+        vocabs = cls.find(root, typed)
+
+        for node in vocabs:
+            alias, type_ = utils.get_type_info(node)
+
+            attribs    = node.attrib
+            terms      = cls.TERMS
+            new_type_  = cls.NEW_TYPE
+            vocab_ref  = cls.VOCAB_REFERENCE
+            vocab_name = cls.VOCAB_NAME
+
+            # Update the xsi:type attribute to identify the new
+            # controlled vocabulary
+            new_xsi_type = "%s:%s" % (alias, new_type_)
+            attribs[TAG_XSI_TYPE] = new_xsi_type
+
+            # Update the vocab_reference attribute if present
+            if TAG_VOCAB_REFERENCE in attribs:
+                attribs[TAG_VOCAB_REFERENCE] = vocab_ref
+
+            # Update the vocab_name attribute if present
+            if TAG_VOCAB_NAME in attribs:
+                attribs[TAG_VOCAB_NAME] = vocab_name
+
+            # Update the node value if there is a new value in the updated
+            # controlled vocabulary
+            value = node.text
+            node.text = terms.get(value, value)
 
 
 class _TranslatableField(object):
@@ -475,7 +539,7 @@ class _BaseUpdater(object):
             Object namespace).
         DEFAULT_VOCAB_NAMESPACE: The namespace for the default vocabulary
             schema.
-        UPDATE_VOCABS: A map of ``_Vocab`` derivations
+        UPDATE_VOCABS: A tuple of ``_Vocab`` derivations
         XPATH_VERSIONED_NODES: An xpath which discovers all versioned nodes
             that need to be updated within the source document.
         XPATH_ROOT_NODES: An xpath which discovers all "root" nodes
@@ -498,7 +562,7 @@ class _BaseUpdater(object):
 
     # Controlled Vocabularies
     DEFAULT_VOCAB_NAMESPACE = None
-    UPDATE_VOCABS = {}
+    UPDATE_VOCABS = ()
 
     XPATH_VERSIONED_NODES = "."
     XPATH_ROOT_NODES = "."
@@ -626,42 +690,11 @@ class _BaseUpdater(object):
         attribute.
 
         """
-        default_vocab_ns = self.DEFAULT_VOCAB_NAMESPACE
-        vocabs = self.UPDATE_VOCABS
+
         typed_nodes = utils.get_typed_nodes(root)
 
-        for node in typed_nodes:
-            alias, type_ = utils.get_type_info(node)
-            ext_ns = utils.get_ext_namespace(node)
-
-            if not all((ext_ns == default_vocab_ns, type_ in vocabs)):
-                continue
-
-            attribs    = node.attrib
-            vocab      = vocabs[type_]
-            terms      = vocab.TERMS
-            new_type_  = vocab.TYPE
-            vocab_ref  = vocab.VOCAB_REFERENCE
-            vocab_name = vocab.VOCAB_NAME
-
-            # Update the xsi:type attribute to identify the new
-            # controlled vocabulary
-            new_xsi_type = "%s:%s" % (alias, new_type_)
-            attribs[TAG_XSI_TYPE] = new_xsi_type
-
-            # Update the vocab_reference attribute if present
-            if TAG_VOCAB_REFERENCE in attribs:
-                attribs[TAG_VOCAB_REFERENCE] = vocab_ref
-
-            # Update the vocab_name attribute if present
-            if TAG_VOCAB_NAME in attribs:
-                attribs[TAG_VOCAB_NAME] = vocab_name
-
-            # Update the node value if there is a new value in the updated
-            # controlled vocabulary
-            value = node.text
-            node.text = terms.get(value, value)
-
+        for vocab in self.UPDATE_VOCABS:
+            vocab.update(root, typed=typed_nodes)
 
     def _remove_schemalocations(self, root):
         """Removes the ``xsi:schemaLocation`` attribute from `root`."""

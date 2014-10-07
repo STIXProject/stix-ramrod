@@ -3,8 +3,8 @@
 
 from lxml import etree
 from distutils.version import StrictVersion
-from ramrod import (_BaseUpdater, UnknownVersionError, InvalidVersionError,
-     UpdateResults, _validate_versions)
+from ramrod import (_BaseUpdater, _Vocab,
+    UnknownVersionError, InvalidVersionError, UpdateResults, _validate_versions)
 import ramrod.utils as utils
 
 TAG_CYBOX_MAJOR  = "cybox_major_version"
@@ -90,6 +90,10 @@ class _CyboxUpdater(_BaseUpdater):
                                           node=node,
                                           expected=expected,
                                           found=found)
+
+
+class _CyboxVocab(_Vocab):
+    VOCAB_NAMESPACE = _CyboxUpdater.DEFAULT_VOCAB_NAMESPACE
 
 
 from .cybox_2_0 import Cybox_2_0_Updater
