@@ -33,7 +33,7 @@ require a **forced** update.
 * ``Type`` elements instances found in ``WinExecutableFileObj:PESectionType``.
 * ``WinMailslotObj:Handle`` element instances when it contains more than one
   child ``Handle`` element.
-* ``WinTaskObj:Task_Trigger`` element instances.
+* ``WinTaskObj:Trigger_Type`` element instances.
 
 
 Object Updates

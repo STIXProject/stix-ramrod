@@ -30,8 +30,8 @@ class ActionNameVocab(_Vocab):
     VOCAB_NAME = 'CybOX Default Action Names'
 
 
-class DisallowedTaskTrigger(_DisallowedFields):
-    XPATH = ".//WinTaskObj:Task_Trigger"
+class DisallowedTaskTriggerType(_DisallowedFields):
+    XPATH = ".//WinTaskObj:Trigger_Type"
 
 
 class DisallowedWindowsMailslotHandle(_DisallowedFields):
@@ -273,7 +273,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
     * ``HTTPSession:X_Forwarded_Proto`` instances.
     * ``WinExecutableFileObj:PESectionType/Type`` instances.
     * ``WinMailslotObj:Handle`` when more than one child is defined.
-    * ``WinTaskObj:Task_Trigger`` instances.
+    * ``WinTaskObj:Trigger_Type`` instances.
 
     """
     VERSION = '2.0.1'
@@ -365,7 +365,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
     DISALLOWED = (
         DisallowedHTTPSession,
-        DisallowedTaskTrigger,
+        DisallowedTaskTriggerType,
         DisallowedWinExecutableFile,
         DisallowedWindowsMailslotHandle
     )
