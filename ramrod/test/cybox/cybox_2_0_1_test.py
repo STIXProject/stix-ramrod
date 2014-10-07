@@ -849,5 +849,31 @@ class DisallowedTaskTriggerType(_BaseDisallowed):
     """
     XML = OBSERVBALE_TEMPLATE % (DISALLOWED_XML)
 
+
+class DisallowedWinExecutableFile(_BaseDisallowed):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    DISALLOWED_KLASS = UPDATER_MOD.DisallowedWinExecutableFile
+    DISALLOWED_COUNT = 1
+    DISALLOWED_XML = \
+    """
+    <cybox:Observable>
+        <cybox:Object>
+            <cybox:Properties xsi:type="WinExecutableFileObj:WindowsExecutableFileObjectType">
+                <FileObj:File_Name>Hax.exe</FileObj:File_Name>
+                <WinExecutableFileObj:Sections>
+                    <WinExecutableFileObj:Section>
+                        <WinExecutableFileObj:Entropy>
+                            <WinExecutableFileObj:Value>1.0</WinExecutableFileObj:Value>
+                        </WinExecutableFileObj:Entropy>
+                        <WinExecutableFileObj:Type>THIS REQUIRES FORCED UPDATES</WinExecutableFileObj:Type>
+                    </WinExecutableFileObj:Section>
+                </WinExecutableFileObj:Sections>
+                <WinExecutableFileObj:Type>Invalid</WinExecutableFileObj:Type>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML = OBSERVBALE_TEMPLATE % (DISALLOWED_XML)
+
 if __name__ == "__main__":
     unittest.main()
