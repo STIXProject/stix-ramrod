@@ -58,3 +58,19 @@ class _BaseTrans(unittest.TestCase):
                 self.assertEqual(node.text, self.TRANS_VALUE)
              else:
                  self.assertTrue(node != None)
+
+
+class _BaseDisallowed(unittest.TestCase):
+    UPDATER = None
+    DISALLOWED_KLASS = None
+    DISALLOWED_COUNT = None
+    XML = None
+
+    @classmethod
+    def setUpClass(cls):
+        cls.xml = StringIO(cls.XML)
+
+    def test_disallowed_find(self):
+        root = utils.get_etree_root(self.xml)
+        disallowed = self.DISALLOWED_KLASS.find(root)
+        self.assertEqual(len(disallowed), self.DISALLOWED_COUNT)

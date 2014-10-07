@@ -9,7 +9,7 @@ import ramrod.cybox
 import ramrod.cybox.cybox_2_0_1
 import ramrod.utils as utils
 
-from ramrod.test import (_BaseOptional, _BaseTrans)
+from ramrod.test import (_BaseOptional, _BaseTrans, _BaseDisallowed)
 
 OBSERVBALE_TEMPLATE = \
 """
@@ -792,6 +792,62 @@ class TransNetPacketAuthenticationData(_BaseTrans):
     </cybox:Observable>
     """ % (TRANS_VALUE)
     XML = OBSERVBALE_TEMPLATE % (TRANS_XML)
+
+
+class TransWinMailslotHandle(_BaseTrans):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    TRANS_KLASS = UPDATER_MOD.TransWinMailslotHandle
+    TRANS_XPATH = ".//WinMailslotObj:Handle/WinMailslotObj:Name"
+    TRANS_VALUE = _BaseTrans.TRANS_VALUE
+    TRANS_COUNT = 1
+    TRANS_XML = \
+    """
+    <cybox:Observable id="example:Observable-1c9af310-0d5a-4c44-bdd7-aea3d99f13b8">
+        <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19d0">
+            <cybox:Properties xsi:type="WinMailslotObj:WindowsMailslotObjectType">
+                <WinMailslotObj:Handle>
+                    <WinHandleObj:Handle>
+                        <WinHandleObj:Name>%s</WinHandleObj:Name>
+                    </WinHandleObj:Handle>
+                </WinMailslotObj:Handle>
+                <WinMailslotObj:Name>TEST NAME</WinMailslotObj:Name>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """ % (TRANS_VALUE)
+    XML = OBSERVBALE_TEMPLATE % (TRANS_XML)
+
+
+class DisallowedTaskTriggerType(_BaseDisallowed):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    DISALLOWED_KLASS = UPDATER_MOD.DisallowedTaskTriggerType
+    DISALLOWED_COUNT = 2
+    DISALLOWED_XML = \
+    """
+    <cybox:Observable>
+        <cybox:Object>
+            <cybox:Properties xsi:type="WinTaskObj:WindowsTaskObjectType">
+                <WinTaskObj:Trigger_List>
+                    <WinTaskObj:Trigger>
+                        <WinTaskObj:Trigger_Type/>
+                    </WinTaskObj:Trigger>
+                </WinTaskObj:Trigger_List>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Object>
+            <cybox:Properties xsi:type="WinTaskObj:WindowsTaskObjectType">
+                <WinTaskObj:Trigger_List>
+                    <WinTaskObj:Trigger>
+                        <WinTaskObj:Trigger_Type/>
+                    </WinTaskObj:Trigger>
+                </WinTaskObj:Trigger_List>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML = OBSERVBALE_TEMPLATE % (DISALLOWED_XML)
 
 if __name__ == "__main__":
     unittest.main()
