@@ -74,3 +74,26 @@ class _BaseDisallowed(unittest.TestCase):
         root = utils.get_etree_root(self.xml)
         disallowed = self.DISALLOWED_KLASS.find(root)
         self.assertEqual(len(disallowed), self.DISALLOWED_COUNT)
+
+
+class _BaseVocab(unittest.TestCase):
+    UPDATER = None
+    VOCAB_KLASS = None
+    VOCAB_COUNT = None
+    XML = None
+
+    @classmethod
+    def setUpClass(cls):
+        cls.xml = StringIO(cls.XML)
+
+    def test_find(self):
+        root = utils.get_etree_root(self.xml)
+        vocabs = self.VOCAB_KLASS.find(root)
+        self.assertEqual(len(vocabs), self.VOCAB_COUNT)
+
+    def test_vocab_update(self):
+        root = utils.get_etree_root(self.xml)
+        self.VOCAB_KLASS.update(root)
+
+        vocabs = self.VOCAB_KLASS.find(root)
+        self.assertEqual(len(vocabs), 0)

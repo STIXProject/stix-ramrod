@@ -6,9 +6,12 @@ from StringIO import StringIO
 
 import ramrod
 import ramrod.cybox
+import ramrod.cybox.cybox_2_0
 import ramrod.utils as utils
+from ramrod.test import _BaseVocab
 
-UPDATER = ramrod.cybox.Cybox_2_0_Updater
+UPDATER_MOD = ramrod.cybox.cybox_2_0
+UPDATER = UPDATER_MOD.Cybox_2_0_Updater
 
 class Cybox_2_0_Test(unittest.TestCase):
     XML_VERSIONS = \
@@ -96,6 +99,35 @@ class CommaTest(unittest.TestCase):
         self.assertEqual(subject, self.UNESCAPED)
 
 
+class EventTypeVocab(_BaseVocab):
+    UPDATER = UPDATER_MOD.Cybox_2_0_Updater
+    VOCAB_KLASS = UPDATER_MOD.EventTypeVocab
+    VOCAB_COUNT = 2
+    XML = \
+    """
+    <cybox:Observables
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:cybox="http://cybox.mitre.org/cybox-2"
+        xmlns:cyboxCommon="http://cybox.mitre.org/common-2"
+        xmlns:cyboxVocabs="http://cybox.mitre.org/default_vocabularies-2"
+        cybox_major_version="2" cybox_minor_version="0">
+        <cybox:Observable>
+            <cybox:Event>
+                <cybox:Type xsi:type="cyboxVocabs:EventTypeVocab-1.0">Anomoly Events</cybox:Type>
+            </cybox:Event>
+        </cybox:Observable>
+        <cybox:Observable>
+            <cybox:Event>
+                <cybox:Type xsi:type="cyboxVocabs:EventTypeVocab-1.0">Anomoly Events</cybox:Type>
+            </cybox:Event>
+        </cybox:Observable>
+        <cybox:Observable>
+            <cybox:Event>
+                <cybox:Type xsi:type="cyboxVocabs:NotATypeVocab-1.0">Not A Vocab</cybox:Type>
+            </cybox:Event>
+        </cybox:Observable>
+    </cybox:Observables>
+    """
 
 if __name__ == "__main__":
     unittest.main()

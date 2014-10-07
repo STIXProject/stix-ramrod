@@ -9,7 +9,7 @@ import ramrod.cybox
 import ramrod.cybox.cybox_2_0_1
 import ramrod.utils as utils
 
-from ramrod.test import (_BaseOptional, _BaseTrans, _BaseDisallowed)
+from ramrod.test import (_BaseOptional, _BaseTrans, _BaseDisallowed, _BaseVocab)
 
 OBSERVBALE_TEMPLATE = \
 """
@@ -924,6 +924,59 @@ class DisallowedWinMailslot(_BaseDisallowed):
     </cybox:Observable>
     """
     XML = OBSERVBALE_TEMPLATE % (DISALLOWED_XML)
+
+
+class ObjectRelationshipVocab(_BaseVocab):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    VOCAB_KLASS = UPDATER_MOD.ObjectRelationshipVocab
+    VOCAB_COUNT = 1
+    VOCAB_XML = \
+    """
+    <cybox:Observable>
+        <cybox:Object>
+            <cybox:Related_Objects>
+                <cybox:Related_Object>
+                    <cybox:Relationship xsi:type="cyboxVocabs:ObjectRelationshipVocab-1.0">Allocated</cybox:Relationship>
+                </cybox:Related_Object>
+            </cybox:Related_Objects>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML = OBSERVBALE_TEMPLATE % (VOCAB_XML)
+
+
+class ToolTypeVocab(_BaseVocab):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    VOCAB_KLASS = UPDATER_MOD.ToolTypeVocab
+    VOCAB_COUNT = 1
+    VOCAB_XML = \
+    """
+    <cybox:Observable>
+        <cybox:Observable_Source>
+            <cyboxCommon:Tool_Type xsi:type="cyboxVocabs:ToolTypeVocab-1.0">A/V</cyboxCommon:Tool_Type>
+        </cybox:Observable_Source>
+    </cybox:Observable>
+    """
+    XML = OBSERVBALE_TEMPLATE % (VOCAB_XML)
+
+
+class ActionNameVocab(_BaseVocab):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    VOCAB_KLASS = UPDATER_MOD.ActionNameVocab
+    VOCAB_COUNT = 1
+    VOCAB_XML = \
+    """
+    <cybox:Observable>
+        <cybox:Event>
+            <cybox:Actions>
+                <cybox:Action>
+                    <cybox:Name xsi:type="cyboxVocabs:ActionNameVocab-1.0">Accept Socket Connection</cybox:Name>
+                </cybox:Action>
+            </cybox:Actions>
+        </cybox:Event>
+    </cybox:Observable>
+    """
+    XML = OBSERVBALE_TEMPLATE % (VOCAB_XML)
 
 if __name__ == "__main__":
     unittest.main()
