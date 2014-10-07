@@ -18,42 +18,6 @@ class AvailabilityLossVocab(_STIXVocab):
        'Degredation': 'Degradation'
     }
 
-
-class DisallowedConfidenceSource(_DisallowedFields):
-    # It might be possible to translate the Source field to the new
-    # Identity/Name field. I'm not sure if that's the best way to go about this.
-    FIELD = "stixCommon:Source"
-    XPATH = (
-        ".//campaign:Confidence/{0} | "
-        ".//coa:Applicability_Confidence/{0} | "
-        ".//incident:Confidence/{0} | "
-        ".//indicator:Confidence/{0} | "  # SightingsType and/or IndicatorType
-        ".//stixCommon:Confidence_Assertion/{0} | "
-        ".//stixCommon:Confidence/{0} | "  # StatementType and/or GenericRelationshipType
-        ".//ta:Confidence/{0}"
-    ).format(FIELD)
-
-
-class DisallowedStatementSource(_DisallowedFields):
-    # It might be possible to translate the Source field to the new
-    # Identity/Name field. I'm not sure if that's the best way to go about this.
-    FIELD = "stixCommon:Source"
-    XPATH = (
-        ".//campaign:Intended_Effect/{0} | "
-        ".//coa:Cost/{0} | "
-        ".//coa:Efficacy/{0}| "
-        ".//incident:Intended_Effect/{0} | "
-        ".//indicator:Likely_Impact/{0} | "
-        ".//indicator:Efficacy/{0} | "
-        ".//ta:Type/{0} | "
-        ".//ta:Motivation/{0} | "
-        ".//ta:Sophistication/{0} | "
-        ".//ta:Intended_Effect/{0} | "
-        ".//ta:Planning_And_Operational_Support/{0} | "
-        ".//ttp:Intended_Effect/{0}"
-    ).format(FIELD)
-
-
 class TransCommonSource(_TranslatableField):
     FIELD = "stixCommon:Source"
     XPATH_NODE = (
@@ -305,14 +269,11 @@ class STIX_1_1_Updater(_STIXUpdater):
         AvailabilityLossVocab,
     )
 
-    DISALLOWED = (
-        # DisallowedConfidenceSource,
-        # DisallowedStatementSource
-    )
-
     OPTIONAL_ELEMENTS = (
         OptionalGenericTestMechanismFields,
     )
+
+    DISALLOWED = ()
 
     TRANSLATABLE_FIELDS = (
         TransCommonSource,
