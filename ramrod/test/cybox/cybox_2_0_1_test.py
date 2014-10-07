@@ -6,9 +6,102 @@ from StringIO import StringIO
 
 import ramrod
 import ramrod.cybox
+import ramrod.cybox.cybox_2_0_1
 import ramrod.utils as utils
 
-UPDATER = ramrod.cybox.Cybox_2_0_1_Updater
+OBSERVBALE_TEMPLATE = \
+"""
+<cybox:Observables xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:APIObj="http://cybox.mitre.org/objects#APIObject-2"
+    xmlns:AccountObj="http://cybox.mitre.org/objects#AccountObject-2"
+    xmlns:AddressObj="http://cybox.mitre.org/objects#AddressObject-2"
+    xmlns:ArtifactObj="http://cybox.mitre.org/objects#ArtifactObject-2"
+    xmlns:CodeObj="http://cybox.mitre.org/objects#CodeObject-2"
+    xmlns:CustomObj="http://cybox.mitre.org/objects#CustomObject-1"
+    xmlns:DNSCacheObj="http://cybox.mitre.org/objects#DNSCacheObject-2"
+    xmlns:DNSQueryObj="http://cybox.mitre.org/objects#DNSQueryObject-2"
+    xmlns:DNSRecordObj="http://cybox.mitre.org/objects#DNSRecordObject-2"
+    xmlns:DeviceObj="http://cybox.mitre.org/objects#DeviceObject-2"
+    xmlns:DiskObj="http://cybox.mitre.org/objects#DiskObject-2"
+    xmlns:DiskPartitionObj="http://cybox.mitre.org/objects#DiskPartitionObject-2"
+    xmlns:EmailMessageObj="http://cybox.mitre.org/objects#EmailMessageObject-2"
+    xmlns:FileObj="http://cybox.mitre.org/objects#FileObject-2"
+    xmlns:GUIDialogBoxObj="http://cybox.mitre.org/objects#GUIDialogboxObject-2"
+    xmlns:GUIObj="http://cybox.mitre.org/objects#GUIObject-2"
+    xmlns:GUIWindowObj="http://cybox.mitre.org/objects#GUIWindowObject-2"
+    xmlns:HTTPSessionObj="http://cybox.mitre.org/objects#HTTPSessionObject-2"
+    xmlns:LibraryObj="http://cybox.mitre.org/objects#LibraryObject-2"
+    xmlns:LinkObj="http://cybox.mitre.org/objects#LinkObject-1"
+    xmlns:LinuxPackageObj="http://cybox.mitre.org/objects#LinuxPackageObject-2"
+    xmlns:MemoryObj="http://cybox.mitre.org/objects#MemoryObject-2"
+    xmlns:MutexObj="http://cybox.mitre.org/objects#MutexObject-2"
+    xmlns:NetFlowObj="http://cybox.mitre.org/objects#NetworkFlowObject-2"
+    xmlns:NetworkConnectionObj="http://cybox.mitre.org/objects#NetworkConnectionObject-2"
+    xmlns:NetworkRouteEntryObj="http://cybox.mitre.org/objects#NetworkRouteEntryObject-2"
+    xmlns:NetworkRouteObj="http://cybox.mitre.org/objects#NetworkRouteObject-2"
+    xmlns:NetworkSocketObj="http://cybox.mitre.org/objects#NetworkSocketObject-2"
+    xmlns:NetworkSubnetObj="http://cybox.mitre.org/objects#NetworkSubnetObject-2"
+    xmlns:PDFFileObj="http://cybox.mitre.org/objects#PDFFileObject-1"
+    xmlns:PacketObj="http://cybox.mitre.org/objects#PacketObject-2"
+    xmlns:PipeObj="http://cybox.mitre.org/objects#PipeObject-2"
+    xmlns:PortObj="http://cybox.mitre.org/objects#PortObject-2"
+    xmlns:ProcessObj="http://cybox.mitre.org/objects#ProcessObject-2"
+    xmlns:ProductObj="http://cybox.mitre.org/objects#ProductObject-2"
+    xmlns:SemaphoreObj="http://cybox.mitre.org/objects#SemaphoreObject-2"
+    xmlns:SocketAddressObj="http://cybox.mitre.org/objects#SocketAddressObject-1"
+    xmlns:SystemObj="http://cybox.mitre.org/objects#SystemObject-2"
+    xmlns:URIObj="http://cybox.mitre.org/objects#URIObject-2"
+    xmlns:UnixFileObj="http://cybox.mitre.org/objects#UnixFileObject-2"
+    xmlns:UnixNetworkRouteEntryObj="http://cybox.mitre.org/objects#UnixNetworkRouteEntryObject-2"
+    xmlns:UnixPipeObj="http://cybox.mitre.org/objects#UnixPipeObject-2"
+    xmlns:UnixProcessObj="http://cybox.mitre.org/objects#UnixProcessObject-2"
+    xmlns:UnixUserAccountObj="http://cybox.mitre.org/objects#UnixUserAccountObject-2"
+    xmlns:UnixVolumeObj="http://cybox.mitre.org/objects#UnixVolumeObject-2"
+    xmlns:UserAccountObj="http://cybox.mitre.org/objects#UserAccountObject-2"
+    xmlns:UserSessionObj="http://cybox.mitre.org/objects#UserSessionObject-2"
+    xmlns:VolumeObj="http://cybox.mitre.org/objects#VolumeObject-2"
+    xmlns:WhoisObj="http://cybox.mitre.org/objects#WhoisObject-2"
+    xmlns:WinComputerAccountObj="http://cybox.mitre.org/objects#WinComputerAccountObject-2"
+    xmlns:WinCriticalSectionObj="http://cybox.mitre.org/objects#WinCriticalSectionObject-2"
+    xmlns:WinDriverObj="http://cybox.mitre.org/objects#WinDriverObject-2"
+    xmlns:WinEventLogObj="http://cybox.mitre.org/objects#WinEventLogObject-2"
+    xmlns:WinEventObj="http://cybox.mitre.org/objects#WinEventObject-2"
+    xmlns:WinExecutableFileObj="http://cybox.mitre.org/objects#WinExecutableFileObject-2"
+    xmlns:WinFileObj="http://cybox.mitre.org/objects#WinFileObject-2"
+    xmlns:WinHandleObj="http://cybox.mitre.org/objects#WinHandleObject-2"
+    xmlns:WinKernelHookObj="http://cybox.mitre.org/objects#WinKernelHookObject-2"
+    xmlns:WinKernelObj="http://cybox.mitre.org/objects#WinKernelObject-2"
+    xmlns:WinMailslotObj="http://cybox.mitre.org/objects#WinMailslotObject-2"
+    xmlns:WinMemoryPageRegionObj="http://cybox.mitre.org/objects#WinMemoryPageRegionObject-2"
+    xmlns:WinMutexObj="http://cybox.mitre.org/objects#WinMutexObject-2"
+    xmlns:WinNetworkRouteEntryObj="http://cybox.mitre.org/objects#WinNetworkRouteEntryObject-2"
+    xmlns:WinNetworkShareObj="http://cybox.mitre.org/objects#WinNetworkShareObject-2"
+    xmlns:WinPipeObj="http://cybox.mitre.org/objects#WinPipeObject-2"
+    xmlns:WinPrefetchObj="http://cybox.mitre.org/objects#WinPrefetchObject-2"
+    xmlns:WinProcessObj="http://cybox.mitre.org/objects#WinProcessObject-2"
+    xmlns:WinRegistryKeyObj="http://cybox.mitre.org/objects#WinRegistryKeyObject-2"
+    xmlns:WinSemaphoreObj="http://cybox.mitre.org/objects#WinSemaphoreObject-2"
+    xmlns:WinServiceObj="http://cybox.mitre.org/objects#WinServiceObject-2"
+    xmlns:WinSystemObj="http://cybox.mitre.org/objects#WinSystemObject-2"
+    xmlns:WinSystemRestoreObj="http://cybox.mitre.org/objects#WinSystemRestoreObject-2"
+    xmlns:WinTaskObj="http://cybox.mitre.org/objects#WinTaskObject-2"
+    xmlns:WinThreadObj="http://cybox.mitre.org/objects#WinThreadObject-2"
+    xmlns:WinUserAccountObj="http://cybox.mitre.org/objects#WinUserAccountObject-2"
+    xmlns:WinVolumeObj="http://cybox.mitre.org/objects#WinVolumeObject-2"
+    xmlns:WinWaitableTimerObj="http://cybox.mitre.org/objects#WinWaitableTimerObject-2"
+    xmlns:X509CertificateObj="http://cybox.mitre.org/objects#X509CertificateObject-2"
+    xmlns:cybox="http://cybox.mitre.org/cybox-2"
+    xmlns:cybox-cpe="http://cybox.mitre.org/extensions/platform#CPE2.3-1"
+    xmlns:cyboxCommon="http://cybox.mitre.org/common-2"
+    xmlns:cyboxVocabs="http://cybox.mitre.org/default_vocabularies-2"
+    xmlns:example="http://example.com/"
+    cybox_major_version="2" cybox_minor_version="0" cybox_update_version="1">
+    %s
+</cybox:Observables>
+"""
+
+UPDATER_MOD = ramrod.cybox.cybox_2_0_1
+UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
 
 class Cybox_2_0_1_Test(unittest.TestCase):
     XML_VERSIONS = \
@@ -41,9 +134,335 @@ class Cybox_2_0_1_Test(unittest.TestCase):
             self.assertEqual(version, updated_version)
 
 
+class _OptionalBase(unittest.TestCase):
+    XML_OPTIONALS = None
+    OPTIONAL_KLASS = None
+    OPTIONAL_COUNT = None
 
-class OptionalTest(unittest.TestCase):
-    pass
+    @classmethod
+    def setUpClass(cls):
+        cls.xml = StringIO(cls.XML_OPTIONALS)
+
+    def test_optional_find(self):
+        root = utils.get_etree_root(self.xml)
+        optionals = self.OPTIONAL_KLASS.find(root)
+        self.assertEqual(len(optionals), self.OPTIONAL_COUNT)
+
+    def test_optional_removal(self):
+        root = utils.get_etree_root(self.xml)
+        updater = UPDATER()
+        updater._update_optionals(root)
+        optionals = self.OPTIONAL_KLASS.find(root)
+        self.assertEqual(len(optionals), 0)
+
+
+class OptionalURIFieldsTest(_OptionalBase):
+    OPTIONAL_KLASS = UPDATER_MOD.OptionalURIFields
+    OPTIONAL_COUNT = 2
+    OBSERVABLES = \
+    """
+    <cybox:Observable id="example:foo-1">
+        <cybox:Object id="example:foo-1">
+            <cybox:Properties xsi:type="URIObj:URIObjectType" type="URL">
+                <cyboxCommon:Custom_Properties>
+                    <cyboxCommon:Property name="Test" condition="Equals">TEST</cyboxCommon:Property>
+                </cyboxCommon:Custom_Properties>
+                <URIObj:Value></URIObj:Value>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+     <cybox:Observable id="example:foo-2">
+        <cybox:Object id="example:foo-2">
+            <cybox:Properties xsi:type="URIObj:URIObjectType" type="URL">
+                <cyboxCommon:Custom_Properties>
+                    <cyboxCommon:Property name="Test" condition="Equals">TEST</cyboxCommon:Property>
+                </cyboxCommon:Custom_Properties>
+                <URIObj:Value></URIObj:Value>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
+
+class OptionalDNSCacheFieldsTest(_OptionalBase):
+    OPTIONAL_KLASS = UPDATER_MOD.OptionalDNSCacheFields
+    OPTIONAL_COUNT = 2
+    OBSERVABLES = \
+    """
+    <cybox:Observable>
+        <cybox:Description>Test Optional DNS_Entry Removal.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="DNSCacheObj:DNSCacheObjectType">
+                <DNSCacheObj:DNS_Cache_Entry>
+                    <DNSCacheObj:DNS_Entry/>
+                    <DNSCacheObj:TTL>1</DNSCacheObj:TTL>
+                </DNSCacheObj:DNS_Cache_Entry>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test Optional DNS_Entry Removal.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="DNSCacheObj:DNSCacheObjectType">
+                <DNSCacheObj:DNS_Cache_Entry>
+                    <DNSCacheObj:DNS_Entry/>
+                    <DNSCacheObj:TTL>1</DNSCacheObj:TTL>
+                </DNSCacheObj:DNS_Cache_Entry>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
+
+
+class OptionaFileFieldsTest(_OptionalBase):
+    OPTIONAL_KLASS = UPDATER_MOD.OptionalFileFields
+    OPTIONAL_COUNT = 2
+    OBSERVABLES = \
+    """
+    <cybox:Observable>
+        <cybox:Description>Test optional Depth element removal.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="FileObj:FileObjectType">
+                <FileObj:Packer_List>
+                    <FileObj:Packer>
+                        <FileObj:EP_Jump_Codes>
+                            <FileObj:Depth/>
+                            <FileObj:Opcodes>Test</FileObj:Opcodes>
+                        </FileObj:EP_Jump_Codes>
+                    </FileObj:Packer>
+                </FileObj:Packer_List>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test optional Depth element removal.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="FileObj:FileObjectType">
+                <FileObj:Packer_List>
+                    <FileObj:Packer>
+                        <FileObj:EP_Jump_Codes>
+                            <FileObj:Depth/>
+                            <FileObj:Opcodes>Test</FileObj:Opcodes>
+                        </FileObj:EP_Jump_Codes>
+                    </FileObj:Packer>
+                </FileObj:Packer_List>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
+
+
+class OptionalDNSQueryFieldsTest(_OptionalBase):
+    OPTIONAL_KLASS = UPDATER_MOD.OptionalDNSQueryFields
+    OPTIONAL_COUNT = 2
+    OBSERVABLES = \
+    """
+    <cybox:Observable>
+        <cybox:Description>Test Optional QName removal. This includes an optional URIObj:Value field removal.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="DNSQueryObj:DNSQueryObjectType">
+                <DNSQueryObj:Question>
+                    <DNSQueryObj:QName>
+                        <URIObj:Value/>
+                    </DNSQueryObj:QName>
+                </DNSQueryObj:Question>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test Optional QName removal. This includes an optional URIObj:Value field removal.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="DNSQueryObj:DNSQueryObjectType">
+                <DNSQueryObj:Question>
+                    <DNSQueryObj:QName>
+                        <URIObj:Value/>
+                    </DNSQueryObj:QName>
+                </DNSQueryObj:Question>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
+
+
+class OptionalDiskPartitionFieldsTest(_OptionalBase):
+    OPTIONAL_KLASS = UPDATER_MOD.OptionalDiskPartitionFields
+    OPTIONAL_COUNT = 2
+    OBSERVABLES = \
+    """
+    <cybox:Observable>
+        <cybox:Description>Test Optional Partition_ID Removal</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="DiskPartitionObj:DiskPartitionObjectType">
+                <DiskPartitionObj:Partition_ID></DiskPartitionObj:Partition_ID>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test Optional Partition_ID Removal</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="DiskPartitionObj:DiskPartitionObjectType">
+                <DiskPartitionObj:Partition_ID/>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
+
+
+class OptionalHTTPSessionFieldsTest(_OptionalBase):
+    OPTIONAL_KLASS = UPDATER_MOD.OptionalHTTPSessionFields
+    OPTIONAL_COUNT = 2
+    OBSERVABLES = \
+    """
+    <cybox:Observable id="example:Observable-1c9af310-0d5a-4c44-bdd7-aea3d99f13b9">
+        <cybox:Description>Test HTTP Session Object translations</cybox:Description>
+        <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19d3">
+            <cybox:Properties xsi:type="HTTPSessionObj:HTTPSessionObjectType">
+                <HTTPSessionObj:HTTP_Request_Response>
+                    <HTTPSessionObj:HTTP_Client_Request>
+                        <HTTPSessionObj:HTTP_Message_Body>
+                            <HTTPSessionObj:Length>1024</HTTPSessionObj:Length>
+                            <!--Message_Body is not optional in CybOX 2.0.1 and will be removed in the update process-->
+                            <HTTPSessionObj:Message_Body/>
+                        </HTTPSessionObj:HTTP_Message_Body>
+                    </HTTPSessionObj:HTTP_Client_Request>
+                </HTTPSessionObj:HTTP_Request_Response>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable id="example:Observable-1c9af310-0d5a-4c44-bdd7-aea3d99f13b9">
+        <cybox:Description>Test HTTP Session Object translations</cybox:Description>
+        <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19d3">
+            <cybox:Properties xsi:type="HTTPSessionObj:HTTPSessionObjectType">
+                <HTTPSessionObj:HTTP_Request_Response>
+                    <HTTPSessionObj:HTTP_Client_Request>
+                       <HTTPSessionObj:HTTP_Request_Header>
+                                <HTTPSessionObj:Parsed_Header>
+                                    <HTTPSessionObj:Host>
+                                        <!-- Test removal of optional Domain Name. URIObj:Value will be removed too -->
+                                        <HTTPSessionObj:Domain_Name>
+                                            <URIObj:Value></URIObj:Value>
+                                        </HTTPSessionObj:Domain_Name>
+                                    </HTTPSessionObj:Host>
+                                </HTTPSessionObj:Parsed_Header>
+                            </HTTPSessionObj:HTTP_Request_Header>
+                    </HTTPSessionObj:HTTP_Client_Request>
+                </HTTPSessionObj:HTTP_Request_Response>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
+
+
+class OptionalLinuxPackageFieldsTest(_OptionalBase):
+    OPTIONAL_KLASS = UPDATER_MOD.OptionalLinkPackageFields
+    OPTIONAL_COUNT = 2
+    OBSERVABLES = \
+    """
+    <cybox:Observable>
+        <cybox:Object>
+            <cybox:Properties xsi:type="LinuxPackageObj:LinuxPackageObjectType">
+                <LinuxPackageObj:Name/>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable><cybox:Observable>
+        <cybox:Object>
+            <cybox:Properties xsi:type="LinuxPackageObj:LinuxPackageObjectType">
+                <LinuxPackageObj:Name/>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
+
+
+class OptionalNetworkPacketFieldsTest(_OptionalBase):
+    # TODO: Make this complete. There are a lot of other elements!
+
+    OPTIONAL_KLASS = UPDATER_MOD.OptionalNetworkPacketFields
+    OPTIONAL_COUNT = 4  # Info_Msg x 2, Echo_Request, Echo_Reply
+    OBSERVABLES = \
+    """
+    <cybox:Observable>
+        <cybox:Description>Test removal of optional Network Packet Object fields.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Internet_Layer>
+                    <PacketObj:ICMPv4>
+                        <PacketObj:Info_Msg>
+                            <PacketObj:Echo_Reply/>
+                        </PacketObj:Info_Msg>
+                    </PacketObj:ICMPv4>
+                </PacketObj:Internet_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test removal of optional Network Packet Object fields.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Internet_Layer>
+                    <PacketObj:ICMPv4>
+                        <PacketObj:Info_Msg>
+                            <PacketObj:Echo_Request/>
+                        </PacketObj:Info_Msg>
+                    </PacketObj:ICMPv4>
+                </PacketObj:Internet_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
+
+
+class OptionalSystemFields(_OptionalBase):
+    OPTIONAL_KLASS = UPDATER_MOD.OptionalSystemFields
+    OPTIONAL_COUNT = 2
+    OBSERVABLES = \
+    """
+    <cybox:Observable>
+        <cybox:Description>Tests SystemObj IP_Address removal.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="SystemObj:SystemObjectType">
+                <SystemObj:Network_Interface_List>
+                    <SystemObj:Network_Interface>
+                        <SystemObj:IP_List>
+                            <SystemObj:IP_Info>
+                                <SystemObj:IP_Address/>
+                                <SystemObj:Subnet_Mask/>
+                            </SystemObj:IP_Info>
+                        </SystemObj:IP_List>
+                    </SystemObj:Network_Interface>
+                </SystemObj:Network_Interface_List>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+     <cybox:Observable>
+        <cybox:Description>Tests SystemObj IP_Address removal.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="SystemObj:SystemObjectType">
+                <SystemObj:Network_Interface_List>
+                    <SystemObj:Network_Interface>
+                        <SystemObj:IP_List>
+                            <SystemObj:IP_Info>
+                                <SystemObj:IP_Address/>
+                                <SystemObj:Subnet_Mask/>
+                            </SystemObj:IP_Info>
+                        </SystemObj:IP_List>
+                    </SystemObj:Network_Interface>
+                </SystemObj:Network_Interface_List>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
+
+
+
 
 if __name__ == "__main__":
     unittest.main()

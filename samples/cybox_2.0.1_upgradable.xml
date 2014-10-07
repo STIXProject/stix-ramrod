@@ -585,4 +585,11 @@
             </cybox:Related_Objects>
         </cybox:Object>
     </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Object>
+            <cybox:Properties xsi:type="LinuxPackageObj:LinuxPackageObjectType">
+                <LinuxPackageObj:Name/>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
 </cybox:Observables>
