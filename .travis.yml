@@ -11,4 +11,4 @@ script:
 
 notifications:
     email:
-        - stix-commits-list@lists.mitre.org
+        - bworrell@mitre.org
