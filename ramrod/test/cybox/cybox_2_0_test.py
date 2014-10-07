@@ -8,9 +8,9 @@ import ramrod
 import ramrod.cybox
 import ramrod.utils as utils
 
-class Cybox_2_0_Test(unittest.TestCase):
-    UPDATER = ramrod.cybox.Cybox_2_0_Updater
+UPDATER = ramrod.cybox.Cybox_2_0_Updater
 
+class Cybox_2_0_Test(unittest.TestCase):
     XML_VERSIONS = \
     """
      <cybox:Observables
@@ -26,18 +26,18 @@ class Cybox_2_0_Test(unittest.TestCase):
 
     def test_get_version(self):
         root = utils.get_etree_root(self._versions)
-        version = self.UPDATER.get_version(root)
-        self.assertEqual(version, self.UPDATER.VERSION)
+        version = UPDATER.get_version(root)
+        self.assertEqual(version, UPDATER.VERSION)
 
     def test_update_version(self):
         valid_versions = ramrod.cybox.CYBOX_VERSIONS
         idx = valid_versions.index
-        version_to = valid_versions[idx(self.UPDATER.VERSION)+1:]
+        version_to = valid_versions[idx(UPDATER.VERSION)+1:]
 
         for version in version_to:
             updated = ramrod.update(self._versions, to_=version)
             updated_root = updated.document.getroot()
-            updated_version = self.UPDATER.get_version(updated_root)
+            updated_version = UPDATER.get_version(updated_root)
             self.assertEqual(version, updated_version)
 
 
@@ -51,8 +51,8 @@ class CommaTest(unittest.TestCase):
     ]
 
     ESCAPED = "Et tu&comma; Brute?"
+    CDATA_ESCAPED = "<![CDATA[%s]]>" % (ESCAPED)
     UNESCAPED = ESCAPED.replace("&comma;", ",")
-
     NEW_DELIMITER = "##comma##"
 
     XML_COMMAS = \
@@ -67,11 +67,11 @@ class CommaTest(unittest.TestCase):
                 <EmailMessageObj:From category="e-mail">
                     <AddressObj:Address_Value condition="Equals" apply_condition="ANY">%s</AddressObj:Address_Value>
                 </EmailMessageObj:From>
-                <EmailMessageObj:Subject condition="Equals"><![CDATA[%s]]></EmailMessageObj:Subject>
+                <EmailMessageObj:Subject condition="Equals">%s</EmailMessageObj:Subject>
             </EmailMessageObj:Header>
         </cybox:Properties>
     </cybox:Object>
-    """ % (",".join(ATTACKERS), ESCAPED)
+    """ % (",".join(ATTACKERS), CDATA_ESCAPED)
 
     @classmethod
     def setUpClass(cls):
@@ -79,7 +79,7 @@ class CommaTest(unittest.TestCase):
 
     def test_lists(self):
         nsmap = {'AddressObj': 'http://cybox.mitre.org/objects#AddressObject-2'}
-        updater = self.UPDATER()
+        updater = UPDATER()
         root = utils.get_etree_root(self._xml)
 
         updater._update_lists(root)
@@ -88,19 +88,12 @@ class CommaTest(unittest.TestCase):
 
     def test_commas(self):
         nsmap = {'EmailMessageObj': 'http://cybox.mitre.org/objects#EmailMessageObject-2'}
-        updater = self.UPDATER()
+        updater = UPDATER()
         root = utils.get_etree_root(self._xml)
 
         updater._update_lists(root)
         subject = root.xpath('.//EmailMessageObj:Subject', namespaces=nsmap)[0].text
         self.assertEqual(subject, self.UNESCAPED)
-
-
-
-class OptionalsTest(unittest.TestCase):
-    UPDATER = ramrod.cybox.Cybox_2_0_Updater
-
-
 
 
 
