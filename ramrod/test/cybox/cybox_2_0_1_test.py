@@ -875,5 +875,55 @@ class DisallowedWinExecutableFile(_BaseDisallowed):
     """
     XML = OBSERVBALE_TEMPLATE % (DISALLOWED_XML)
 
+
+class DisallowedHTTPSession(_BaseDisallowed):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    DISALLOWED_KLASS = UPDATER_MOD.DisallowedHTTPSession
+    DISALLOWED_COUNT = 1
+    DISALLOWED_XML = \
+    """
+    <cybox:Observable id="example:Observable-1c9af310-0d5a-4c44-bdd7-aea3d99f13b9">
+        <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19d3">
+            <cybox:Properties xsi:type="HTTPSessionObj:HTTPSessionObjectType">
+                <HTTPSessionObj:HTTP_Request_Response>
+                    <HTTPSessionObj:HTTP_Server_Response>
+                        <HTTPSessionObj:HTTP_Response_Header>
+                            <HTTPSessionObj:Parsed_Header>
+                                <HTTPSessionObj:X_Forwarded_Proto/>
+                            </HTTPSessionObj:Parsed_Header>
+                        </HTTPSessionObj:HTTP_Response_Header>
+                    </HTTPSessionObj:HTTP_Server_Response>
+                </HTTPSessionObj:HTTP_Request_Response>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML = OBSERVBALE_TEMPLATE % (DISALLOWED_XML)
+
+
+class DisallowedWinMailslot(_BaseDisallowed):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    DISALLOWED_KLASS = UPDATER_MOD.DisallowedWindowsMailslotHandle
+    DISALLOWED_COUNT = 1
+    DISALLOWED_XML = \
+    """
+    <cybox:Observable id="example:Observable-1c9af310-0d5a-4c44-bdd7-aea3d99f13b8">
+        <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19d0">
+            <cybox:Properties xsi:type="WinMailslotObj:WindowsMailslotObjectType">
+                <WinMailslotObj:Handle>
+                    <WinHandleObj:Handle>
+                        <WinHandleObj:Name>Test</WinHandleObj:Name>
+                    </WinHandleObj:Handle>
+                    <WinHandleObj:Handle>
+                        <WinHandleObj:Name>Test</WinHandleObj:Name>
+                    </WinHandleObj:Handle>
+                </WinMailslotObj:Handle>
+                <WinMailslotObj:Name>TEST NAME</WinMailslotObj:Name>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML = OBSERVBALE_TEMPLATE % (DISALLOWED_XML)
+
 if __name__ == "__main__":
     unittest.main()
