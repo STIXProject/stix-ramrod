@@ -8,7 +8,7 @@ import ramrod
 import ramrod.stix
 import ramrod.stix.stix_1_1
 import ramrod.utils as utils
-from ramrod.test import (_BaseVocab, _BaseDisallowed, _BaseTrans)
+from ramrod.test import (_BaseVocab, _BaseTrans)
 
 UPDATER_MOD = ramrod.stix.stix_1_1
 UPDATER = UPDATER_MOD.STIX_1_1_Updater
