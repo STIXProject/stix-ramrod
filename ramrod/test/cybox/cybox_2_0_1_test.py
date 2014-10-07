@@ -707,5 +707,91 @@ class TransHTTPSessionRefresh(_BaseTrans):
             self.assertEqual(node.attrib['datatype'], 'string')
 
 
+class TransNetPacketProtoAddrSize(_BaseTrans):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    TRANS_KLASS = UPDATER_MOD.TransNetPacketProtoAddrSize
+    TRANS_XPATH = ".//HTTPSessionObj:Proto_Addr_Size"
+    TRANS_VALUE = _BaseTrans.TRANS_VALUE
+    TRANS_COUNT = 1
+    TRANS_XML = \
+    """
+    <cybox:Observable>
+        <cybox:Description>Test Network Packet Object translations</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Link_Layer>
+                    <PacketObj:Logical_Protocols>
+                        <PacketObj:ARP_RARP>
+                            <PacketObj:Protol_Addr_Size>%s</PacketObj:Protol_Addr_Size>
+                        </PacketObj:ARP_RARP>
+                    </PacketObj:Logical_Protocols>
+                </PacketObj:Link_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """ % (TRANS_VALUE)
+    XML = OBSERVBALE_TEMPLATE % (TRANS_XML)
+
+
+class TransNetPacketEncapsulatingSecurityPayload(_BaseTrans):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    TRANS_KLASS = UPDATER_MOD.TransNetPacketEncapsulatingSecurityPayload
+    TRANS_XPATH = ".//PacketObj:Encapsulating_Security_Payload"
+    TRANS_VALUE = None
+    TRANS_COUNT = 1
+    TRANS_XML = \
+    """
+    <cybox:Observable>
+        <cybox:Description>Test Network Packet Object translations</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Internet_Layer>
+                    <PacketObj:IPv6>
+                        <PacketObj:Ext_Headers>
+                            <!-- This should get renamed to Encapsulating_Security_Payload -->
+                            <PacketObj:Excapsulating_Security_Payload>
+                                <PacketObj:Sequence_Number>1</PacketObj:Sequence_Number>
+                            </PacketObj:Excapsulating_Security_Payload>
+                        </PacketObj:Ext_Headers>
+                    </PacketObj:IPv6>
+                </PacketObj:Internet_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML = OBSERVBALE_TEMPLATE % (TRANS_XML)
+
+
+
+class TransNetPacketAuthenticationData(_BaseTrans):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    TRANS_KLASS = UPDATER_MOD.TransNetPacketAuthenticationData
+    TRANS_XPATH = ".//PacketObj:Authentication_Data"
+    TRANS_VALUE = _BaseTrans.TRANS_VALUE
+    TRANS_COUNT = 1
+    TRANS_XML = \
+    """
+    <cybox:Observable>
+        <cybox:Description>Test Network Packet Object translations</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="PacketObj:NetworkPacketObjectType">
+                <PacketObj:Internet_Layer>
+                    <PacketObj:IPv6>
+                        <PacketObj:Ext_Headers>
+                            <!-- This should get renamed to Encapsulating_Security_Payload -->
+                            <PacketObj:Excapsulating_Security_Payload>
+                                <PacketObj:Sequence_Number>1</PacketObj:Sequence_Number>
+                                <!-- This should get renamed to Authentication_Data -->
+                                <PacketObj:Authenication_Data>%s</PacketObj:Authenication_Data>
+                            </PacketObj:Excapsulating_Security_Payload>
+                        </PacketObj:Ext_Headers>
+                    </PacketObj:IPv6>
+                </PacketObj:Internet_Layer>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """ % (TRANS_VALUE)
+    XML = OBSERVBALE_TEMPLATE % (TRANS_XML)
+
 if __name__ == "__main__":
     unittest.main()

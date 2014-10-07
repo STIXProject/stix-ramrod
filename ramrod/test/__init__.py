@@ -54,4 +54,7 @@ class _BaseTrans(unittest.TestCase):
                                     namespaces=self.UPDATER.NSMAP)
 
          for node in updated_nodes:
-             self.assertEqual(node.text, self.TRANS_VALUE)
+             if self.TRANS_VALUE:
+                self.assertEqual(node.text, self.TRANS_VALUE)
+             else:
+                 self.assertTrue(node != None)
