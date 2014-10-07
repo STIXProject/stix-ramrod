@@ -9,6 +9,8 @@ import ramrod.cybox
 import ramrod.cybox.cybox_2_0_1
 import ramrod.utils as utils
 
+from ramrod.test import (_BaseOptional, _BaseTrans)
+
 OBSERVBALE_TEMPLATE = \
 """
 <cybox:Observables xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -134,29 +136,8 @@ class Cybox_2_0_1_Test(unittest.TestCase):
             self.assertEqual(version, updated_version)
 
 
-class _OptionalBase(unittest.TestCase):
-    XML_OPTIONALS = None
-    OPTIONAL_KLASS = None
-    OPTIONAL_COUNT = None
-
-    @classmethod
-    def setUpClass(cls):
-        cls.xml = StringIO(cls.XML_OPTIONALS)
-
-    def test_optional_find(self):
-        root = utils.get_etree_root(self.xml)
-        optionals = self.OPTIONAL_KLASS.find(root)
-        self.assertEqual(len(optionals), self.OPTIONAL_COUNT)
-
-    def test_optional_removal(self):
-        root = utils.get_etree_root(self.xml)
-        updater = UPDATER()
-        updater._update_optionals(root)
-        optionals = self.OPTIONAL_KLASS.find(root)
-        self.assertEqual(len(optionals), 0)
-
-
-class OptionalURIFieldsTest(_OptionalBase):
+class OptionalURIFieldsTest(_BaseOptional):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
     OPTIONAL_KLASS = UPDATER_MOD.OptionalURIFields
     OPTIONAL_COUNT = 2
     OBSERVABLES = \
@@ -184,7 +165,8 @@ class OptionalURIFieldsTest(_OptionalBase):
     """
     XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
 
-class OptionalDNSCacheFieldsTest(_OptionalBase):
+class OptionalDNSCacheFieldsTest(_BaseOptional):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
     OPTIONAL_KLASS = UPDATER_MOD.OptionalDNSCacheFields
     OPTIONAL_COUNT = 2
     OBSERVABLES = \
@@ -215,7 +197,8 @@ class OptionalDNSCacheFieldsTest(_OptionalBase):
     XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
 
 
-class OptionaFileFieldsTest(_OptionalBase):
+class OptionaFileFieldsTest(_BaseOptional):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
     OPTIONAL_KLASS = UPDATER_MOD.OptionalFileFields
     OPTIONAL_COUNT = 2
     OBSERVABLES = \
@@ -254,7 +237,8 @@ class OptionaFileFieldsTest(_OptionalBase):
     XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
 
 
-class OptionalDNSQueryFieldsTest(_OptionalBase):
+class OptionalDNSQueryFieldsTest(_BaseOptional):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
     OPTIONAL_KLASS = UPDATER_MOD.OptionalDNSQueryFields
     OPTIONAL_COUNT = 2
     OBSERVABLES = \
@@ -287,7 +271,8 @@ class OptionalDNSQueryFieldsTest(_OptionalBase):
     XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
 
 
-class OptionalDiskPartitionFieldsTest(_OptionalBase):
+class OptionalDiskPartitionFieldsTest(_BaseOptional):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
     OPTIONAL_KLASS = UPDATER_MOD.OptionalDiskPartitionFields
     OPTIONAL_COUNT = 2
     OBSERVABLES = \
@@ -312,7 +297,8 @@ class OptionalDiskPartitionFieldsTest(_OptionalBase):
     XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
 
 
-class OptionalHTTPSessionFieldsTest(_OptionalBase):
+class OptionalHTTPSessionFieldsTest(_BaseOptional):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
     OPTIONAL_KLASS = UPDATER_MOD.OptionalHTTPSessionFields
     OPTIONAL_COUNT = 2
     OBSERVABLES = \
@@ -358,7 +344,8 @@ class OptionalHTTPSessionFieldsTest(_OptionalBase):
     XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
 
 
-class OptionalLinuxPackageFieldsTest(_OptionalBase):
+class OptionalLinuxPackageFieldsTest(_BaseOptional):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
     OPTIONAL_KLASS = UPDATER_MOD.OptionalLinkPackageFields
     OPTIONAL_COUNT = 2
     OBSERVABLES = \
@@ -380,9 +367,9 @@ class OptionalLinuxPackageFieldsTest(_OptionalBase):
     XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
 
 
-class OptionalNetworkPacketFieldsTest(_OptionalBase):
+class OptionalNetworkPacketFieldsTest(_BaseOptional):
     # TODO: Make this complete. There are a lot of other elements!
-
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
     OPTIONAL_KLASS = UPDATER_MOD.OptionalNetworkPacketFields
     OPTIONAL_COUNT = 4  # Info_Msg x 2, Echo_Request, Echo_Reply
     OBSERVABLES = \
@@ -419,7 +406,8 @@ class OptionalNetworkPacketFieldsTest(_OptionalBase):
     XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
 
 
-class OptionalSystemFields(_OptionalBase):
+class OptionalSystemFields(_BaseOptional):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
     OPTIONAL_KLASS = UPDATER_MOD.OptionalSystemFields
     OPTIONAL_COUNT = 2
     OBSERVABLES = \
@@ -461,7 +449,262 @@ class OptionalSystemFields(_OptionalBase):
     """
     XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
 
+class OptionalWinComputerAccountFields(_BaseOptional):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    OPTIONAL_KLASS = UPDATER_MOD.OptionalWinComputerAccountFields
+    OPTIONAL_COUNT = 6
+    OBSERVABLES = \
+    """
+    <cybox:Observable>
+        <cybox:Description>Test Optional WinComputerAccountObj element removal.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="WinComputerAccountObj:WindowsComputerAccountObjectType">
+                <WinComputerAccountObj:Kerberos>
+                    <WinComputerAccountObj:Delegation>
+                        <WinComputerAccountObj:Bitmask/>
+                        <WinComputerAccountObj:Service/>
+                    </WinComputerAccountObj:Delegation>
+                    <WinComputerAccountObj:Ticket>1</WinComputerAccountObj:Ticket>
+                </WinComputerAccountObj:Kerberos>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+        <cybox:Observable>
+        <cybox:Description>Test Optional WinComputerAccountObj element removal.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="WinComputerAccountObj:WindowsComputerAccountObjectType">
+                <WinComputerAccountObj:Kerberos>
+                    <WinComputerAccountObj:Delegation>
+                        <WinComputerAccountObj:Bitmask/>
+                        <WinComputerAccountObj:Service/>
+                    </WinComputerAccountObj:Delegation>
+                    <WinComputerAccountObj:Ticket>1</WinComputerAccountObj:Ticket>
+                </WinComputerAccountObj:Kerberos>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
 
+class OptionalWinFileFields(_BaseOptional):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    OPTIONAL_KLASS = UPDATER_MOD.OptionalWinFileFields
+    OPTIONAL_COUNT = 2
+    OBSERVABLES = \
+    """
+     <cybox:Observable>
+        <cybox:Description>Test WinFileObject Size_In_Bytes element removal.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="WinFileObj:WindowsFileObjectType">
+                <WinFileObj:Security_ID>TEST</WinFileObj:Security_ID>
+                <WinFileObj:Stream_List>
+                    <WinFileObj:Stream>
+                        <cyboxCommon:Hash/>
+                        <WinFileObj:Name>Test</WinFileObj:Name>
+                        <WinFileObj:Size_In_Bytes/>
+                    </WinFileObj:Stream>
+                </WinFileObj:Stream_List>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+     <cybox:Observable>
+        <cybox:Description>Test WinFileObject Size_In_Bytes element removal.</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="WinFileObj:WindowsFileObjectType">
+                <WinFileObj:Security_ID>TEST</WinFileObj:Security_ID>
+                <WinFileObj:Stream_List>
+                    <WinFileObj:Stream>
+                        <cyboxCommon:Hash/>
+                        <WinFileObj:Name>Test</WinFileObj:Name>
+                        <WinFileObj:Size_In_Bytes/>
+                    </WinFileObj:Stream>
+                </WinFileObj:Stream_List>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
+
+class OptionalWinNetworkShareFields(_BaseOptional):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    OPTIONAL_KLASS = UPDATER_MOD.OptionalWinNetworkShareFields
+    OPTIONAL_COUNT = 2
+    OBSERVABLES = \
+    """
+    <cybox:Observable>
+        <cybox:Description>Test optional WinNetworkShareObj Netname element removal</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="WinNetworkShareObj:WindowsNetworkShareObjectType">
+                <WinNetworkShareObj:Current_Uses>0</WinNetworkShareObj:Current_Uses>
+                <WinNetworkShareObj:Netname/>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    <cybox:Observable>
+        <cybox:Description>Test optional WinNetworkShareObj Netname element removal</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="WinNetworkShareObj:WindowsNetworkShareObjectType">
+                <WinNetworkShareObj:Current_Uses>0</WinNetworkShareObj:Current_Uses>
+                <WinNetworkShareObj:Netname/>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
+
+
+class OptionalWinPrefetchFields(_BaseOptional):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    OPTIONAL_KLASS = UPDATER_MOD.OptionalWinPrefetchFields
+    OPTIONAL_COUNT = 2
+    OBSERVABLES = \
+    """
+    <cybox:Observable>
+        <cybox:Description>Test optional WinPrefetchObj element removal</cybox:Description>
+        <cybox:Object>
+            <cybox:Properties xsi:type="WinPrefetchObj:WindowsPrefetchObjectType">
+                <WinPrefetchObj:Application_File_Name>Test</WinPrefetchObj:Application_File_Name>
+                <WinPrefetchObj:Volume>
+                    <WinPrefetchObj:VolumeItem/>
+                    <WinPrefetchObj:VolumeItem>
+                        <VolumeObj:Name>Not Empty</VolumeObj:Name>
+                    </WinPrefetchObj:VolumeItem>
+                    <WinPrefetchObj:DeviceItem/>
+                    <WinPrefetchObj:DeviceItem>
+                        <DeviceObj:Description>Not Empty</DeviceObj:Description>
+                    </WinPrefetchObj:DeviceItem>
+                </WinPrefetchObj:Volume>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """
+    XML_OPTIONALS = OBSERVBALE_TEMPLATE % (OBSERVABLES)
+
+
+class TransHTTPSessionDNT(_BaseTrans):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    TRANS_KLASS = UPDATER_MOD.TransHTTPSessionDNT
+    TRANS_XPATH = ".//HTTPSessionObj:DNT"
+    TRANS_VALUE = _BaseTrans.TRANS_VALUE
+    TRANS_COUNT = 1
+    TRANS_XML = \
+    """
+    <cybox:Observable id="example:Observable-1c9af310-0d5a-4c44-bdd7-aea3d99f13b9">
+        <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19d3">
+            <cybox:Properties xsi:type="HTTPSessionObj:HTTPSessionObjectType">
+                <HTTPSessionObj:HTTP_Request_Response>
+                    <HTTPSessionObj:HTTP_Client_Request>
+                        <HTTPSessionObj:HTTP_Request_Header>
+                            <HTTPSessionObj:Parsed_Header>
+                                <HTTPSessionObj:DNT>
+                                    <URIObj:Value>%s</URIObj:Value>
+                                </HTTPSessionObj:DNT>
+                            </HTTPSessionObj:Parsed_Header>
+                        </HTTPSessionObj:HTTP_Request_Header>
+                    </HTTPSessionObj:HTTP_Client_Request>
+                </HTTPSessionObj:HTTP_Request_Response>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """ % (TRANS_VALUE)
+
+    XML = OBSERVBALE_TEMPLATE % (TRANS_XML)
+
+
+class TransHTTPSessionVary(_BaseTrans):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    TRANS_KLASS = UPDATER_MOD.TransHTTPSessionVary
+    TRANS_XPATH = ".//HTTPSessionObj:Vary"
+    TRANS_VALUE = _BaseTrans.TRANS_VALUE
+    TRANS_COUNT = 1
+    TRANS_XML = \
+    """
+    <cybox:Observable id="example:Observable-1c9af310-0d5a-4c44-bdd7-aea3d99f13b9">
+        <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19d3">
+            <cybox:Properties xsi:type="HTTPSessionObj:HTTPSessionObjectType">
+                <HTTPSessionObj:HTTP_Request_Response>
+                    <HTTPSessionObj:HTTP_Server_Response>
+                        <HTTPSessionObj:HTTP_Response_Header>
+                            <HTTPSessionObj:Parsed_Header>
+                                <HTTPSessionObj:Vary>
+                                    <URIObj:Value>%s</URIObj:Value>
+                                </HTTPSessionObj:Vary>
+                            </HTTPSessionObj:Parsed_Header>
+                        </HTTPSessionObj:HTTP_Response_Header>
+                    </HTTPSessionObj:HTTP_Server_Response>
+                </HTTPSessionObj:HTTP_Request_Response>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """ % (TRANS_VALUE)
+
+    XML = OBSERVBALE_TEMPLATE % (TRANS_XML)
+
+
+class TransHTTPSessionXRequestedFor(_BaseTrans):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    TRANS_KLASS = UPDATER_MOD.TransHTTPSessionXRequestedFor
+    TRANS_XPATH = ".//HTTPSessionObj:X_Forwarded_For"
+    TRANS_VALUE = _BaseTrans.TRANS_VALUE
+    TRANS_COUNT = 1
+    TRANS_XML = \
+    """
+    <cybox:Observable id="example:Observable-1c9af310-0d5a-4c44-bdd7-aea3d99f13b9">
+        <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19d3">
+            <cybox:Properties xsi:type="HTTPSessionObj:HTTPSessionObjectType">
+                <HTTPSessionObj:HTTP_Request_Response>
+                    <HTTPSessionObj:HTTP_Server_Response>
+                        <HTTPSessionObj:HTTP_Response_Header>
+                            <HTTPSessionObj:Parsed_Header>
+                               <HTTPSessionObj:X_Requested_For>%s</HTTPSessionObj:X_Requested_For>
+                            </HTTPSessionObj:Parsed_Header>
+                        </HTTPSessionObj:HTTP_Response_Header>
+                    </HTTPSessionObj:HTTP_Server_Response>
+                </HTTPSessionObj:HTTP_Request_Response>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """ % (TRANS_VALUE)
+
+    XML = OBSERVBALE_TEMPLATE % (TRANS_XML)
+
+
+class TransHTTPSessionRefresh(_BaseTrans):
+    UPDATER = UPDATER_MOD.Cybox_2_0_1_Updater
+    TRANS_KLASS = UPDATER_MOD.TransHTTPSessionRefresh
+    TRANS_XPATH = ".//HTTPSessionObj:Refresh"
+    TRANS_VALUE = _BaseTrans.TRANS_VALUE
+    TRANS_COUNT = 1
+    TRANS_XML = \
+    """
+    <cybox:Observable id="example:Observable-1c9af310-0d5a-4c44-bdd7-aea3d99f13b9">
+        <cybox:Object id="example:Object-26be6630-b2df-4bf9-8750-3f45ca9e19d3">
+            <cybox:Properties xsi:type="HTTPSessionObj:HTTPSessionObjectType">
+                <HTTPSessionObj:HTTP_Request_Response>
+                    <HTTPSessionObj:HTTP_Server_Response>
+                        <HTTPSessionObj:HTTP_Response_Header>
+                            <HTTPSessionObj:Parsed_Header>
+                                <HTTPSessionObj:Refresh datatype="int">%s</HTTPSessionObj:Refresh>
+                            </HTTPSessionObj:Parsed_Header>
+                        </HTTPSessionObj:HTTP_Response_Header>
+                    </HTTPSessionObj:HTTP_Server_Response>
+                </HTTPSessionObj:HTTP_Request_Response>
+            </cybox:Properties>
+        </cybox:Object>
+    </cybox:Observable>
+    """ % (TRANS_VALUE)
+
+    XML = OBSERVBALE_TEMPLATE % (TRANS_XML)
+
+    def test_attrib_value(self):
+        root = utils.get_etree_root(self.xml)
+        self.TRANS_KLASS.translate(root)
+
+        updated_nodes = root.xpath(self.TRANS_XPATH,
+                                namespaces=self.UPDATER.NSMAP)
+
+        for node in updated_nodes:
+            self.assertEqual(node.attrib['datatype'], 'string')
 
 
 if __name__ == "__main__":

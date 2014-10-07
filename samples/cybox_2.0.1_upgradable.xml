@@ -557,6 +557,7 @@
                                 <HTTPSessionObj:DNT>
                                     <URIObj:Value>Translate to StringObjectPropertyType Field</URIObj:Value>
                                 </HTTPSessionObj:DNT>
+                                <HTTPSessionObj:X_Requested_For>Test</HTTPSessionObj:X_Requested_For>
                             </HTTPSessionObj:Parsed_Header>
                         </HTTPSessionObj:HTTP_Request_Header>
                         <HTTPSessionObj:HTTP_Message_Body>
