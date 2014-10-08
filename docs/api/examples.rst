@@ -133,7 +133,7 @@ or that were lost in translation can be retrieved from the returned
 
     # Iterate over the {id: [nodes]} dictionary containing nodes
     # with remapped IDs
-    for original_id, node_list in updated.remapped.iteritems():
+    for original_id, node_list in updated.remapped_ids.iteritems():
         do_something_with_remapped_items(original_id, node_list)
 
 Using the UpdateOptions Class
