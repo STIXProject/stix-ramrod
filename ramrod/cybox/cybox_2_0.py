@@ -254,15 +254,15 @@ class Cybox_2_0_Updater(_CyboxUpdater):
 
     def _get_disallowed(self, root):
         """There are no untranslatable fields between CybOX 2.0 and
-        CybOX v2.0.1 so this just returns an empty list.
+        CybOX v2.0.1 so this just returns an empty tuple.
 
         """
-        return []
+        return ()
 
 
     def _clean_disallowed(self, disallowed, options):
         """There are no untranslatable fields between CybOX 2.0 and
-        CybOX v2.0.1 so this just returns an empty list.
+        CybOX v2.0.1 so this just returns an empty tuple.
 
         """
         return ()
