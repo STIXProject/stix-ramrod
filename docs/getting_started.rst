@@ -12,10 +12,10 @@ statement.
 
 Installation
 ------------
-There are two options for installation:  
 
-#. :code:`pip install stix-ramrod --upgrade`
-#. Download the latest zip from https://pypi.python.org/pypi/stix-ramrod
+To install **stix-ramrod** just run :code:`pip install stix-ramrod`. If you have
+any issues, please refer to the instructions found on the
+:doc:`/installation` page.
 
 Scripts
 -------
