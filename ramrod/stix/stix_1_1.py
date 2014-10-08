@@ -312,50 +312,28 @@ class STIX_1_1_Updater(_STIXUpdater):
 
 
     def _get_disallowed(self, root):
-        """Finds all xml entities under `root` that cannot be updated.
-
-        Note:
-            This checks for both untranslatable STIX and CybOX entities.
-
-        Args:
-            root: The top-level xml node
-
-        Returns:
-            A list of untranslatable items.
+        """There are no untranslatable fields between STIX v1.1 and
+        STIX v1.1.11 so this just returns an empty list.
 
         """
-        disallowed = []
-
-        for klass in self.DISALLOWED:
-            found = klass.find(root)
-            disallowed.extend(found)
-
-        return disallowed
+        return []
 
 
     def _clean_disallowed(self, disallowed, options):
-        """Removes the `disallowed` nodes from the source document.
-
-        Args:
-            disallowed: A list of nodes to remove from the source document.
-
-        Returns:
-            A list of `disallowed` node copies.
+        """There are no untranslatable fields between STIX v1.1 and
+        STIX v1.1.1 so this just returns an empty list.
 
         """
-        removed = []
-        for node in disallowed:
-            dup = utils.copy_xml_element(node)
-            utils.remove_xml_element(node)
-            removed.append(dup)
-
-        return removed
+        return ()
 
 
     def _get_duplicates(self, root):
-        """The STIX v1.1 and v1.1.1 schemas enforces ID uniqueness, so this
+        """The STIX v1.1 and v1.1.1 schemas both enforces ID uniqueness, so this
         overrides the default ``_get_duplicates()`` by immediately returning
         an empty dictionary.
+
+        Note:
+            This assumes that `root` is schema-valid.
 
         """
         return {}

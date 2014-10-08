@@ -222,6 +222,9 @@ class STIX_1_0_Updater(_STIXUpdater):
         overrides the default ``_get_duplicates()`` by immediately returning
         an empty dictionary.
 
+        Note:
+            This assumes that `root` is schema-valid.
+
         """
         return {}
 
@@ -230,6 +233,9 @@ class STIX_1_0_Updater(_STIXUpdater):
         """The STIX v1.0.1 schema does not enforce ID uniqueness, so this
         overrides the default ``_get_duplicates()`` by immediately returning
         an empty dictionary.
+
+        Note:
+            This assumes that `root` is schema-valid.
 
         """
         return {}

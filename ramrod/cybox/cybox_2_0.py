@@ -273,6 +273,9 @@ class Cybox_2_0_Updater(_CyboxUpdater):
         CybOX 2.0.1 instance documents because CybOX 2.0.1 does not enforce
         ID uniqueness in schema.
 
+        Note:
+            This assumes that `root` is schema-valid.
+
         """
         return {}
 
@@ -280,6 +283,9 @@ class Cybox_2_0_Updater(_CyboxUpdater):
         """There is no need to remap non-unique IDs between CybOX 2.0 and
         CybOX 2.0.1 instance documents because CybOX 2.0.1 does not enforce
         ID uniqueness in schema.
+
+        Note:
+            This assumes that `root` is schema-valid.
 
         """
         return {}
