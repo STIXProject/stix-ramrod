@@ -49,7 +49,7 @@ class STIX_1_0_Test(unittest.TestCase):
 
         for version in version_to:
             updated = ramrod.update(self._versions, to_=version)
-            updated_root = updated.document.getroot()
+            updated_root = updated.document.as_element()
             updated_version = UPDATER.get_version(updated_root)
             self.assertEqual(version, updated_version)
 

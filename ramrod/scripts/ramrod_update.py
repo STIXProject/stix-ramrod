@@ -25,15 +25,16 @@ def _print_error(fmt, *args):
     sys.stderr.write("%s\n" % (msg))
 
 
-def _write_xml(tree, outfn=None):
+def _write_xml(document, outfn=None):
     """Writes the XML tree to an output stream. If `outfn` is ``None``,
     sys.stdout is written to.
 
     Args:
-        tree: An etree._ElementTree instance.
+        tree: A :class:`ramrod.ResultDocument` instance.
 
     """
     out = outfn or sys.stdout
+    tree = document.as_element_tree()
     tree.write(out, pretty_print=True)
 
 

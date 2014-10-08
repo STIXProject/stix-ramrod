@@ -37,12 +37,14 @@ returns an instance of :class:`ramrod.UpdateResults`.
     (such as files on disk or ``StringIO`` instances), ``etree._Element``
     instances, or ``etree._ElementTree`` instances. Neato!
 
+
 Retrieving Updated Content
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 After successfully calling :meth:`ramrod.update`, the update document can be
 retrieved from the returned :class:`ramrod.UpdateResults` object instance via
-the ``document`` attribute.
+the ``document`` attribute. The ``document`` attribute is an instance of
+:class:`ramrod.ResultDocument`.
 
 .. code-block:: python
 
@@ -52,11 +54,14 @@ the ``document`` attribute.
     # Update the document
     updated = ramrod.update('stix-content.xml')
 
+    # Print the resulting document to stdout
+    print updated
+
     # Retrieve the updated document from the returned UpdateResults object
     new_stix_doc = updated.document
 
-    # Print the results
-    print etree.tostring(new_stix_doc)
+    # Or retrieve the etree._Element root
+    root = new_stix_doc.as_element()
 
 
 Forcing An Update

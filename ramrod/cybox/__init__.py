@@ -3,8 +3,8 @@
 
 from lxml import etree
 from distutils.version import StrictVersion
-from ramrod import (_BaseUpdater, _Vocab,
-    UnknownVersionError, InvalidVersionError, UpdateResults, _validate_versions)
+from ramrod import (_BaseUpdater, _Vocab, UnknownVersionError,
+    InvalidVersionError, ResultDocument, UpdateResults, _validate_versions)
 import ramrod.utils as utils
 
 TAG_CYBOX_MAJOR  = "cybox_major_version"
@@ -123,7 +123,7 @@ def update(doc, from_=None, to_=None, options=None, force=False):
             schema-invalid content. **Use at your own risk!**
 
     Returns:
-        An instance of ``ramrod.UpdateResults`` named tuple.
+        An instance of ``ramrod.UpdateResults``.
 
     Raises:
         ramrod.UpdateError: If any of the following conditions are encountered:
@@ -155,7 +155,8 @@ def update(doc, from_=None, to_=None, options=None, force=False):
         remapped.update(updater.cleaned_ids)
 
     updated = etree.ElementTree(updated)
+    results = ResultDocument(updated)
 
-    return UpdateResults(document=updated,
+    return UpdateResults(document=results,
                          removed=removed,
                          remapped_ids=remapped)
