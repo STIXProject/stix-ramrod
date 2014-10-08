@@ -219,7 +219,7 @@ class STIX_1_0_Updater(_STIXUpdater):
 
     def _get_duplicates(self, root):
         """The STIX v1.0.1 schema does not enforce ID uniqueness, so this
-        overrides the default ``_get_dupliates()`` by immediately returning
+        overrides the default ``_get_duplicates()`` by immediately returning
         an empty dictionary.
 
         """
@@ -228,30 +228,11 @@ class STIX_1_0_Updater(_STIXUpdater):
 
     def _clean_duplicates(self, duplicates, options):
         """The STIX v1.0.1 schema does not enforce ID uniqueness, so this
-        overrides the default ``_get_dupliates()`` by immediately returning
+        overrides the default ``_get_duplicates()`` by immediately returning
         an empty dictionary.
 
         """
         return {}
-
-
-    def _clean_disallowed(self, disallowed, options):
-        """Removes the `disallowed` nodes from the source document.
-
-        Args:
-            disallowed: A list of nodes to remove from the source document.
-
-        Returns:
-            A list of `disallowed` node copies.
-
-        """
-        removed = []
-        for node in disallowed:
-            dup = utils.copy_xml_element(node)
-            utils.remove_xml_element(node)
-            removed.append(dup)
-
-        return removed
 
 
     def _get_disallowed(self, root, options=None):
@@ -277,6 +258,25 @@ class STIX_1_0_Updater(_STIXUpdater):
         disallowed.extend(cybox)
 
         return disallowed
+
+
+    def _clean_disallowed(self, disallowed, options):
+        """Removes the `disallowed` nodes from the source document.
+
+        Args:
+            disallowed: A list of nodes to remove from the source document.
+
+        Returns:
+            A list of `disallowed` node copies.
+
+        """
+        removed = []
+        for node in disallowed:
+            dup = utils.copy_xml_element(node)
+            utils.remove_xml_element(node)
+            removed.append(dup)
+
+        return removed
 
 
     def _update_versions(self, root):
