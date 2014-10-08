@@ -312,25 +312,40 @@ class STIX_1_1_Updater(_STIXUpdater):
 
 
     def _get_disallowed(self, root):
-        """Finds all xml entities under `root` that cannot be updated.
-
-        Note:
-            This checks for both untranslatable STIX and CybOX entities.
-
-        Args:
-            root: The top-level xml node
-
-        Returns:
-            A list of untranslatable items.
+        """There are no untranslatable fields between STIX v1.1 and
+        STIX v1.1.11 so this just returns an empty list.
 
         """
-        disallowed = []
+        return []
 
-        for klass in self.DISALLOWED:
-            found = klass.find(root)
-            disallowed.extend(found)
 
-        return disallowed
+    def _clean_disallowed(self, disallowed, options):
+        """There are no untranslatable fields between STIX v1.1 and
+        STIX v1.1.1 so this just returns an empty list.
+
+        """
+        return ()
+
+
+    def _get_duplicates(self, root):
+        """The STIX v1.1 and v1.1.1 schemas both enforces ID uniqueness, so this
+        overrides the default ``_get_duplicates()`` by immediately returning
+        an empty dictionary.
+
+        Note:
+            This assumes that `root` is schema-valid.
+
+        """
+        return {}
+
+
+    def _clean_duplicates(self, duplicates, options):
+        """The STIX v1.1 and STIX v1.1.1 schemas enforce ID uniqueness, so this
+        overrides the default ``_get_duplicates()`` by immediately returning
+        an empty dictionary.
+
+        """
+        return {}
 
 
     def _update_versions(self, root):
@@ -365,63 +380,14 @@ class STIX_1_1_Updater(_STIXUpdater):
         self._cybox_updater._update_schemalocs(root)
 
 
-    def _clean_disallowed(self, disallowed):
-        """Removes the `disallowed` nodes from the source document.
-
-        Args:
-            disallowed: A list of nodes to remove from the source document.
-
-        Returns:
-            A list of `disallowed` node copies.
-
-        """
-        removed = []
-        for node in disallowed:
-            dup = utils.copy_xml_element(node)
-            utils.remove_xml_element(node)
-            removed.append(dup)
-
-        return removed
-
-
-    def clean(self, root, options=None):
-        """Removes disallowed elements from `root`.
-
-        Removed items can be retrieved via the `cleaned_fields` attribute:
-
-        >>> updated = updater.update(root, force=True)
-        >>> print updater.cleaned_fields
-        (<Element at 0xffdcf234>, <Element at 0xffdcf284>)
-
-
-        Note:
-            The `cleaned_fields` attribute will be overwritten with each method
-            invocation.
-
-        Args:
-            root (lxml.etree._Element): The top-level XML document node.
-            options (optional): A :class:`ramrod.UpdateOptions` instance. If
-                ``None``,  ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
-
-        Returns:
-            The source `root` node.
-
-        """
-        disallowed = self._get_disallowed(root)
-        removed = self._clean_disallowed(disallowed)
-
-        self.cleaned_fields = tuple(removed)
-        return root
-
-
     def check_update(self, root, options=None):
-        """Determines if the input document can be updated from STIX v1.1 to
-        STIX v1.1.1.
+        """Determines if the input document can be upgraded.
 
         Args:
-            root (lxml.etree._Element): The top-level node of the STIX
-                document.
-            options (optional): A :class:`ramrod.UpdateOptions` instance. If
+            root: The XML document. This can be a filename, a file-like object,
+                an instance of ``etree._Element`` or an instance of
+                ``etree._ElementTree``.
+            options (optional): A ``ramrod.UpdateOptions`` instance. If
                 ``None``, ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
         Raises:
@@ -429,10 +395,11 @@ class STIX_1_1_Updater(_STIXUpdater):
                 version.
             ramrod.InvalidVersionError: If the version of the input document
                 does not match the `VERSION` class-level attribute value.
-            ramrod.UpdateError: If the input document contains fields which cannot
-                be updated or constructs with non-unique IDs are discovered.
+            ramrod.UpdateError: If the input document contains fields which
+                cannot be updated or constructs with non-unique IDs are discovered.
 
         """
+        root = utils.get_etree_root(root)
         options = options or DEFAULT_UPDATE_OPTIONS
 
         if options.check_versions:

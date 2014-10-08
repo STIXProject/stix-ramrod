@@ -4,7 +4,8 @@
 from lxml import etree
 from distutils.version import StrictVersion
 from ramrod import (_BaseUpdater, _Vocab, UnknownVersionError,
-    InvalidVersionError, UpdateResults, ResultDocument,  _validate_versions)
+    InvalidVersionError, UpdateResults, ResultDocument, _validate_versions,
+    DEFAULT_UPDATE_OPTIONS)
 import ramrod.utils as utils
 
 class _STIXUpdater(_BaseUpdater):
@@ -153,19 +154,17 @@ def update(doc, from_=None, to_=None, options=None, force=False):
     _validate_versions(from_, to_, STIX_VERSIONS)
 
     removed, remapped = [], {}
-    updated = root
     idx = STIX_VERSIONS.index
     for version in STIX_VERSIONS[idx(from_):idx(to_)]:
         klass   = STIX_UPDATERS[version]
         updater = klass()
 
-        updated = updater.update(updated, options=options, force=force)
-        removed.extend(updater.cleaned_fields)
-        remapped.update(updater.cleaned_ids)
+        results = updater.update(root, options=options, force=force)
+        removed.extend(results.removed)
+        remapped.update(results.remapped_ids)
 
-    updated = etree.ElementTree(updated)
-    results = ResultDocument(updated)
+        root = results.document.as_element()
 
-    return UpdateResults(document=results,
+    return UpdateResults(document=root,
                          removed=removed,
                          remapped_ids=remapped)

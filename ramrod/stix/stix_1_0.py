@@ -217,7 +217,31 @@ class STIX_1_0_Updater(_STIXUpdater):
         self._cybox_updater = updater
 
 
-    def _get_disallowed(self, root):
+    def _get_duplicates(self, root):
+        """The STIX v1.0.1 schema does not enforce ID uniqueness, so this
+        overrides the default ``_get_duplicates()`` by immediately returning
+        an empty dictionary.
+
+        Note:
+            This assumes that `root` is schema-valid.
+
+        """
+        return {}
+
+
+    def _clean_duplicates(self, duplicates, options):
+        """The STIX v1.0.1 schema does not enforce ID uniqueness, so this
+        overrides the default ``_get_duplicates()`` by immediately returning
+        an empty dictionary.
+
+        Note:
+            This assumes that `root` is schema-valid.
+
+        """
+        return {}
+
+
+    def _get_disallowed(self, root, options=None):
         """Finds all xml entities under `root` that cannot be updated.
 
         Note:
@@ -240,6 +264,25 @@ class STIX_1_0_Updater(_STIXUpdater):
         disallowed.extend(cybox)
 
         return disallowed
+
+
+    def _clean_disallowed(self, disallowed, options):
+        """Removes the `disallowed` nodes from the source document.
+
+        Args:
+            disallowed: A list of nodes to remove from the source document.
+
+        Returns:
+            A list of `disallowed` node copies.
+
+        """
+        removed = []
+        for node in disallowed:
+            dup = utils.copy_xml_element(node)
+            utils.remove_xml_element(node)
+            removed.append(dup)
+
+        return removed
 
 
     def _update_versions(self, root):
@@ -270,48 +313,14 @@ class STIX_1_0_Updater(_STIXUpdater):
         return updated
 
 
-    def clean(self, root, options=None):
-        """Removes disallowed elements from `root`.
-
-        Removed items can be retrieved via the `cleaned_fields` attribute:
-
-        >>> updated = updater.update(root, force=True)
-        >>> print updater.cleaned_fields
-        (<Element at 0xffdcf234>, <Element at 0xffdcf284>)
-
-
-        Note:
-            The `cleaned_fields` attribute will be overwritten with each method
-            invocation.
-
-        Args:
-            root (lxml.etree._Element): The top-level XML document node.
-            options (optional): A :class:`ramrod.UpdateOptions` instance. If
-                ``None``,  ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
-
-        Returns:
-            The source `root` node.
-
-        """
-        removed = []
-        disallowed = self._get_disallowed(root)
-
-        for node in disallowed:
-            dup = utils.copy_xml_element(node)
-            utils.remove_xml_element(node)
-            removed.append(dup)
-
-        self.cleaned_fields = tuple(removed)
-        return root
-
-
     def check_update(self, root, options=None):
         """Determines if the input document can be upgraded.
 
         Args:
-            root (lxml.etree._Element): The top-level node of the document
-                being upgraded.
-            options (optional): A :class:`ramrod.UpdateOptions` instance. If
+            root: The XML document. This can be a filename, a file-like object,
+                an instance of ``etree._Element`` or an instance of
+                ``etree._ElementTree``.
+            options (optional): A ``ramrod.UpdateOptions`` instance. If
                 ``None``, ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
         Raises:
@@ -320,9 +329,10 @@ class STIX_1_0_Updater(_STIXUpdater):
             ramrod.InvalidVersionError: If the version of the input document
                 does not match the `VERSION` class-level attribute value.
             ramrod.UpdateError: If the input document contains fields which
-                cannot be updated.
+                cannot be updated or constructs with non-unique IDs are discovered.
 
         """
+        root = utils.get_etree_root(root)
         options = options or DEFAULT_UPDATE_OPTIONS
 
         if options.check_versions:

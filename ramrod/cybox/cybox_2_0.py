@@ -4,6 +4,7 @@
 from ramrod import (UpdateError, DEFAULT_UPDATE_OPTIONS)
 from ramrod.cybox import (_CyboxUpdater, _CyboxVocab, TAG_CYBOX_MAJOR,
     TAG_CYBOX_MINOR, TAG_CYBOX_UPDATE)
+import ramrod.utils as utils
 
 class EventTypeVocab(_CyboxVocab):
     OLD_TYPES = ('EventTypeVocab-1.0',)
@@ -259,48 +260,61 @@ class Cybox_2_0_Updater(_CyboxUpdater):
         return []
 
 
-    def check_update(self, root, options=None):
-        """Removes disallowed elements from `root`.
-
-        Removed items can be retrieved via the `cleaned_fields` attribute.
-
-        Example:
-            >>> updated = updater.update(root, force=True)
-            >>> print updater.cleaned_fields
-            (<Element at 0xffdcf234>, <Element at 0xffdcf284>)
-
-
-        Note:
-            The `cleaned_fields` attribute will be overwritten with each method
-            invocation.
-
-        Args:
-            root (lxml.etree._Element): The top-level XML document node.
-            options (optional): A :class:`ramrod.UpdateOptions` instance. If
-                ``None``,  ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
-
-        Returns:
-            The source `root` node.
+    def _clean_disallowed(self, disallowed, options):
+        """There are no untranslatable fields between CybOX 2.0 and
+        CybOX v2.0.1 so this just returns an empty list.
 
         """
+        return ()
+
+
+    def _get_duplicates(self, root):
+        """There is no need to remap non-unique IDs between CybOX 2.0 and
+        CybOX 2.0.1 instance documents because CybOX 2.0.1 does not enforce
+        ID uniqueness in schema.
+
+        Note:
+            This assumes that `root` is schema-valid.
+
+        """
+        return {}
+
+    def _clean_duplicates(self, duplicates, options):
+        """There is no need to remap non-unique IDs between CybOX 2.0 and
+        CybOX 2.0.1 instance documents because CybOX 2.0.1 does not enforce
+        ID uniqueness in schema.
+
+        Note:
+            This assumes that `root` is schema-valid.
+
+        """
+        return {}
+
+
+    def check_update(self, root, options=None):
+        """Determines if the input document can be upgraded.
+
+        Args:
+            root: The XML document. This can be a filename, a file-like object,
+                an instance of ``etree._Element`` or an instance of
+                ``etree._ElementTree``.
+            options (optional): A ``ramrod.UpdateOptions`` instance. If
+                ``None``, ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
+
+        Raises:
+            ramrod.UnknownVersionError: If the input document does not have a
+                version.
+            ramrod.InvalidVersionError: If the version of the input document
+                does not match the `VERSION` class-level attribute value.
+            ramrod.UpdateError: If the input document contains fields which
+                cannot be updated or constructs with non-unique IDs are discovered.
+
+        """
+        root = utils.get_etree_root(root)
         options = options or DEFAULT_UPDATE_OPTIONS
 
         if options.check_versions:
             self._check_version(root)
-
-        disallowed = self._get_disallowed(root)
-        if disallowed:
-            raise UpdateError("Found untranslatable fields in source "
-                              "document.",
-                              disallowed=disallowed)
-
-
-    def clean(self, root, options=None):
-        """There are no untranslatable fields between CybOX 2.0 and
-        CybOX v2.0.1 so this method just returns immediately.
-
-        """
-        return root
 
 
     def _update(self, root, options):

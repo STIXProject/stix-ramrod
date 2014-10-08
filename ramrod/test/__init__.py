@@ -75,6 +75,15 @@ class _BaseDisallowed(unittest.TestCase):
         disallowed = self.DISALLOWED_KLASS.find(root)
         self.assertEqual(len(disallowed), self.DISALLOWED_COUNT)
 
+    def test_clean(self):
+        root = utils.get_etree_root(self.xml)
+        results = self.UPDATER().clean(root)
+
+        doc = results.document.as_element()
+        disallowed = self.DISALLOWED_KLASS.find(doc)
+        self.assertEqual(len(disallowed), 0)
+
+
 
 class _BaseVocab(unittest.TestCase):
     UPDATER = None

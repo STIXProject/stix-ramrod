@@ -4,7 +4,8 @@
 from lxml import etree
 from distutils.version import StrictVersion
 from ramrod import (_BaseUpdater, _Vocab, UnknownVersionError,
-    InvalidVersionError, ResultDocument, UpdateResults, _validate_versions)
+    InvalidVersionError, ResultDocument, UpdateResults, _validate_versions,
+    DEFAULT_UPDATE_OPTIONS)
 import ramrod.utils as utils
 
 TAG_CYBOX_MAJOR  = "cybox_major_version"
@@ -144,19 +145,17 @@ def update(doc, from_=None, to_=None, options=None, force=False):
     _validate_versions(from_, to_, CYBOX_VERSIONS)
 
     removed, remapped = [], {}
-    updated = root
     idx = CYBOX_VERSIONS.index
     for version in CYBOX_VERSIONS[idx(from_):idx(to_)]:
         klass   = CYBOX_UPDATERS[version]
         updater = klass()
 
-        updated = updater.update(updated, options=options, force=force)
-        removed.extend(updater.cleaned_fields)
-        remapped.update(updater.cleaned_ids)
+        results = updater.update(root, options=options, force=force)
+        removed.extend(results.removed)
+        remapped.update(results.remapped_ids)
 
-    updated = etree.ElementTree(updated)
-    results = ResultDocument(updated)
+        root = results.document.as_element()
 
-    return UpdateResults(document=results,
+    return UpdateResults(document=root,
                          removed=removed,
                          remapped_ids=remapped)

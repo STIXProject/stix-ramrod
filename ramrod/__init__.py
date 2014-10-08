@@ -38,11 +38,26 @@ class UpdateResults(object):
         self.removed = removed or ()
         self.remapped_ids = remapped_ids or {}
 
+
+    @property
+    def document(self):
+        return self._document
+
+
+    @document.setter
+    def document(self, value):
+        if isinstance(value, ResultDocument):
+            self._document = value
+        else:
+            self._document = ResultDocument(value)
+
+
     def __unicode__(self):
         if not self.document:
             return None
 
         return unicode(self.document)
+
 
     def __str__(self):
         if not self.document:
@@ -648,12 +663,7 @@ class _BaseUpdater(object):
     XPATH_ROOT_NODES = "."
 
     def __init__(self):
-        self._init_cleaned()
-
-
-    def _init_cleaned(self):
-        self.cleaned_fields = ()
-        self.cleaned_ids = {}
+        pass
 
 
     def _is_leaf(self, node):
@@ -997,17 +1007,93 @@ class _BaseUpdater(object):
         return new_node
 
 
-    def clean(self, root, options=None):
-        """Removes untranslatable items from the `root` document.
+    def _create_update_results(self, root, remapped=None, removed=None):
+        """Creates and returns a :class:`ramrod.UpdateResults` object instance
+        from the input `root` parameter, and the class instance attributes
+        ``cleaned_ids`` and ``cleaned_fields``.
 
-        Note:
-            This needs to be overridden by an implementation class
+        Args:
+            root: An instance of ``etree._Element`` or ``etree._ElementTree``.
 
-        Raises:
-            NotImplementedError: If this is called directly from _BaseUpdater.
+        Returns:
+            An instance of ``ramrod.UpdateResults``.
 
         """
+        update_results = UpdateResults(root)
+        update_results.remapped_ids = remapped or ()
+        update_results.removed = removed or {}
+
+        return update_results
+
+
+    def _get_disallowed(self, root):
         raise NotImplementedError()
+
+
+    def _clean_disallowed(self, disallowed, options):
+        raise NotImplementedError()
+
+
+    def _clean_duplicates(self, duplicates, options):
+        raise NotImplementedError()
+
+
+    def _clean(self, root, options):
+        """Internal handler for public ``clean()`` method. Orchestrates the
+        invocation of sub-cleaning methods (e.g., ``_clean_disallowed()``).
+
+        """
+        options = options or DEFAULT_UPDATE_OPTIONS
+
+        disallowed = self._get_disallowed(root)
+        duplicates = self._get_duplicates(root)
+
+        remapped = self._clean_duplicates(duplicates, options=options)
+        removed = self._clean_disallowed(disallowed, options=options)
+
+        results = UpdateResults(root)
+        results.remapped_ids = remapped
+        results.removed = tuple(removed)
+
+        return results
+
+    def clean(self, root, options=None):
+        """Removes disallowed elements from `root` and remaps non-unique
+        IDs to unique IDs for the sake of schema-validation.
+
+        Removed items can be retrieved via the ``removed`` attribute on the
+        return value:
+
+        >>> results = updater.clean(root)
+        >>> print results.removed
+        (<Element at 0xffdcf234>, <Element at 0xffdcf284>)
+
+        Items which have been reassigned IDs can be retrieved via the
+        ``remappped_ids`` attribute on the return value:
+
+        >>> results = updater.clean(root)
+        >>> print results.remapped_ids
+        {'example:Observable-duplicate': [<Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67e64>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f2c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f54>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f7c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67fa4>]}
+
+        Note:
+            This does not remap ``idref`` attributes to new ID values because
+            it is impossible to determine which entity the ``idref`` was
+            pointing to.
+
+        Args:
+            root: The XML document. This can be a filename, a file-like object,
+                an instance of ``etree._Element`` or an instance of
+                ``etree._ElementTree``.
+            options (optional): A :class:`ramrod.UpdateOptions` instance. If
+                ``None``,  ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
+
+        Returns:
+            An instance of ``ramrod.UpdateResults``.
+
+        """
+        root = utils.get_etree_root(root, make_copy=True)
+        results = self._clean(root, options)
+        return results
 
 
     def check_update(self, root, options=None):
@@ -1023,8 +1109,32 @@ class _BaseUpdater(object):
         raise NotImplementedError()
 
 
+    def _force_update(self, root, options):
+        """Removes untranslatable fields from the `root` document and calls
+        ``self._update(...)``.
+
+         Returns:
+            An instance of ``ramrod.UpdateResults`` for the updated document.
+
+        """
+        # Clean the document
+        cleaned_results = self._clean(root, options)
+        cleaned_doc = cleaned_results.document.as_element()
+        remapped = cleaned_results.remapped_ids
+        removed = cleaned_results.removed
+
+        # Update the document
+        updated = self._update(cleaned_doc, options)
+        results = self._create_update_results(
+            updated, remapped=remapped, removed=removed
+        )
+
+        return results
+
+
     def update(self, root, options=None, force=False):
-        """Attempts to update the `root` node.
+        """Attempts to update `root` to the next version of its language
+        specification.
 
         If `force` is set to True, items may be removed during the
         translation process and IDs may be reassigned if they are not
@@ -1035,21 +1145,24 @@ class _BaseUpdater(object):
             it is impossible to determine which entity the ``idref`` was
             pointing to.
 
-        Removed items can be retrieved via the `cleaned_fields` attribute:
+        Removed items can be retrieved via the ``removed`` attribute on the
+        return value:
 
-        >>> doc = updater.update(root, force=True)
-        >>> print updater.cleaned_fields
+        >>> results = updater.update(root, force=True)
+        >>> print results.removed
         (<Element at 0xffdcf234>, <Element at 0xffdcf284>)
 
         Items which have been reassigned IDs can be retrieved via the
-        `cleaned_ids` instance attribute:
+        ``remappped_ids`` attribute on the return value:
 
-        >>> doc = updater.update(root, force=True)
-        >>> print updater.cleaned_ids
-        {'example:Observable-duplicate': [<Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67e64>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f2c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f54>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f7c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67fa4>]}
+        >>> results = updater.update(root, force=True)
+        >>> print results.remapped_ids
+        {'example:Observable-duplicate-id-1': [<Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67e64>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f2c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f54>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f7c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67fa4>]}
 
         Args:
-            root (lxml.etree._Element): The top-level XML document node
+            root: The XML document. This can be a filename, a file-like object,
+                an instance of ``etree._Element`` or an instance of
+                ``etree._ElementTree``.
             options: A :class:`ramrod.UpdateOptions` instance. If ``None``,
                 ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
             force: Forces the update process to complete by potentially
@@ -1058,7 +1171,7 @@ class _BaseUpdater(object):
                 YOUR OWN RISK!**
 
         Returns:
-            An updated ``etree._Element`` version of `root`.
+            An instance of ``ramrod.UpdateResults``.
 
         Raises:
             ramrod.UpdateError: If untranslatable fields or non-unique IDs are
@@ -1070,20 +1183,20 @@ class _BaseUpdater(object):
                 the `root` node contains v1.1 content).
 
         """
+        root = utils.get_etree_root(root, make_copy=True)
         options = options or DEFAULT_UPDATE_OPTIONS
 
         try:
-            self._init_cleaned()
             self.check_update(root, options)
             updated = self._update(root, options)
+            results = self._create_update_results(updated)
         except (UpdateError, UnknownVersionError, InvalidVersionError):
             if force:
-                self.clean(root)
-                updated = self._update(root, options)
+                results = self._force_update(root, options)
             else:
                 raise
 
-        return updated
+        return results
 
 
 def _get_version(root):
@@ -1132,7 +1245,6 @@ def _validate_versions(from_, to_, allowed):
         raise InvalidVersionError(
             "Cannot upgrade from '%s' to '%s'" % (from_, to_),
         )
-
 
 
 def update(doc, from_=None, to_=None, options=None, force=False):
