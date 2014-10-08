@@ -99,7 +99,7 @@ class ResultDocument(object):
 
     def as_stringio(self):
         """Returns a ``StringIO.StringIO`` representation of the
-        ``ResultsDocument`` instance.
+        ``ResultDocument`` instance.
 
         """
         sio = StringIO()
