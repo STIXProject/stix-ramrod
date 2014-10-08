@@ -32,7 +32,7 @@ Use pip to install or upgrade stix-ramrod:
 
 ::
 
-    $ pip install stix-ramrod [--upgrade]
+    $ pip install stix-ramrod [--pre] [--upgrade]
 
 For more information, see the `Installation instructions
 <http://stix-ramrod.readthedocs.org/en/latest/installation.html>`_.

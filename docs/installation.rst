@@ -13,7 +13,18 @@ Use PyPI_ and pip_:
 
 .. code-block:: bash
 
-    $ pip install stix-ramrod
+    $ pip install stix-ramrod [--pre] [--upgrade]
+
+.. note::
+    **stix-ramrod** is currently in **alpha** status. To install an alpha or
+    beta release via ``pip``, you must specify the version number or use
+    ``--pre``.
+
+    .. code-block:: bash
+
+        $ pip install stix-ramrod --pre
+
+
 
 You might also want to consider using a virtualenv_.
 Please refer to the `pip installation instructions`_ for details regarding the
