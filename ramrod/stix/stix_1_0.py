@@ -217,7 +217,21 @@ class STIX_1_0_Updater(_STIXUpdater):
         self._cybox_updater = updater
 
 
+    def _get_duplicates(self, root):
+        """The STIX v1.0.1 schema does not enforce ID uniqueness, so this
+        overrides the default ``_get_dupliates()`` by immediately returning
+        an empty dictionary.
+
+        """
+        return {}
+
+
     def _clean_duplicates(self, duplicates, options):
+        """The STIX v1.0.1 schema does not enforce ID uniqueness, so this
+        overrides the default ``_get_dupliates()`` by immediately returning
+        an empty dictionary.
+
+        """
         return {}
 
 
