@@ -7,6 +7,8 @@ import sys
 import argparse
 import ramrod
 
+EXIT_SUCCESS = 0
+EXIT_FAILURE = 1
 
 def _print_error(fmt, *args):
     """Writes a message to sys.stderr.
@@ -45,7 +47,7 @@ def _print_update_error(err):
         err: A ramrod.UpdateError instance.
 
     """
-    print "[!] %s" % (str(err))
+    _print_error("[!] %s", str(err))
 
     disallowed = err.disallowed
     duplicates = err.duplicates
@@ -62,7 +64,7 @@ def _print_update_error(err):
 
 
 def _print_invalid_version_error(err):
-    print "[!] %s" % (str(err))
+    _print_error("[!] %s", str(err))
 
     node = err.node
     expected_version = err.expected
@@ -74,6 +76,10 @@ def _print_invalid_version_error(err):
         _print_error("  Expected: '%s'", expected_version)
     if found_version:
         _print_error("  Found: '%s'", found_version)
+
+
+def _print_unknown_version_error(err):
+     _print_error("[!] %s", str(err))
 
 
 def _write_removed(removed):
@@ -193,11 +199,13 @@ def main():
 
     except ramrod.UpdateError as ex:
         _print_update_error(ex)
+        sys.exit(EXIT_FAILURE)
     except ramrod.InvalidVersionError as ex:
         _print_invalid_version_error(ex)
+        sys.exit(EXIT_FAILURE)
     except ramrod.UnknownVersionError as ex:
-        _print_error(str(ex))
-
+        _print_unknown_version_error(str(ex))
+        sys.exit(EXIT_FAILURE)
 
 if __name__ == "__main__":
     main()
