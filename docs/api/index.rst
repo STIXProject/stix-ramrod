@@ -10,8 +10,8 @@ page.
 
 .. note::
 
-	The stix-ramrod APIs are currently under heavy development. Feel free to
-	check out our `issue tracker`_ to see what we're working on!
+	The **stix-ramrod** APIs are currently under heavy development. Feel free
+	to check out our `issue tracker`_ to see what we're working on!
 
 .. _issue tracker: https://github.com/STIXProject/stix-ramrod/issues
 
