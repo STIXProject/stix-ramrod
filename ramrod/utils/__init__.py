@@ -32,22 +32,26 @@ def get_xml_parser():
     return parser
 
 
-def get_etree_root(doc):
+def get_etree_root(doc, make_copy=False):
     """Returns an instance of lxml.etree._Element for the given input.
 
     Args:
         doc: The input XML document. Can be an instance of
             ``lxml.etree._Element``, ``lxml.etree._ElementTree``, a file-like
             object, or a string filename.
+        make_copy: If ``True``, a ``copy.deepcopy()`` of the root node will be
+            returned.
 
     Returns:
         An ``lxml.etree._Element`` instance for `doc`.
 
     """
+    deepcopy = copy.deepcopy
+
     if isinstance(doc, etree._Element):
-        root = doc
+        root = deepcopy(doc) if make_copy else doc
     elif isinstance(doc, etree._ElementTree):
-        root = doc.getroot()
+        root = deepcopy(doc.getroot()) if make_copy else doc.getroot()
     else:
         parser = get_xml_parser()
         tree = etree.parse(doc, parser=parser)

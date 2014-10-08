@@ -1038,6 +1038,25 @@ class _BaseUpdater(object):
         raise NotImplementedError()
 
 
+    def _clean(self, root, options):
+        """Internal handler for public ``clean()`` method. Orchestrates the
+        invocation of sub-cleaning methods (e.g., ``_clean_disallowed()``).
+
+        """
+        options = options or DEFAULT_UPDATE_OPTIONS
+
+        disallowed = self._get_disallowed(root)
+        duplicates = self._get_duplicates(root)
+
+        remapped = self._clean_duplicates(duplicates, options=options)
+        removed = self._clean_disallowed(disallowed, options=options)
+
+        results = UpdateResults(root)
+        results.remapped_ids = remapped
+        results.removed = tuple(removed)
+
+        return results
+
     def clean(self, root, options=None):
         """Removes disallowed elements from `root` and remaps non-unique
         IDs to unique IDs for the sake of schema-validation.
@@ -1072,19 +1091,8 @@ class _BaseUpdater(object):
             An instance of ``ramrod.UpdateResults``.
 
         """
-        root = utils.get_etree_root(root)
-        options = options or DEFAULT_UPDATE_OPTIONS
-
-        disallowed = self._get_disallowed(root)
-        duplicates = self._get_duplicates(root)
-
-        remapped = self._clean_duplicates(duplicates, options=options)
-        removed = self._clean_disallowed(disallowed, options=options)
-
-        results = UpdateResults(root)
-        results.remapped_ids = remapped
-        results.removed = tuple(removed)
-
+        root = utils.get_etree_root(root, make_copy=True)
+        results = self._clean(root, options)
         return results
 
 
@@ -1109,13 +1117,14 @@ class _BaseUpdater(object):
             An instance of ``ramrod.UpdateResults`` for the updated document.
 
         """
-        cleaned_results = self.clean(root, options)
-
+        # Clean the document
+        cleaned_results = self._clean(root, options)
         cleaned_doc = cleaned_results.document.as_element()
         remapped = cleaned_results.remapped_ids
         removed = cleaned_results.removed
-        updated = self._update(cleaned_doc, options)
 
+        # Update the document
+        updated = self._update(cleaned_doc, options)
         results = self._create_update_results(
             updated, remapped=remapped, removed=removed
         )
@@ -1174,7 +1183,7 @@ class _BaseUpdater(object):
                 the `root` node contains v1.1 content).
 
         """
-        root = utils.get_etree_root(root)
+        root = utils.get_etree_root(root, make_copy=True)
         options = options or DEFAULT_UPDATE_OPTIONS
 
         try:
