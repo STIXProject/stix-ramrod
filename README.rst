@@ -30,7 +30,7 @@ Installation
 
 Use pip to install or upgrade stix-ramrod:
 
-.. code-block::
+::
 
     $ pip install stix-ramrod [--upgrade]
 
