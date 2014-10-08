@@ -583,7 +583,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         return disallowed
 
 
-    def _clean_disallowed(self, disallowed):
+    def _clean_disallowed(self, disallowed, options):
         """Removes the `disallowed` nodes from the source document.
 
         Args:
@@ -619,61 +619,14 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
         return duplicates
 
-    def clean(self, root, options=None):
-        """Removes disallowed elements from `root` and remaps non-unique
-        IDs to unique IDs for the sake of schema-validation.
-
-        Note:
-            This does not remap ``idref`` attributes to new ID values because
-            it is impossible to determine which entity the ``idref`` was
-            pointing to.
-
-        Removed items can be retrieved via the `cleaned_fields` attribute:
-
-        >>> updated = updater.update(root, force=True)
-        >>> print updater.cleaned_fields
-        (<Element at 0xffdcf234>, <Element at 0xffdcf284>)
-
-        Items which have been reassigned IDs can be retrieved via the
-        `cleaned_ids` instance attribute:
-
-        >>> updated = updater.update(root, force=True)
-        >>> print updater.cleaned_ids
-        {'example:Observable-duplicate': [<Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67e64>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f2c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f54>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f7c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67fa4>]}
-
-
-        Note:
-            The `cleaned_fields` and `cleanded_ids` attributes will be
-            overwritten with each method invocation.
-
-        Args:
-            root: The top-level XML document node.
-            options (optional): A ``ramrod.UpdateOptions`` instance. If
-                ``None``,  ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
-
-        Returns:
-            The source `root` node.
-
-        """
-        options = options or DEFAULT_UPDATE_OPTIONS
-        disallowed = self._get_disallowed(root)
-        duplicates = self._get_duplicates(root)
-
-        remapped = self._clean_duplicates(duplicates, options)
-        removed = self._clean_disallowed(disallowed)
-
-        self.cleaned_ids = remapped
-        self.cleaned_fields = tuple(removed)
-
-        return root
-
 
     def check_update(self, root, options=None):
         """Determines if the input document can be upgraded.
 
         Args:
-            root (lxml.etree._Element): The top-level node of the document
-                being upgraded.
+            root: The XML document. This can be a filename, a file-like object,
+                an instance of ``etree._Element`` or an instance of
+                ``etree._ElementTree``.
             options (optional): A ``ramrod.UpdateOptions`` instance. If
                 ``None``, ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
@@ -686,6 +639,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
                 cannot be updated or constructs with non-unique IDs are discovered.
 
         """
+        root = utils.get_etree_root(root)
         options = options or DEFAULT_UPDATE_OPTIONS
 
         if options.check_versions:
