@@ -254,18 +254,10 @@ class Cybox_2_0_Updater(_CyboxUpdater):
 
     def _get_disallowed(self, root):
         """There are no untranslatable fields between CybOX 2.0 and
-        CybOX v2.0.1 so this just returns an empty tuple.
+        CybOX v2.0.1..
 
         """
-        return ()
-
-
-    def _clean_disallowed(self, disallowed, options):
-        """There are no untranslatable fields between CybOX 2.0 and
-        CybOX v2.0.1 so this just returns an empty tuple.
-
-        """
-        return ()
+        pass
 
 
     def _get_duplicates(self, root):
@@ -277,18 +269,7 @@ class Cybox_2_0_Updater(_CyboxUpdater):
             This assumes that `root` is schema-valid.
 
         """
-        return {}
-
-    def _clean_duplicates(self, duplicates, options):
-        """There is no need to remap non-unique IDs between CybOX 2.0 and
-        CybOX 2.0.1 instance documents because CybOX 2.0.1 does not enforce
-        ID uniqueness in schema.
-
-        Note:
-            This assumes that `root` is schema-valid.
-
-        """
-        return {}
+        pass
 
 
     def check_update(self, root, options=None):

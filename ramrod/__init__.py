@@ -1044,12 +1044,15 @@ class _BaseUpdater(object):
 
         """
         options = options or DEFAULT_UPDATE_OPTIONS
-
         disallowed = self._get_disallowed(root)
         duplicates = self._get_duplicates(root)
+        remapped, removed = {}, ()
 
-        remapped = self._clean_duplicates(duplicates, options=options)
-        removed = self._clean_disallowed(disallowed, options=options)
+        if duplicates:
+            remapped = self._clean_duplicates(duplicates, options=options)
+
+        if disallowed:
+            removed = self._clean_disallowed(disallowed, options=options)
 
         results = UpdateResults(root)
         results.remapped_ids = remapped

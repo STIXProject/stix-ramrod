@@ -313,39 +313,24 @@ class STIX_1_1_Updater(_STIXUpdater):
 
     def _get_disallowed(self, root):
         """There are no untranslatable fields between STIX v1.1 and
-        STIX v1.1.11 so this just returns an empty list.
+        STIX v1.1.1.
+
+        Note:
+            This assume that `root` is schema-valid
 
         """
-        return []
-
-
-    def _clean_disallowed(self, disallowed, options):
-        """There are no untranslatable fields between STIX v1.1 and
-        STIX v1.1.1 so this just returns an empty list.
-
-        """
-        return ()
+        pass
 
 
     def _get_duplicates(self, root):
-        """The STIX v1.1 and v1.1.1 schemas both enforces ID uniqueness, so this
-        overrides the default ``_get_duplicates()`` by immediately returning
-        an empty dictionary.
+        """The STIX v1.1 and v1.1.1 schemas both enforces ID uniqueness, so
+        this overrides the default ``_get_duplicates()``.
 
         Note:
             This assumes that `root` is schema-valid.
 
         """
-        return {}
-
-
-    def _clean_duplicates(self, duplicates, options):
-        """The STIX v1.1 and STIX v1.1.1 schemas enforce ID uniqueness, so this
-        overrides the default ``_get_duplicates()`` by immediately returning
-        an empty dictionary.
-
-        """
-        return {}
+        pass
 
 
     def _update_versions(self, root):

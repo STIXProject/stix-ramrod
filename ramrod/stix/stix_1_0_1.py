@@ -426,8 +426,9 @@ class STIX_1_0_1_Updater(_STIXUpdater):
             found = klass.find(root)
             disallowed.extend(found)
 
-        cybox = self._cybox_updater._get_disallowed(root)
-        disallowed.extend(cybox)
+        disallowed_cybox = self._cybox_updater._get_disallowed(root)
+        if disallowed_cybox:
+            disallowed.extend(disallowed_cybox)
 
         return disallowed
 

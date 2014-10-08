@@ -219,26 +219,13 @@ class STIX_1_0_Updater(_STIXUpdater):
 
     def _get_duplicates(self, root):
         """The STIX v1.0.1 schema does not enforce ID uniqueness, so this
-        overrides the default ``_get_duplicates()`` by immediately returning
-        an empty dictionary.
+        overrides the default ``_get_duplicates()`` by immediately returning.
 
         Note:
             This assumes that `root` is schema-valid.
 
         """
-        return {}
-
-
-    def _clean_duplicates(self, duplicates, options):
-        """The STIX v1.0.1 schema does not enforce ID uniqueness, so this
-        overrides the default ``_get_duplicates()`` by immediately returning
-        an empty dictionary.
-
-        Note:
-            This assumes that `root` is schema-valid.
-
-        """
-        return {}
+        pass
 
 
     def _get_disallowed(self, root, options=None):
@@ -260,8 +247,10 @@ class STIX_1_0_Updater(_STIXUpdater):
             found = klass.find(root)
             disallowed.extend(found)
 
-        cybox = self._cybox_updater._get_disallowed(root)
-        disallowed.extend(cybox)
+        disallowed_cybox = self._cybox_updater._get_disallowed(root)
+
+        if disallowed_cybox:
+            disallowed.extend(disallowed_cybox)
 
         return disallowed
 
