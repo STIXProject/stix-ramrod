@@ -54,9 +54,6 @@ setup(
     version=get_version(),
     packages=find_packages(),
     scripts=['ramrod/scripts/ramrod_update.py'],
-    entry_points={
-        'console_scripts': ['ramrod_update = ramrod.scripts.ramrod_update:main']
-    },
     install_requires=install_requires,
     extras_require=extras_require,
     long_description=readme,
