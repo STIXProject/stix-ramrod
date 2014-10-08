@@ -6,6 +6,7 @@
 
 import unittest
 from StringIO import StringIO
+from lxml import etree
 
 import ramrod
 import ramrod.stix
@@ -179,6 +180,33 @@ class DocumentTest(unittest.TestCase):
         updated = ramrod.update(self._cybox_observables)
         self.assertTrue(updated.document)
 
+
+class ResultDocumentTest(unittest.TestCase):
+    XML = """<test>foobar</test>"""
+
+    @classmethod
+    def setUpClass(cls):
+        cls._xml = etree.fromstring(cls.XML)
+        cls._result = ramrod.ResultDocument(cls._xml)
+
+    def test_unicode(self):
+        self.assertEqual(unicode(self.XML).strip(), unicode(self._result).strip())
+
+    def test_str(self):
+        self.assertEqual(str(self.XML).strip(), str(self._result).strip())
+
+    def test_as_element(self):
+        self.assertTrue(isinstance(self._result.as_element(), etree._Element))
+
+    def test_as_element_tree(self):
+        self.assertTrue(
+            isinstance(self._result.as_element_tree(), etree._ElementTree)
+        )
+
+    def test_as_stringio(self):
+        sio = self._result.as_stringio()
+        val = sio.getvalue().strip()
+        self.assertEqual(val, self.XML)
 
 if __name__ == "__main__":
     unittest.main()

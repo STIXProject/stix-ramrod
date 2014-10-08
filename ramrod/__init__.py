@@ -76,13 +76,11 @@ class ResultDocument(object):
 
 
     def __unicode__(self):
-        sio = StringIO()
-        self._document.write(sio, pretty_print=True)
-        return sio.getvalue()
+        return unicode(self.as_stringio().getvalue())
 
 
     def __str__(self):
-        return str(self.__unicode__())
+        return unicode(self).encode('utf-8')
 
 
     def as_element(self):
