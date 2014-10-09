@@ -117,9 +117,8 @@ class ResultDocument(object):
         ``ResultDocument`` instance.
 
         """
-        sio = StringIO()
-        self._document.write(sio, pretty_print=True)
-        return sio
+        buf = etree.tostring(self._document, pretty_print=True)
+        return StringIO(buf)
 
 
 class UpdateOptions(object):
