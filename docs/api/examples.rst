@@ -159,4 +159,46 @@ to let the update code know **not** to update controlled vocabulary instances:
     updated = ramrod.update('stix-content.xml', options=options)
 
     # Print the results!
-    print etree.tostring(updated.document)
+    print updated
+
+
+Working with python-stix
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+The `python-stix <http://stix.readthedocs.org>`_ library provides an API for
+developing and consuming STIX content. The python-stix library is designed to
+consume and produce specific versions of STIX, as detailed
+`here <http://stix.readthedocs.org/en/latest/#versions>`_.
+
+Because python-stix consumes specific versions of STIX content, older content
+needs to be updated before it can be parsed. Luckily, updating old versions of
+STIX content is easy with **stix-ramrod**!.
+
+Example
+~~~~~~~
+
+The following example demonstrates one way of updating content so that
+python-stix can parse it. This code works with python-stix v1.1.1.1.
+
+.. code-block:: python
+
+    import ramrod
+    from stix.core import STIXPackage
+    from stix.utils.parser import UnsupportedVersionError
+
+    stix_filename = "stix-upgradable-content.xml"
+
+    try:
+        package = STIXPackage.from_xml(stix_filename)
+    except UnsupportedVersionError as ex:
+        updated  = ramrod.update(stix_filename)
+        document = updated.document.as_stringio()
+        package  = STIXPackage.from_xml(document)
+
+    # Work with the parsed STIXPackage instance.
+    print package.id_
+
+.. note::
+
+    The example above assumes that the input content can be upgraded without
+    raising a :class:`ramrod.UpdateError` or any other exceptions.
