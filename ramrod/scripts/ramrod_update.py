@@ -64,6 +64,12 @@ def _print_update_error(err):
 
 
 def _print_invalid_version_error(err):
+    """Prints ``ramrod.InvalidVersionError`` information to stderr.
+
+    Args:
+        err: Instance of ``ramrod.InvalidVersionError``.
+
+    """
     _print_error("[!] %s", str(err))
 
     node = err.node
@@ -79,7 +85,13 @@ def _print_invalid_version_error(err):
 
 
 def _print_unknown_version_error(err):
-     _print_error("[!] %s", str(err))
+    """Prints ``ramrod.UnknownVersionError`` information to stderr.
+
+    Args:
+        err: Instance of ``ramrod.UnknownVersionError``.
+
+    """
+    _print_error("[!] %s", str(err))
 
 
 def _write_removed(removed):
