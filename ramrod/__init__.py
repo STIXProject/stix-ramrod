@@ -9,7 +9,7 @@ from lxml import etree
 from lxml.etree import QName
 import ramrod.utils as utils
 
-__version__ = "1.0.0-alpha.2"
+__version__ = "1.0.0-alpha.3"
 
 NS_XSI = "http://www.w3.org/2001/XMLSchema-instance"
 TAG_XSI_TYPE = "{%s}type" % NS_XSI
