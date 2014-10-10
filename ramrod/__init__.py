@@ -117,7 +117,11 @@ class ResultDocument(object):
         ``ResultDocument`` instance.
 
         """
-        buf = etree.tostring(self._document, pretty_print=True)
+        buf = etree.tostring(
+            self._document,
+            pretty_print=True,
+            encoding='unicode'
+        )
         return StringIO(buf)
 
 
@@ -852,14 +856,12 @@ class _BaseUpdater(object):
             root (lxml.etree._Element): The top-level xml node.
 
         """
-        schemalocs = root.attrib.get(TAG_SCHEMALOCATION)
-        if not schemalocs:
+        try:
+            schemaloc = utils.get_schemaloc_pairs(root)
+        except KeyError:
             return
 
-        l = schemalocs.split()
-        pairs = itertools.izip(l[::2], l[1::2])
-
-        cleaned = self._clean_schemalocs(pairs)
+        cleaned = self._clean_schemalocs(schemaloc)
         remapped = self._remap_schemalocs(cleaned)
         updated = self._create_schemaloc_str(remapped)
 
