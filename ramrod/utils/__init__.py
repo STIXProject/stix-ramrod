@@ -8,7 +8,7 @@ from uuid import uuid4
 
 NS_XSI = "http://www.w3.org/2001/XMLSchema-instance"
 TAG_XSI_TYPE = "{%s}type" % NS_XSI
-
+TAG_SCHEMALOCATION = "{%s}schemaLocation" % NS_XSI
 
 @contextmanager
 def ignored(*exceptions):
@@ -213,4 +213,18 @@ def get_node_text(node):
     return node.text
 
 
+def get_schemaloc_pairs(node):
+    """Parses the xsi:schemaLocation attribute on `node`.
 
+    Returns:
+        A list of (ns, schemaLocation) tuples for the node.
+
+    Raises:
+        KeyError: If `node` does not have an xsi:schemaLocation attribute.
+
+    """
+    schemalocs = node.attrib[TAG_SCHEMALOCATION]
+    l = schemalocs.split()
+    pairs = zip(l[::2], l[1::2])
+
+    return pairs
