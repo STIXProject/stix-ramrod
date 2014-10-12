@@ -1,7 +1,6 @@
 # Copyright (c) 2014, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
-import itertools
 from StringIO import StringIO
 from distutils.version import StrictVersion
 from collections import defaultdict
