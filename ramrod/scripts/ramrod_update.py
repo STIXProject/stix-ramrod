@@ -151,9 +151,12 @@ def _get_options(args):
 
 def _get_arg_parser():
     """Returns an ArgumentParser instance for this script."""
-    parser = argparse.ArgumentParser(description="Ramrod Updater v%s: Updates "
-                                                 "STIX and CybOX documents."
-                                    % ramrod.__version__)
+    parser = argparse.ArgumentParser(
+        description=(
+            "Ramrod Updater v%s: Updates STIX and CybOX documents." %
+            ramrod.__version__
+        )
+    )
 
     parser.add_argument("--infile", default=None, required=True,
                         help="Input STIX/CybOX document filename.")
@@ -184,7 +187,6 @@ def _get_arg_parser():
                         help="Do not remove empty elements and attributes "
                              "which were required in previous language "
                              "versions but became optional in later releases.")
-
 
     parser.add_argument("-f", "--force", action="store_true", default=False,
                         help="Removes untranslatable fields, remaps non-unique "
