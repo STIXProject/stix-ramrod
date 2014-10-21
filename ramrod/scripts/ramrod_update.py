@@ -158,39 +158,46 @@ def _get_arg_parser():
         )
     )
 
-    parser.add_argument("--infile", default=None, required=True,
-                        help="Input STIX/CybOX document filename.")
+    parser.add_argument(
+        "--infile", default=None, required=True,
+        help="Input STIX/CybOX document filename."
+    )
 
-    parser.add_argument("--outfile", default=None,
-                        help="Output XML document filename. Prints to stdout "
-                             "if no filename is provided.")
+    parser.add_argument(
+        "--outfile", default=None,
+        help="Output XML document filename. Prints to stdout if no filename is "
+             "provided."
+    )
 
-    parser.add_argument("--from", default=None, dest="from_",
-                        metavar="VERSION IN",
-                        help="The version of the input document. If not "
-                             "supplied, RAMROD will try to determine the "
-                             "version of the input document.")
+    parser.add_argument(
+        "--from", default=None, dest="from_",  metavar="VERSION IN",
+        help="The version of the input document. If not supplied, RAMROD will "
+             "try to determine the version of the input document."
+    )
 
-    parser.add_argument("--to", default=None, dest="to_",
-                        metavar="VERSION OUT",
-                        help="Update document to this version. If no version "
-                             "is supplied, the document will be updated to "
-                             "the latest version.")
+    parser.add_argument(
+        "--to", default=None, dest="to_",  metavar="VERSION OUT",
+        help="Update document to this version. If no version is supplied, the "
+             "document will be updated to the latest version."
+    )
 
-    parser.add_argument("--disable-vocab-update", action="store_true",
-                        default=False,
-                        help="Controlled vocabulary strings will not be "
-                             "updated.")
+    parser.add_argument(
+        "--disable-vocab-update", action="store_true",  default=False,
+        help="Controlled vocabulary strings will not be updated."
+    )
 
-    parser.add_argument("--disable-remove-optionals", action="store_true",
-                        default=False,
-                        help="Do not remove empty elements and attributes "
-                             "which were required in previous language "
-                             "versions but became optional in later releases.")
+    parser.add_argument(
+        "--disable-remove-optionals", action="store_true", default=False,
+        help="Do not remove empty elements and attributes which were required "
+             "in previous language versions but became optional in later "
+             "releases."
+    )
 
-    parser.add_argument("-f", "--force", action="store_true", default=False,
-                        help="Removes untranslatable fields, remaps non-unique "
-                             "IDs, and attempts to force the update process.")
+    parser.add_argument(
+        "-f", "--force", action="store_true", default=False,
+        help="Removes untranslatable fields, remaps non-unique IDs, and "
+             "attempts to force the update process."
+    )
 
     return parser
 
