@@ -86,11 +86,11 @@ class _CyboxUpdater(_BaseUpdater):
             found = self.get_version(node)
 
             if StrictVersion(expected) != StrictVersion(found):
-                raise InvalidVersionError("Document version does not match "
-                                          "the expected version.",
-                                          node=node,
-                                          expected=expected,
-                                          found=found)
+                raise InvalidVersionError(
+                    "Document version '{0}' does not match the expected "
+                    "version '{1}'".format(found, expected),
+                    node=node, expected=expected, found=found
+                )
 
 
 class _CyboxVocab(_Vocab):

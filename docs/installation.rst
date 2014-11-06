@@ -85,7 +85,7 @@ continuing.
    versions you install are compatible with the version of stix you plan
    to install.
 
-2. Download the desired version of stix from PyPI_ or the GitHub releases_
+2. Download the desired version of stix-ramrod from PyPI_ or the GitHub releases_
    page. The steps below assume you are using the |release| release.
 
 3. Extract the downloaded file. This will leave you with a directory named
@@ -123,7 +123,7 @@ OR
 If you don't see an ``ImportError``, the installation was successful.
 
 .. _setuptools: https://pypi.python.org/pypi/setuptools/
-.. _releases: https://github.com/STIXProject/stix-ramrodreleases
+.. _releases: https://github.com/STIXProject/stix-ramrod/releases
 
 
 Further Information
