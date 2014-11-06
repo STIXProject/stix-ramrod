@@ -24,10 +24,13 @@ def ignored(*exceptions):
 
 def get_xml_parser():
     """Returns an ``etree.ETCompatXMLParser`` instance."""
-    parser = etree.ETCompatXMLParser(huge_tree=True,
-                                     remove_comments=False,
-                                     strip_cdata=False,
-                                     remove_blank_text=True)
+    parser = etree.ETCompatXMLParser(
+        huge_tree=True,
+        resolve_entities=False,
+        remove_comments=False,
+        strip_cdata=False,
+        remove_blank_text=True
+    )
 
     return parser
 
@@ -167,6 +170,9 @@ def get_ext_namespace(node):
 def create_new_id(orig_id):
     """Creates a new ID from `orig_id` by appending '-cleaned-' and a UUID4
     string to the end of the `orig_id` value.
+
+    Returns:
+        An ID string.
 
     """
     new_id = "%s-cleaned-%s" % (orig_id, uuid4())
