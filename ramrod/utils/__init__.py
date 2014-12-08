@@ -214,7 +214,7 @@ def get_node_text(node):
         return None
 
     if "<![CDATA[" in etree.tostring(node):
-            return etree.CDATA(node.text)
+        return etree.CDATA(node.text)
 
     return node.text
 

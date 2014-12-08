@@ -88,11 +88,12 @@ class _STIXUpdater(_BaseUpdater):
                 raise UnknownVersionError()
 
             if StrictVersion(found) != StrictVersion(expected):
-                raise InvalidVersionError("Document version does not match "
-                                          "the expected version.",
-                                          node=node,
-                                          expected=expected,
-                                          found=found)
+                raise InvalidVersionError(
+                    "Document version does not match the expected version.",
+                    node=node,
+                    expected=expected,
+                    found=found
+                )
 
 
 class _STIXVocab(_Vocab):

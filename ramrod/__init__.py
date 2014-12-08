@@ -607,8 +607,8 @@ class _OptionalElements(_DisallowedFields):
         """
         contraband = []
         for node in nodes:
-           if cls._is_empty(node):
-            contraband.append(node)
+            if cls._is_empty(node):
+                contraband.append(node)
 
         return contraband
 
@@ -1000,7 +1000,7 @@ class _BaseUpdater(object):
             return node
 
         for child in node:
-           self._update_namespaces(child)
+            self._update_namespaces(child)
 
         new_node = self._update_nsmap(node)
         utils.replace_xml_element(node, new_node)
