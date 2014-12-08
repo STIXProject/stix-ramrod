@@ -247,7 +247,7 @@ class _Vocab(object):
 
         found = []
         for node in typed:
-            alias, type_ = utils.get_type_info(node)
+            _, type_ = utils.get_type_info(node)
             ext_ns = utils.get_ext_namespace(node)
 
             if all((ext_ns == vocab_ns, type_ in old)):
@@ -271,7 +271,7 @@ class _Vocab(object):
         vocabs = cls.find(root, typed)
 
         for node in vocabs:
-            alias, type_ = utils.get_type_info(node)
+            alias, _ = utils.get_type_info(node)
 
             attribs    = node.attrib
             terms      = cls.TERMS
@@ -496,7 +496,7 @@ class _DisallowedFields(object):
 
         contexts = []
         for node in typed:
-            alias, type_ = utils.get_type_info(node)
+            _, type_ = utils.get_type_info(node)
             ns = utils.get_ext_namespace(node)
 
             if ctx.get(type_) == ns:
@@ -1026,7 +1026,7 @@ class _BaseUpdater(object):
         return update_results
 
 
-    def _get_disallowed(self, root):
+    def _get_disallowed(self, root, options):
         raise NotImplementedError()
 
 

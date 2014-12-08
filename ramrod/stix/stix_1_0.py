@@ -2,8 +2,7 @@
 # See LICENSE.txt for complete terms.
 
 from lxml import etree
-from ramrod import (UpdateError, _DisallowedFields, TAG_XSI_TYPE,
-    DEFAULT_UPDATE_OPTIONS)
+from ramrod import (UpdateError, _DisallowedFields, DEFAULT_UPDATE_OPTIONS)
 from ramrod.stix import (_STIXUpdater, _STIXVocab)
 from ramrod.cybox import Cybox_2_0_Updater
 import ramrod.utils as utils

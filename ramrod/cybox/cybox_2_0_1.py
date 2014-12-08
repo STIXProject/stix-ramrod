@@ -2,7 +2,7 @@
 # See LICENSE.txt for complete terms.
 
 import itertools
-from ramrod import (_Vocab, UpdateError, _DisallowedFields, _OptionalElements,
+from ramrod import (UpdateError, _DisallowedFields, _OptionalElements,
     _TranslatableField, _RenamedField, DEFAULT_UPDATE_OPTIONS)
 from ramrod.cybox import (_CyboxUpdater, _CyboxVocab, TAG_CYBOX_MAJOR,
     TAG_CYBOX_MINOR, TAG_CYBOX_UPDATE)
