@@ -162,7 +162,7 @@ def get_ext_namespace(node):
 
     """
     xsi_type = node.attrib[TAG_XSI_TYPE]
-    alias, type_ = xsi_type.split(":")
+    alias, _ = xsi_type.split(":")
     namespace = node.nsmap[alias]
     return namespace
 

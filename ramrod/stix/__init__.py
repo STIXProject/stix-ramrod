@@ -1,11 +1,9 @@
 # Copyright (c) 2014, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
-from lxml import etree
 from distutils.version import StrictVersion
 from ramrod import (_BaseUpdater, _Vocab, UnknownVersionError,
-    InvalidVersionError, UpdateResults, ResultDocument, _validate_versions,
-    DEFAULT_UPDATE_OPTIONS)
+    InvalidVersionError, UpdateResults, _validate_versions)
 import ramrod.utils as utils
 
 class _STIXUpdater(_BaseUpdater):
