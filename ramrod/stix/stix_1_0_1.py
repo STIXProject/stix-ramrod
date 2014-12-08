@@ -3,8 +3,8 @@
 
 import itertools
 from lxml import etree
-from ramrod import (_Vocab, UpdateError, _DisallowedFields, _OptionalElements,
-    _TranslatableField, TAG_XSI_TYPE, DEFAULT_UPDATE_OPTIONS)
+from ramrod import (UpdateError, _DisallowedFields, _OptionalElements,
+    _TranslatableField, DEFAULT_UPDATE_OPTIONS)
 from ramrod.stix import (_STIXUpdater, _STIXVocab)
 from ramrod.cybox import Cybox_2_0_1_Updater
 import ramrod.utils as utils
@@ -506,7 +506,7 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         """
         new_id = options.new_id_func
 
-        for id_, nodes in duplicates.iteritems():
+        for _, nodes in duplicates.iteritems():
             for node in nodes:
                new_id(node)
 

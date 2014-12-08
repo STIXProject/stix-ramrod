@@ -1,7 +1,7 @@
 # Copyright (c) 2014, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
-from ramrod import (UpdateError, DEFAULT_UPDATE_OPTIONS)
+from ramrod import DEFAULT_UPDATE_OPTIONS
 from ramrod.cybox import (_CyboxUpdater, _CyboxVocab, TAG_CYBOX_MAJOR,
     TAG_CYBOX_MINOR, TAG_CYBOX_UPDATE)
 import ramrod.utils as utils

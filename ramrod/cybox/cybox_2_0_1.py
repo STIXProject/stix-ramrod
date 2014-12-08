@@ -613,7 +613,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
         """
         new_id = options.new_id_func
-        for id_, nodes in duplicates.iteritems():
+        for _, nodes in duplicates.iteritems():
             for node in nodes:
                 new_id(node)
 
