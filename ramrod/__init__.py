@@ -1135,6 +1135,14 @@ class _BaseUpdater(object):
         return results
 
 
+    def _update(self, root, options):
+        """Abstract method that needs to be overriden by concrete base
+        classes.
+
+        """
+        raise NotImplementedError()
+
+
     def update(self, root, options=None, force=False):
         """Attempts to update `root` to the next version of its language
         specification.
