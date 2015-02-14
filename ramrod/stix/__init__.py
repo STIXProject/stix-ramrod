@@ -1,10 +1,13 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
+# builtin
 from distutils.version import StrictVersion
-from ramrod import (_BaseUpdater, _Vocab, UnknownVersionError,
-    InvalidVersionError, UpdateResults, _validate_versions)
+
+# internal
 import ramrod.utils as utils
+import ramrod.errors as errors
+from ramrod import (_BaseUpdater, _Vocab, UpdateResults)
 
 class _STIXUpdater(_BaseUpdater):
     """Base class for STIX updating code. Sets default values for
@@ -38,11 +41,9 @@ class _STIXUpdater(_BaseUpdater):
     )
     XPATH_ROOT_NODES = "//stix:STIX_Package"
 
-
     def __init__(self):
         super(_STIXUpdater, self).__init__()
         self._init_cybox_updater()
-
 
     def _init_cybox_updater(self):
         """Returns an initialized instance of a _CyboxUpdater implementation.
@@ -53,7 +54,6 @@ class _STIXUpdater(_BaseUpdater):
         """
         raise NotImplementedError()
 
-
     @classmethod
     def get_version(cls, package):
         """Returns the version of the `package` ``STIX_Package`` element by
@@ -61,7 +61,6 @@ class _STIXUpdater(_BaseUpdater):
 
         """
         return package.attrib.get('version')
-
 
     def _check_version(self, root):
         """Checks that the version of the document `root` is valid for an
@@ -85,15 +84,19 @@ class _STIXUpdater(_BaseUpdater):
             found = self.get_version(node)
 
             if not found:
-                raise UnknownVersionError()
+                error = "Unable to determine the version of the STIX document."
+                raise errors.UnknownVersionError(error)
 
-            if StrictVersion(found) != StrictVersion(expected):
-                raise InvalidVersionError(
-                    "Document version does not match the expected version.",
-                    node=node,
-                    expected=expected,
-                    found=found
-                )
+            if utils.is_version_equal(found, expected):
+                return
+
+            error = "Document version does not match the expected version."
+            raise errors.InvalidVersionError(
+                message=error,
+                node=node,
+                expected=expected,
+                found=found
+            )
 
 
 class _STIXVocab(_Vocab):
@@ -105,7 +108,6 @@ from .stix_1_0_1 import  STIX_1_0_1_Updater
 from .stix_1_1 import STIX_1_1_Updater
 
 STIX_VERSIONS = ('1.0', '1.0.1', '1.1', '1.1.1')
-
 STIX_UPDATERS = {
     '1.0': STIX_1_0_Updater,
     '1.0.1': STIX_1_0_1_Updater,
@@ -150,20 +152,22 @@ def update(doc, from_=None, to_=None, options=None, force=False):
     from_ = from_ or _STIXUpdater.get_version(root)
     to_ = to_ or STIX_VERSIONS[-1]  # The latest version if not specified
 
-    _validate_versions(from_, to_, STIX_VERSIONS)
+    utils.validate_versions(from_, to_, STIX_VERSIONS)
 
     removed, remapped = [], {}
     idx = STIX_VERSIONS.index
-    for version in STIX_VERSIONS[idx(from_):idx(to_)]:
-        klass   = STIX_UPDATERS[version]
-        updater = klass()
 
-        results = updater.update(root, options=options, force=force)
+    for version in STIX_VERSIONS[idx(from_):idx(to_)]:
+        updater   = STIX_UPDATERS[version]
+        results   = updater().update(root, options=options, force=force)
+        root      = results.document.as_element()
         removed.extend(results.removed)
         remapped.update(results.remapped_ids)
 
-        root = results.document.as_element()
+    results = UpdateResults(
+        document=root,
+        removed=removed,
+        remapped_ids=remapped
+    )
 
-    return UpdateResults(document=root,
-                         removed=removed,
-                         remapped_ids=remapped)
+    return results

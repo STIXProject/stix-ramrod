@@ -1,11 +1,12 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
-from lxml import etree
-from ramrod import (UpdateError, _DisallowedFields, DEFAULT_UPDATE_OPTIONS)
+# internal
+import ramrod.errors as errors
+import ramrod.utils as utils
+from ramrod import (_DisallowedFields, DEFAULT_UPDATE_OPTIONS)
 from ramrod.stix import (_STIXUpdater, _STIXVocab)
 from ramrod.cybox import Cybox_2_0_Updater
-import ramrod.utils as utils
 
 
 class MotivationVocab(_STIXVocab):
@@ -198,10 +199,10 @@ class STIX_1_0_Updater(_STIXUpdater):
         PlanningAndOperationalSupportVocab,
     )
 
+
     def __init__(self):
         super(STIX_1_0_Updater, self).__init__()
         self._init_cybox_updater()
-
 
     def _init_cybox_updater(self):
         updater_klass = Cybox_2_0_Updater
@@ -215,7 +216,6 @@ class STIX_1_0_Updater(_STIXUpdater):
         updater.XPATH_VERSIONED_NODES = updater.XPATH_ROOT_NODES
         self._cybox_updater = updater
 
-
     def _get_duplicates(self, root):
         """The STIX v1.0.1 schema does not enforce ID uniqueness, so this
         overrides the default ``_get_duplicates()`` by immediately returning.
@@ -225,7 +225,6 @@ class STIX_1_0_Updater(_STIXUpdater):
 
         """
         pass
-
 
     def _get_disallowed(self, root, options=None):
         """Finds all xml entities under `root` that cannot be updated.
@@ -253,7 +252,6 @@ class STIX_1_0_Updater(_STIXUpdater):
 
         return disallowed
 
-
     def _clean_disallowed(self, disallowed, options):
         """Removes the `disallowed` nodes from the source document.
 
@@ -272,7 +270,6 @@ class STIX_1_0_Updater(_STIXUpdater):
 
         return removed
 
-
     def _update_versions(self, root):
         """Updates the versions of versioned nodes under `root` to align with
         STIX v1.0.1 versions.
@@ -280,14 +277,12 @@ class STIX_1_0_Updater(_STIXUpdater):
         """
         nodes = self._get_versioned_nodes(root)
         for node in nodes:
-            tag = etree.QName(node)
-            name = tag.localname
+            name = utils.get_localname(node)
 
             if name == "Indicator":
                 node.attrib['version'] = '2.0.1'
             else:
                 node.attrib['version'] = '1.0.1'
-
 
     def _update_cybox(self, root, options):
         """Updates the CybOX content found under the `root` node.
@@ -299,7 +294,6 @@ class STIX_1_0_Updater(_STIXUpdater):
         """
         updated = self._cybox_updater._update(root, options)
         return updated
-
 
     def check_update(self, root, options=None):
         """Determines if the input document can be upgraded.
@@ -329,11 +323,13 @@ class STIX_1_0_Updater(_STIXUpdater):
 
         disallowed  = self._get_disallowed(root)
 
-        if disallowed:
-            raise UpdateError("Found untranslatable fields in source "
-                              "document.",
-                              disallowed=disallowed)
+        if not disallowed:
+            return
 
+        raise errors.UpdateError(
+            message="Found untranslatable fields in source document.",
+            disallowed=disallowed
+        )
 
     def _update(self, root, options):
         updated = self._update_cybox(root, options)

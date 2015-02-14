@@ -1,16 +1,21 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
+# builtin
 import copy
+import contextlib
+import uuid
+from distutils.version import StrictVersion
+
+# external
 from lxml import etree
-from contextlib import contextmanager
-from uuid import uuid4
 
-NS_XSI = "http://www.w3.org/2001/XMLSchema-instance"
-TAG_XSI_TYPE = "{%s}type" % NS_XSI
-TAG_SCHEMALOCATION = "{%s}schemaLocation" % NS_XSI
+# internal
+import ramrod.errors as errors
+import ramrod.xmlconst as xmlconst
 
-@contextmanager
+
+@contextlib.contextmanager
 def ignored(*exceptions):
     """Allows you to ignore exceptions cleanly using context managers. This
     exists in Python 3.
@@ -124,7 +129,7 @@ def get_type_info(node):
         ValueError: If the ``xsi:type`` attribute does not have a colon in it.
 
     """
-    xsi_type = node.attrib[TAG_XSI_TYPE]
+    xsi_type = node.attrib[xmlconst.TAG_XSI_TYPE]
     alias, type_ = xsi_type.split(':')
     return (alias, type_)
 
@@ -136,7 +141,7 @@ def get_typed_nodes(root):
         A list of ``etree._Element`` instances.
 
     """
-    nsmap = {'xsi': NS_XSI}
+    nsmap = {'xsi': xmlconst.NS_XSI}
     xpath = ".//*[@xsi:type]"
     nodes = root.xpath(xpath, namespaces=nsmap)
     return nodes
@@ -161,7 +166,7 @@ def get_ext_namespace(node):
         KeyError: if the node does not contain an ``xsi:type`` attribute.
 
     """
-    xsi_type = node.attrib[TAG_XSI_TYPE]
+    xsi_type = node.attrib[xmlconst.TAG_XSI_TYPE]
     alias, _ = xsi_type.split(":")
     namespace = node.nsmap[alias]
     return namespace
@@ -175,7 +180,7 @@ def create_new_id(orig_id):
         An ID string.
 
     """
-    new_id = "%s-cleaned-%s" % (orig_id, uuid4())
+    new_id = "%s-cleaned-%s" % (orig_id, uuid.uuid4())
     return new_id
 
 
@@ -198,6 +203,16 @@ def new_id(node):
 
     node.attrib['id'] = unique_id
     return node
+
+
+def get_localname(node):
+    """Returns the localname portion the `node` QName"""
+    return etree.QName(node).localname
+
+
+def get_namespace(node):
+    """Returns the namespace portion of the QName for `node`."""
+    return etree.QName(node).namespace
 
 
 def get_node_text(node):
@@ -229,8 +244,45 @@ def get_schemaloc_pairs(node):
         KeyError: If `node` does not have an xsi:schemaLocation attribute.
 
     """
-    schemalocs = node.attrib[TAG_SCHEMALOCATION]
+    schemalocs = node.attrib[xmlconst.TAG_SCHEMALOCATION]
     l = schemalocs.split()
     pairs = zip(l[::2], l[1::2])
 
     return pairs
+
+
+def is_version_equal(x, y):
+    """Attempts to determine if the `x` amd `y` version numbers are semantically
+    equivalent.
+
+    Examples:
+        The version strings "2.1.0" and "2.1" represent semantically equivalent
+        versions, despite not being equal strings.
+    Args:
+        x: A string version number. Ex: '2.1.0'
+        y: A string version number. Ex: '2.1'
+
+    """
+    return StrictVersion(x) == StrictVersion(y)
+
+
+def validate_version(version, allowed):
+    if not version:
+        error = "The version was `None` or could not be determined."
+        raise errors.UnknownVersionError(error)
+
+    if version not in allowed:
+        error = "The version '{0}' is not valid. Must be one of '{1}'"
+        error = error.format(version, allowed)
+        raise errors.InvalidVersionError(error)
+
+
+
+def validate_versions(from_, to_, allowed):
+    validate_version(from_, allowed)
+    validate_version(to_, allowed)
+
+    if StrictVersion(from_) >= StrictVersion(to_):
+        error =  "Cannot upgrade from '{0}' to '{1}'"
+        error = error.format(from_, to_)
+        raise errors.InvalidVersionError(error)

@@ -1,20 +1,48 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
-from StringIO import StringIO
-from distutils.version import StrictVersion
-from collections import defaultdict
+# builtin
+import StringIO
+import collections
+
+# external
 from lxml import etree
-from lxml.etree import QName
+
+# internal
 import ramrod.utils as utils
+import ramrod.errors as errors
+import ramrod.xmlconst as xmlconst
+from ramrod.version import __version__
 
-__version__ = "1.0.0-alpha.3"
 
-NS_XSI = "http://www.w3.org/2001/XMLSchema-instance"
-TAG_XSI_TYPE = "{%s}type" % NS_XSI
-TAG_SCHEMALOCATION ="{%s}schemaLocation" % NS_XSI
+# lazy loaded mods
+stix = None
+cybox = None
+
+__LAZY_MODS_LOADED = False
+
+# Constants
 TAG_VOCAB_REFERENCE = "vocab_reference"
 TAG_VOCAB_NAME = 'vocab_name'
+
+
+def _load_lazy_mods():
+    """Lazy load modules to avoid circular dependencies.
+
+    """
+    global __LAZY_MODS_LOADED
+    global stix, cybox
+
+    if __LAZY_MODS_LOADED:
+        return
+
+    if not stix:
+        import ramrod.stix as stix
+
+    if not cybox:
+        import ramrod.cybox as cybox
+
+    __LAZY_MODS_LOADED = True
 
 
 class UpdateResults(object):
@@ -53,14 +81,14 @@ class UpdateResults(object):
 
     def __unicode__(self):
         if not self.document:
-            return None
+            return u''
 
         return unicode(self.document)
 
 
     def __str__(self):
         if not self.document:
-            return None
+            return ''
 
         return str(self.document)
 
@@ -116,12 +144,8 @@ class ResultDocument(object):
         ``ResultDocument`` instance.
 
         """
-        buf = etree.tostring(
-            self._document,
-            pretty_print=True,
-            encoding='unicode'
-        )
-        return StringIO(buf)
+        buf = etree.tounicode(self._document, pretty_print=True)
+        return StringIO.StringIO(buf)
 
 
 class UpdateOptions(object):
@@ -163,56 +187,6 @@ class UpdateOptions(object):
 
 
 DEFAULT_UPDATE_OPTIONS = UpdateOptions()
-
-
-class UnknownVersionError(Exception):
-    """Raised when an input document does not contain a ``version`` attribute
-    and the user has not specified a document version.
-
-    """
-    pass
-
-
-class UpdateError(Exception):
-    """Raised when non-translatable fields are encountered during the update
-    process..
-
-    Attributes:
-        message: The error message.
-        disallowed: A list of nodes found in the input document that
-            cannot be translated during the update process.
-        duplicates: A dictionary of nodes found in the input document
-            that contain the same `id` attribute value.
-    """
-    def __init__(self, message=None, disallowed=None, duplicates=None):
-        super(UpdateError, self).__init__(message)
-        self.disallowed = disallowed
-        self.duplicates = duplicates
-
-    def __str__(self):
-        return "Update Error: %s" % (self.message)
-
-
-class InvalidVersionError(Exception):
-    """Raised when an input document's ``version`` attribute does not align
-    with the expected version number for a given ``_BaseUpdater``
-    implementation.
-
-    Attributes:
-        message: The error message.
-        node: The node containing an incompatible version number.
-        expected: The version that was expected.
-        found: The version that was found on the `node`.
-
-    """
-    def __init__(self, message=None, node=None, expected=None, found=None):
-        super(InvalidVersionError, self).__init__(message)
-        self.node = node
-        self.expected = expected
-        self.found = found
-
-    def __str__(self):
-        return ("InvalidVersionError: %s" % (self.message))
 
 
 class _Vocab(object):
@@ -282,7 +256,7 @@ class _Vocab(object):
             # Update the xsi:type attribute to identify the new
             # controlled vocabulary
             new_xsi_type = "%s:%s" % (alias, new_type_)
-            attribs[TAG_XSI_TYPE] = new_xsi_type
+            attribs[xmlconst.TAG_XSI_TYPE] = new_xsi_type
 
             # Update the vocab_reference attribute if present
             if TAG_VOCAB_REFERENCE in attribs:
@@ -327,7 +301,7 @@ class _TranslatableField(object):
     XPATH_VALUE = '.'
     NEW_TAG = None
     COPY_ATTRIBUTES = False
-    OVERRIDE_ATTRIBUTES = None
+    OVERRIDE_ATTRIBUTES = {}
 
 
     @classmethod
@@ -362,11 +336,10 @@ class _TranslatableField(object):
         if cls.COPY_ATTRIBUTES:
             new.attrib.update(source.attrib)
 
-        if cls.OVERRIDE_ATTRIBUTES:
-            for name, val in cls.OVERRIDE_ATTRIBUTES.iteritems():
-                if name not in source.attrib:
-                    continue
-                new.attrib[name] = val
+        for name, val in cls.OVERRIDE_ATTRIBUTES.iteritems():
+            if name not in source.attrib:
+                continue
+            new.attrib[name] = val
 
 
     @classmethod
@@ -441,7 +414,7 @@ class _DisallowedFields(object):
     """
     CTX_TYPES = {}
     XPATH = "."
-    NSMAP = None
+    NSMAP = {}
 
     def __init__(self,):
         pass
@@ -555,14 +528,19 @@ class _OptionalAttributes(_DisallowedFields):
 
         """
         contraband = []
-
         attrs = cls.ATTRIBUTES
+
+        def is_empty(node, attr):
+            try:
+                val = node.attrib[attr]
+                return not val
+            except KeyError:
+                return False
+
         for node in nodes:
-            for attr in attrs:
-                val = node.attrib.get(attr)
-                if not val:
-                    contraband.append(node)
-                    break
+            if not any(is_empty(node, x) for x in attrs):
+                continue
+            contraband.append(node)
 
         return contraband
 
@@ -667,11 +645,9 @@ class _BaseUpdater(object):
     def __init__(self):
         pass
 
-
     def _is_leaf(self, node):
         """Returns ``True`` if the `node` has no children."""
         return (len(node) == 0)
-
 
     def _get_ns_alias(self, root, ns):
         """Returns the XML Namespace alias defined for a namespace in a given
@@ -689,7 +665,6 @@ class _BaseUpdater(object):
         """
         return root.nsmap.get(ns)
 
-
     def _get_duplicates(self, root):
         """This checks `root` for nodes with duplicate IDs.
 
@@ -699,11 +674,11 @@ class _BaseUpdater(object):
 
         """
         namespaces = self.NSMAP.values()
-        id_nodes = defaultdict(list)
+        id_nodes = collections.defaultdict(list)
 
         for child in root.iterdescendants():
             try:
-                ns = QName(child).namespace
+                ns = utils.get_namespace(child)
             except ValueError:
                 continue
 
@@ -717,7 +692,6 @@ class _BaseUpdater(object):
             id_nodes[id_].append(child)
 
         return dict((id_, nodes) for id_, nodes in id_nodes.iteritems() if len(nodes) > 1)
-
 
     def _get_versioned_nodes(self, root):
         """Discovers all versioned nodes under `root` defined by the class-level
@@ -734,7 +708,6 @@ class _BaseUpdater(object):
         xpath = self.XPATH_VERSIONED_NODES
         namespaces = self.NSMAP
         return root.xpath(xpath, namespaces=namespaces)
-
 
     def _get_root_nodes(self, root):
         """Discovers all versioned nodes under `root` defined by the class-level
@@ -753,7 +726,6 @@ class _BaseUpdater(object):
         namespaces = self.NSMAP
         return root.xpath(xpath, namespaces=namespaces)
 
-
     def _check_version(self, root):
         """Checks that the version of the document matches the expected
         version. Derived classes need to implement this method.
@@ -767,7 +739,6 @@ class _BaseUpdater(object):
 
         """
         raise NotImplementedError()
-
 
     def _update_vocabs(self, root):
         """Updates controlled vocabularies found under the `root` document.
@@ -790,8 +761,7 @@ class _BaseUpdater(object):
 
     def _remove_schemalocations(self, root):
         """Removes the ``xsi:schemaLocation`` attribute from `root`."""
-        utils.remove_xml_attribute(root, TAG_SCHEMALOCATION)
-
+        utils.remove_xml_attribute(root, xmlconst.TAG_SCHEMALOCATION)
 
     def _create_schemaloc_str(self, pairs):
         """Creates a valid ``xsi:schemaLocation`` string from the `pairs`
@@ -807,7 +777,6 @@ class _BaseUpdater(object):
         schemaloc_str = "   ".join(("%s %s" % (ns, loc)) for ns, loc in pairs)
         return schemaloc_str
 
-
     def _clean_schemalocs(self, pairs):
         """Returns a list of ``(namespace, schemalocation)`` tuples that are
         allowed for the updated document.
@@ -820,8 +789,8 @@ class _BaseUpdater(object):
             found in the return value.
 
         """
-        return [(ns, loc) for ns, loc in pairs if ns not in self.DISALLOWED_NAMESPACES]
-
+        disallowed = self.DISALLOWED_NAMESPACES
+        return [(ns, loc) for ns, loc in pairs if ns not in disallowed]
 
     def _remap_schemalocs(self, pairs):
         """Updates the ``xsi:schemaLocation`` value to use namespaces and
@@ -843,7 +812,6 @@ class _BaseUpdater(object):
 
         return remapped
 
-
     def _update_schemalocs(self, root):
         """Updates the schemalocations found on `root` to point to
         the schemalocations for the next language version.
@@ -864,8 +832,7 @@ class _BaseUpdater(object):
         remapped = self._remap_schemalocs(cleaned)
         updated = self._create_schemaloc_str(remapped)
 
-        root.attrib[TAG_SCHEMALOCATION] = updated
-
+        root.attrib[xmlconst.TAG_SCHEMALOCATION] = updated
 
     def _apply_namespace_updates(self, root):
         """Updates the children of `root` to be defined under their updated
@@ -879,10 +846,9 @@ class _BaseUpdater(object):
 
         """
         for node in root.findall(".//*"):
-            node_ns = QName(node).namespace
+            node_ns = utils.get_namespace(node)
             updated_ns = self.UPDATE_NS_MAP.get(node_ns, node_ns)
             node.tag = node.tag.replace(node_ns, updated_ns)
-
 
     def _remap_namespaces(self, node):
         """Remaps the namespaces found on the input `node` to namespaces
@@ -909,7 +875,6 @@ class _BaseUpdater(object):
 
         return remapped
 
-
     def _get_remapped_tag(self, node):
         """Returns a new tag for `node` which includes an updated namespace
         portion of the tag. This is determined by looking up the tag
@@ -919,12 +884,11 @@ class _BaseUpdater(object):
             A new tag for `node` which contains an updated namespace.
 
         """
-        qname = QName(node)
-        namespace, localname = qname.namespace, qname.localname
+        namespace = utils.get_namespace(node)
+        localname = utils.get_localname(node)
         updated_ns = self.UPDATE_NS_MAP.get(namespace, namespace)
 
         return "{%s}%s" % (updated_ns, localname)
-
 
     def _update_tag(self, node):
         """Updates the tag for `node` which a tag that includes an updated
@@ -937,7 +901,6 @@ class _BaseUpdater(object):
         """
         node.tag = self._get_remapped_tag(node)
         return node
-
 
     def _update_nsmap(self, node):
         """Updates the ``nsmap`` attribute found on `node` to `nsmap`.
@@ -962,7 +925,6 @@ class _BaseUpdater(object):
         new[:] = node[:]
 
         return new
-
 
     def _update_namespaces(self, node):
         """Updates the namespaces in the instance `node` to align with
@@ -990,7 +952,7 @@ class _BaseUpdater(object):
         """
 
         try:
-            ns = QName(node).namespace
+            ns = utils.get_namespace(node)
         except ValueError:
             # The `node` was probably an XML comment
             return node
@@ -1005,7 +967,6 @@ class _BaseUpdater(object):
         new_node = self._update_nsmap(node)
         utils.replace_xml_element(node, new_node)
         return new_node
-
 
     def _create_update_results(self, root, remapped=None, removed=None):
         """Creates and returns a :class:`ramrod.UpdateResults` object instance
@@ -1025,18 +986,14 @@ class _BaseUpdater(object):
 
         return update_results
 
-
     def _get_disallowed(self, root, options):
         raise NotImplementedError()
-
 
     def _clean_disallowed(self, disallowed, options):
         raise NotImplementedError()
 
-
     def _clean_duplicates(self, duplicates, options):
         raise NotImplementedError()
-
 
     def _clean(self, root, options):
         """Internal handler for public ``clean()`` method. Orchestrates the
@@ -1098,7 +1055,6 @@ class _BaseUpdater(object):
         results = self._clean(root, options)
         return results
 
-
     def check_update(self, root, options=None):
         """Checks to see if the `root` document can be updated.
 
@@ -1110,7 +1066,6 @@ class _BaseUpdater(object):
 
         """
         raise NotImplementedError()
-
 
     def _force_update(self, root, options):
         """Removes untranslatable fields from the `root` document and calls
@@ -1134,14 +1089,12 @@ class _BaseUpdater(object):
 
         return results
 
-
     def _update(self, root, options):
         """Abstract method that needs to be overriden by concrete base
         classes.
 
         """
         raise NotImplementedError()
-
 
     def update(self, root, options=None, force=False):
         """Attempts to update `root` to the next version of its language
@@ -1201,14 +1154,13 @@ class _BaseUpdater(object):
             self.check_update(root, options)
             updated = self._update(root, options)
             results = self._create_update_results(updated)
-        except (UpdateError, UnknownVersionError, InvalidVersionError):
+        except (errors.UpdateError, errors.UnknownVersionError, errors.InvalidVersionError):
             if force:
                 results = self._force_update(root, options)
             else:
                 raise
 
         return results
-
 
 def _get_version(root):
     """Returns the ``version`` attribute of the input document `root`.
@@ -1223,39 +1175,16 @@ def _get_version(root):
         UnknownVersionError: if `root` does not have a ``version`` attribute.
 
     """
-    from ramrod.stix import _STIXUpdater
-    from ramrod.cybox import _CyboxUpdater
+    _load_lazy_mods()
 
-    name = QName(root).localname
+    name = utils.get_localname(root)
     methods = {
-        'STIX_Package': _STIXUpdater.get_version,
-        'Observables': _CyboxUpdater.get_version
+        'STIX_Package': stix._STIXUpdater.get_version,
+        'Observables': cybox._CyboxUpdater.get_version
     }
 
     get_version = methods[name]
     return get_version(root)
-
-
-def _validate_version(version, allowed):
-    if not version:
-        raise UnknownVersionError("The version was `None` or could not be "
-                                  "determined.")
-
-    if version not in allowed:
-        raise InvalidVersionError(
-            "The version '%s' is not valid. Must be one of '%s' " %
-            (version, allowed,)
-        )
-
-
-def _validate_versions(from_, to_, allowed):
-    _validate_version(from_, allowed)
-    _validate_version(to_, allowed)
-
-    if StrictVersion(from_) >= StrictVersion(to_):
-        raise InvalidVersionError(
-            "Cannot upgrade from '%s' to '%s'" % (from_, to_),
-        )
 
 
 def update(doc, from_=None, to_=None, options=None, force=False):
@@ -1302,11 +1231,10 @@ def update(doc, from_=None, to_=None, options=None, force=False):
             document does not contain a version attribute.
 
     """
-    import ramrod.stix as stix
-    import ramrod.cybox as cybox
+    _load_lazy_mods()
 
     root = utils.get_etree_root(doc)
-    name = QName(root).localname
+    name = utils.get_localname(root)
 
     update_methods = {
         'STIX_Package': stix.update,
@@ -1318,11 +1246,9 @@ def update(doc, from_=None, to_=None, options=None, force=False):
         from_ = from_ or _get_version(root)  # _get_version raises KeyError
         func = update_methods[name]
     except KeyError:
-        error = (
-            "Document root node must be one of %s. Found: '%s'" %
-            (update_methods.keys(), name)
-        )
-        raise UpdateError(error)
+        error = "Document root node must be one of {0}. Found: '{1}'"
+        error = error.format(update_methods.keys(), name)
+        raise errors.UpdateError(error)
 
     updated = func(root, from_, to_, options, force)
     return updated

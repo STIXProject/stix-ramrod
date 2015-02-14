@@ -1,12 +1,20 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
+# builtin
 import itertools
-from ramrod import (UpdateError, _DisallowedFields, _OptionalElements,
-    _TranslatableField, _RenamedField, DEFAULT_UPDATE_OPTIONS)
-from ramrod.cybox import (_CyboxUpdater, _CyboxVocab, TAG_CYBOX_MAJOR,
-    TAG_CYBOX_MINOR, TAG_CYBOX_UPDATE)
+
+# internal
+import ramrod.errors as errors
 import ramrod.utils as utils
+from ramrod import (
+    _DisallowedFields, _OptionalElements, _TranslatableField, _RenamedField,
+    DEFAULT_UPDATE_OPTIONS
+)
+from ramrod.cybox import (
+    _CyboxUpdater, _CyboxVocab, TAG_CYBOX_MAJOR, TAG_CYBOX_MINOR,
+    TAG_CYBOX_UPDATE
+)
 
 
 class ObjectRelationshipVocab(_CyboxVocab):
@@ -648,11 +656,15 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         duplicates = self._get_duplicates(root)
         disallowed = self._get_disallowed(root)
 
-        if any((disallowed, duplicates)):
-            raise UpdateError("Found duplicate or untranslatable fields in "
-                              "source document.",
-                              disallowed=disallowed,
-                              duplicates=duplicates)
+        if not (disallowed or duplicates):
+            return
+
+        error = "Found duplicate or untranslatable fields in source document."
+        raise errors.UpdateError(
+            message=error,
+            disallowed=disallowed,
+            duplicates=duplicates
+        )
 
 
     def _update(self, root, options):

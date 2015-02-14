@@ -1,10 +1,9 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
-from distutils.version import StrictVersion
-from ramrod import (_BaseUpdater, _Vocab, UnknownVersionError,
-    InvalidVersionError, UpdateResults, _validate_versions)
 import ramrod.utils as utils
+import ramrod.errors as errors
+from ramrod import (_BaseUpdater, _Vocab, UpdateResults)
 
 TAG_CYBOX_MAJOR  = "cybox_major_version"
 TAG_CYBOX_MINOR  = "cybox_minor_version"
@@ -26,7 +25,6 @@ class _CyboxUpdater(_BaseUpdater):
     def __init__(self):
         super(_CyboxUpdater, self).__init__()
 
-
     @classmethod
     def get_version(cls, observables):
         """Returns the version of the `observables` ``Observables`` node.
@@ -47,8 +45,9 @@ class _CyboxUpdater(_BaseUpdater):
         cybox_minor  = observables.attrib.get(TAG_CYBOX_MINOR)
         cybox_update = observables.attrib.get(TAG_CYBOX_UPDATE)
 
-        if not any((cybox_major, cybox_minor, cybox_update)):
-            raise UnknownVersionError()
+        if not (cybox_major and cybox_minor):
+            error = "CybOX document contains no version information."
+            raise errors.UnknownVersionError(error)
 
         if cybox_update:
             version = "%s.%s.%s" % (cybox_major, cybox_minor, cybox_update)
@@ -83,12 +82,17 @@ class _CyboxUpdater(_BaseUpdater):
         for node in roots:
             found = self.get_version(node)
 
-            if StrictVersion(expected) != StrictVersion(found):
-                raise InvalidVersionError(
-                    "Document version '{0}' does not match the expected "
-                    "version '{1}'".format(found, expected),
-                    node=node, expected=expected, found=found
-                )
+            if utils.is_version_equal(expected, found):
+                continue
+
+            error = "Document version '{0}' does not match the expected version '{1}'."
+            error = error.format(found, expected)
+            raise errors.InvalidVersionError(
+                message=error,
+                node=node,
+                expected=expected,
+                found=found
+            )
 
 
 class _CyboxVocab(_Vocab):
@@ -140,20 +144,23 @@ def update(doc, from_=None, to_=None, options=None, force=False):
     from_ = from_ or _CyboxUpdater.get_version(root)
     to_ = to_ or CYBOX_VERSIONS[-1]  # The latest version if not specified
 
-    _validate_versions(from_, to_, CYBOX_VERSIONS)
+    utils.validate_versions(from_, to_, CYBOX_VERSIONS)
 
     removed, remapped = [], {}
     idx = CYBOX_VERSIONS.index
-    for version in CYBOX_VERSIONS[idx(from_):idx(to_)]:
-        klass   = CYBOX_UPDATERS[version]
-        updater = klass()
 
-        results = updater.update(root, options=options, force=force)
+    for version in CYBOX_VERSIONS[idx(from_):idx(to_)]:
+        updater   = CYBOX_UPDATERS[version]
+        results   = updater().update(root, options=options, force=force)
+        root      = results.document.as_element()
         removed.extend(results.removed)
         remapped.update(results.remapped_ids)
 
-        root = results.document.as_element()
 
-    return UpdateResults(document=root,
-                         removed=removed,
-                         remapped_ids=remapped)
+    results = UpdateResults(
+        document=root,
+        removed=removed,
+        remapped_ids=remapped
+    )
+
+    return results

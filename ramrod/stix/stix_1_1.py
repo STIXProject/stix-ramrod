@@ -1,13 +1,19 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
+# builtin
 import itertools
+
+# external
 from lxml import etree
-from ramrod import (UpdateError, _OptionalElements,
-    _TranslatableField, DEFAULT_UPDATE_OPTIONS)
+
+# internal
+import ramrod.utils as utils
+import ramrod.errors as errors
+from ramrod import (_OptionalElements, _TranslatableField, DEFAULT_UPDATE_OPTIONS)
 from ramrod.stix import (_STIXUpdater, _STIXVocab)
 from ramrod.cybox import Cybox_2_0_1_Updater
-import ramrod.utils as utils
+
 
 class AvailabilityLossVocab(_STIXVocab):
     OLD_TYPES = ("AvailabilityLossTypeVocab-1.0",)
@@ -340,8 +346,7 @@ class STIX_1_1_Updater(_STIXUpdater):
         """
         nodes = self._get_versioned_nodes(root)
         for node in nodes:
-            tag = etree.QName(node)
-            name = tag.localname
+            name = utils.get_localname(node)
 
             if name == "Indicator":
                 node.attrib['version'] = '2.1.1'
@@ -393,11 +398,14 @@ class STIX_1_1_Updater(_STIXUpdater):
 
         disallowed = self._get_disallowed(root)
 
-        if disallowed:
-            raise UpdateError("Found duplicate or untranslatable fields in "
-                              "source document.",
-                              disallowed=disallowed)
+        if not disallowed:
+            return
 
+        error = "Found duplicate or untranslatable fields in source document."
+        raise errors.UpdateError(
+            message=error,
+            disallowed=disallowed
+        )
 
     def _update(self, root, options):
         self._update_cybox(root, options)
