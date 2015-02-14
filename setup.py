@@ -7,12 +7,12 @@ import sys
 from os.path import abspath, dirname, join, realpath
 from setuptools import setup, find_packages
 
-
 BASE_DIR = dirname(abspath(__file__))
 INIT_FILE = join(BASE_DIR, 'ramrod', '__init__.py')
+VERSION_FILE = join(BASE_DIR, 'ramrod', 'version.py')
 
 def get_version():
-    with open(INIT_FILE) as f:
+    with open(VERSION_FILE) as f:
         for line in f.readlines():
             if line.startswith("__version__"):
                 version = line.split()[-1].strip('"')
