@@ -10,9 +10,8 @@ from distutils.version import StrictVersion
 # external
 from lxml import etree
 
-# internal
-import ramrod.errors as errors
-import ramrod.xmlconst as xmlconst
+# relative
+from . import errors, xmlconst
 
 
 @contextlib.contextmanager
@@ -96,7 +95,9 @@ def remove_xml_elements(nodes):
 
 def copy_xml_element(node, tag=None):
     """Returns a copy of `node`. The copied node will be renamed to `tag`
-    if `tag` is not ``None``."""
+    if `tag` is not ``None``.
+
+    """
     dup = copy.deepcopy(node)
     dup.tag = tag if tag else dup.tag
     return dup

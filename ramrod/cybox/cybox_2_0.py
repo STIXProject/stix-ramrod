@@ -1,12 +1,16 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
-from ramrod import DEFAULT_UPDATE_OPTIONS
-from ramrod.cybox import (_CyboxUpdater, _CyboxVocab, TAG_CYBOX_MAJOR,
-    TAG_CYBOX_MINOR, TAG_CYBOX_UPDATE)
+# internal
+import ramrod
 import ramrod.utils as utils
 
-class EventTypeVocab(_CyboxVocab):
+# relative
+from . import base as cyboxbase
+from . import common
+
+
+class EventTypeVocab(cyboxbase.CyboxVocab):
     OLD_TYPES = ('EventTypeVocab-1.0',)
     NEW_TYPE = 'EventTypeVocab-1.0.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.0.1/cybox_default_vocabularies.xsd#EventTypeVocab-1.0.1'
@@ -16,7 +20,7 @@ class EventTypeVocab(_CyboxVocab):
     }
 
 
-class Cybox_2_0_Updater(_CyboxUpdater):
+class Cybox_2_0_Updater(cyboxbase.BaseCyboxUpdater):
     """Updates CybOX v2.0 content to CybOX v2.0.1.
 
     The following fields are translated:
@@ -219,9 +223,9 @@ class Cybox_2_0_Updater(_CyboxUpdater):
 
         for node in nodes:
             attribs = node.attrib
-            attribs[TAG_CYBOX_MAJOR]  = '2'
-            attribs[TAG_CYBOX_MINOR]  = '0'
-            attribs[TAG_CYBOX_UPDATE] = '1'
+            attribs[common.TAG_CYBOX_MAJOR]  = '2'
+            attribs[common.TAG_CYBOX_MINOR]  = '0'
+            attribs[common.TAG_CYBOX_UPDATE] = '1'
 
 
     def _update_lists(self, root):
@@ -283,16 +287,16 @@ class Cybox_2_0_Updater(_CyboxUpdater):
                 ``None``, ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
         Raises:
-            ramrod.UnknownVersionError: If the input document does not have a
+            .UnknownVersionError: If the input document does not have a
                 version.
-            ramrod.InvalidVersionError: If the version of the input document
+            .InvalidVersionError: If the version of the input document
                 does not match the `VERSION` class-level attribute value.
-            ramrod.UpdateError: If the input document contains fields which
+            .UpdateError: If the input document contains fields which
                 cannot be updated or constructs with non-unique IDs are discovered.
 
         """
         root = utils.get_etree_root(root)
-        options = options or DEFAULT_UPDATE_OPTIONS
+        options = options or ramrod.DEFAULT_UPDATE_OPTIONS
 
         if options.check_versions:
             self._check_version(root)

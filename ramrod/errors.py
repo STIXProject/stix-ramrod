@@ -43,3 +43,10 @@ class InvalidVersionError(Exception):
         self.node = node
         self.expected = expected
         self.found = found
+
+
+__all__ = (
+    'UnknownVersionError',
+    'UpdateError',
+    'InvalidVersionError'
+)

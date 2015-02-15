@@ -2,14 +2,15 @@
 # See LICENSE.txt for complete terms.
 
 # internal
-import ramrod.errors as errors
-import ramrod.utils as utils
-from ramrod import (_DisallowedFields, DEFAULT_UPDATE_OPTIONS)
-from ramrod.stix import (_STIXUpdater, _STIXVocab)
+import ramrod
+from ramrod import base, errors, utils
 from ramrod.cybox import Cybox_2_0_Updater
 
+# relative
+from . import base as stixbase
 
-class MotivationVocab(_STIXVocab):
+
+class MotivationVocab(stixbase.STIXVocab):
     OLD_TYPES = ('MotivationVocab-1.0',)
     NEW_TYPE = 'MotivationVocab-1.0.1'
     VOCAB_REFERENCE = 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd#MotivationVocab-1.0.1'
@@ -19,7 +20,7 @@ class MotivationVocab(_STIXVocab):
     }
 
 
-class PlanningAndOperationalSupportVocab(_STIXVocab):
+class PlanningAndOperationalSupportVocab(stixbase.STIXVocab):
     OLD_TYPES = ('PlanningAndOperationalSupportVocab-1.0',)
     NEW_TYPE = 'PlanningAndOperationalSupportVocab-1.0.1'
     VOCAB_REFERENCE = 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd#PlanningAndOperationalSupportVocab-1.0.1',
@@ -30,13 +31,13 @@ class PlanningAndOperationalSupportVocab(_STIXVocab):
     }
 
 
-class DisallowedMAEC(_DisallowedFields):
+class DisallowedMAEC(base.DisallowedFields):
     CTX_TYPES = {
         "MAEC4.0InstanceType": "http://stix.mitre.org/extensions/Malware#MAEC4.0-1"
     }
 
 
-class DisallowedMalware(_DisallowedFields):
+class DisallowedMalware(base.DisallowedFields):
     """A ``ttp:Malware`` field **must** contain at least one child. If all
     children are instances of the MAEC Malware Extension, they will be removed
     and leave the parent ``ttp:Malware`` instance with no children, rendering
@@ -68,13 +69,13 @@ class DisallowedMalware(_DisallowedFields):
         return [x for x in nodes if cls._check_maec(x)]
 
 
-class DisallowedCAPEC(_DisallowedFields):
+class DisallowedCAPEC(base.DisallowedFields):
     CTX_TYPES = {
         "CAPEC2.5InstanceType": "http://stix.mitre.org/extensions/AP#CAPEC2.5-1"
     }
 
 
-class DisallowedAttackPatterns(_DisallowedFields):
+class DisallowedAttackPatterns(base.DisallowedFields):
     """A ``ttp:Attack_Patterns`` field **must** contain at least one child. If
     all children are instances of the CAPEC Attack Pattern Extension, they will
     be removed and leave the parent ``ttp:Attack_Patterns`` instance with no
@@ -107,7 +108,7 @@ class DisallowedAttackPatterns(_DisallowedFields):
         return [x for x in nodes if cls._check_capec(x)]
 
 
-class STIX_1_0_Updater(_STIXUpdater):
+class STIX_1_0_Updater(stixbase.BaseSTIXUpdater):
     """Updates STIX v1.0 content to STIX v1.0.1.
 
     The following fields and types are translated:
@@ -120,7 +121,8 @@ class STIX_1_0_Updater(_STIXUpdater):
 
     * MAEC 4.0 Malware extension instances
     * CAPEC 2.5 Attack Pattern extension instances
-    * ``TTP:Malware`` nodes that contain only MAEC Malware_Instance children
+    * ``TTP:Malware`` nodes that contain only MAEC Malware_Instance
+      children
     * ``TTP:Attack_Patterns`` nodes that contain only CAPEC Attack Pattern
       instance children
 
@@ -306,16 +308,16 @@ class STIX_1_0_Updater(_STIXUpdater):
                 ``None``, ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
         Raises:
-            ramrod.UnknownVersionError: If the input document does not have a
+            .UnknownVersionError: If the input document does not have a
                 version.
-            ramrod.InvalidVersionError: If the version of the input document
+            .InvalidVersionError: If the version of the input document
                 does not match the `VERSION` class-level attribute value.
-            ramrod.UpdateError: If the input document contains fields which
+            .UpdateError: If the input document contains fields which
                 cannot be updated or constructs with non-unique IDs are discovered.
 
         """
         root = utils.get_etree_root(root)
-        options = options or DEFAULT_UPDATE_OPTIONS
+        options = options or ramrod.DEFAULT_UPDATE_OPTIONS
 
         if options.check_versions:
             self._check_version(root)

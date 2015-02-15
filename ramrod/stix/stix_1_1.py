@@ -8,14 +8,15 @@ import itertools
 from lxml import etree
 
 # internal
-import ramrod.utils as utils
-import ramrod.errors as errors
-from ramrod import (_OptionalElements, _TranslatableField, DEFAULT_UPDATE_OPTIONS)
-from ramrod.stix import (_STIXUpdater, _STIXVocab)
+import ramrod
+from ramrod import base, errors, utils
 from ramrod.cybox import Cybox_2_0_1_Updater
 
+# relative
+from . import base as stixbase
 
-class AvailabilityLossVocab(_STIXVocab):
+
+class AvailabilityLossVocab(stixbase.STIXVocab):
     OLD_TYPES = ("AvailabilityLossTypeVocab-1.0",)
     NEW_TYPE = "AvailabilityLossTypeVocab-1.1.1"
     VOCAB_NAME = "STIX Default Availability Loss Type Vocabulary"
@@ -24,7 +25,7 @@ class AvailabilityLossVocab(_STIXVocab):
        'Degredation': 'Degradation'
     }
 
-class TransCommonSource(_TranslatableField):
+class TransCommonSource(base.TranslatableField):
     FIELD = "stixCommon:Source"
     XPATH_NODE = (
         ".//campaign:Confidence/{0} | "
@@ -92,7 +93,7 @@ class TransCommonSource(_TranslatableField):
         return source
 
 
-class TransSightingsSource(_TranslatableField):
+class TransSightingsSource(base.TranslatableField):
     XPATH_NODE = (
         ".//indicator:Sighting/indicator:Source"
     )
@@ -140,7 +141,7 @@ class TransSightingsSource(_TranslatableField):
 
 
 
-class TransIndicatorRelatedCampaign(_TranslatableField):
+class TransIndicatorRelatedCampaign(base.TranslatableField):
     XPATH_NODE = ".//indicator:Related_Campaigns/indicator:Related_Campaign"
     NEW_TAG =  "{http://stix.mitre.org/common-1}Campaign"
 
@@ -182,14 +183,14 @@ class TransIndicatorRelatedCampaign(_TranslatableField):
         return wrapper
 
 
-class OptionalGenericTestMechanismFields(_OptionalElements):
+class OptionalGenericTestMechanismFields(base.OptionalElements):
     XPATH = "./*"
     CTX_TYPES = {
         'GenericTestMechanismType': 'http://stix.mitre.org/extensions/TestMechanism#Generic-1'
     }
 
 
-class STIX_1_1_Updater(_STIXUpdater):
+class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
     """Updates STIX v1.1 content to STIX v1.1.1.
 
     The following update operations are performed:
@@ -381,16 +382,17 @@ class STIX_1_1_Updater(_STIXUpdater):
                 ``None``, ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
         Raises:
-            ramrod.UnknownVersionError: If the input document does not have a
+            .UnknownVersionError: If the input document does not have a
                 version.
-            ramrod.InvalidVersionError: If the version of the input document
+            .InvalidVersionError: If the version of the input document
                 does not match the `VERSION` class-level attribute value.
-            ramrod.UpdateError: If the input document contains fields which
-                cannot be updated or constructs with non-unique IDs are discovered.
+            .UpdateError: If the input document contains fields which
+                cannot be updated or constructs with non-unique IDs are
+                discovered.
 
         """
         root = utils.get_etree_root(root)
-        options = options or DEFAULT_UPDATE_OPTIONS
+        options = options or ramrod.DEFAULT_UPDATE_OPTIONS
 
         if options.check_versions:
             self._check_version(root)
