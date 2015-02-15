@@ -831,7 +831,7 @@ class BaseUpdater(object):
 
         """
         options = options or ramrod.DEFAULT_UPDATE_OPTIONS
-        disallowed = self._get_disallowed(root)
+        disallowed = self._get_disallowed(root, options=options)
         duplicates = self._get_duplicates(root)
         remapped, removed = {}, ()
 

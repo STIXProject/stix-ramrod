@@ -318,7 +318,7 @@ class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
             utils.remove_xml_elements(found)
 
 
-    def _get_disallowed(self, root):
+    def _get_disallowed(self, root, options=None):
         """There are no untranslatable fields between STIX v1.1 and
         STIX v1.1.1.
 
@@ -355,7 +355,7 @@ class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
                 node.attrib['version'] = '1.1.1'
 
 
-    def _update_cybox(self, root, options):
+    def _update_cybox(self, root, options=None):
         """Updates the CybOX content found under the `root` node.
 
         Note:

@@ -256,7 +256,7 @@ class Cybox_2_0_Updater(cyboxbase.BaseCyboxUpdater):
                 child.text = text
 
 
-    def _get_disallowed(self, root):
+    def _get_disallowed(self, root, options=None):
         """There are no untranslatable fields between CybOX 2.0 and
         CybOX v2.0.1..
 

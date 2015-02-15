@@ -413,7 +413,7 @@ class STIX_1_0_1_Updater(stixbase.BaseSTIXUpdater):
             utils.remove_xml_elements(found)
 
 
-    def _get_disallowed(self, root):
+    def _get_disallowed(self, root, options=None):
         """Finds all xml entities under `root` that cannot be updated.
 
         Note:
@@ -513,7 +513,7 @@ class STIX_1_0_1_Updater(stixbase.BaseSTIXUpdater):
 
         for _, nodes in duplicates.iteritems():
             for node in nodes:
-               new_id(node)
+                new_id(node)
 
         return duplicates
 

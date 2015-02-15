@@ -8,7 +8,7 @@ import StringIO
 from lxml import etree
 
 # internal
-from . import errors, utils, xmlconst
+from . import errors, utils
 from .version import __version__
 
 # lazy loaded mods

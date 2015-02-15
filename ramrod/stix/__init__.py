@@ -1,9 +1,6 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
-# builtin
-from distutils.version import StrictVersion
-
 # internal
 import ramrod
 import ramrod.utils as utils

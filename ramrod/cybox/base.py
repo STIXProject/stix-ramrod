@@ -1,4 +1,6 @@
-import ramrod
+# Copyright (c) 2015, The MITRE Corporation. All rights reserved.
+# See LICENSE.txt for complete terms.
+
 import ramrod.base as base
 import ramrod.errors as errors
 import ramrod.utils as utils

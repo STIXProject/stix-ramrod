@@ -567,7 +567,7 @@ class Cybox_2_0_1_Updater(cyboxbase.BaseCyboxUpdater):
                 utils.remove_xml_attributes(node, optional.ATTRIBUTES)
 
 
-    def _get_disallowed(self, root):
+    def _get_disallowed(self, root, options=None):
         """Finds all xml entities under `root` that cannot be updated.
 
         Args:
