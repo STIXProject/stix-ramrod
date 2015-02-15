@@ -21,7 +21,7 @@ Calling the ramrod.update() Function
 
 Once the imports are taken care of you only need to call the
 :meth:`ramrod.update` method, which parses the content, updates it, and
-returns an instance of :class:`ramrod.UpdateResults`.
+returns an instance of :class:`.UpdateResults`.
 
 .. code-block:: python
 
@@ -42,9 +42,9 @@ Retrieving Updated Content
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 After successfully calling :meth:`ramrod.update`, the update document can be
-retrieved from the returned :class:`ramrod.UpdateResults` object instance via
+retrieved from the returned :class:`.UpdateResults` object instance via
 the ``document`` attribute. The ``document`` attribute is an instance of
-:class:`ramrod.ResultDocument`.
+:class:`.ResultDocument`.
 
 .. code-block:: python
 
@@ -67,7 +67,7 @@ the ``document`` attribute. The ``document`` attribute is an instance of
 Forcing An Update
 ^^^^^^^^^^^^^^^^^
 
-Sometimes an update doesn't go smoothly and a :class:`ramrod.UpdateError`
+Sometimes an update doesn't go smoothly and a :class:`.UpdateError`
 is raised because untranslatable data or non-unique IDs are discovered in the
 source document. The following code and output demonstrates how to force the
 update and retrieve the data that is lost in the process.
@@ -80,25 +80,26 @@ update and retrieve the data that is lost in the process.
     updated = ramrod.update('untranslatable-stix-content.xml')
 
 The ``untranslatable-stix-content.xml`` contains untranslatable data, so a
-:class:`ramrod.UpdateError` gets raised:
+:class:`.UpdateError` gets raised:
 
 .. testoutput::
 
-    ramrod.UpdateError: Update Error: Found untranslatable fields in source document.
+    ramrod.errors.UpdateError: Update Error: Found untranslatable fields in source document.
 
 
 To find out *exactly* what couldn't be translated, you can inspect the
-``disallowed`` and ``duplicates`` attributes on the :class:`ramrod.UpdateError`
+``disallowed`` and ``duplicates`` attributes on the :class:`.UpdateError`
 instance:
 
 .. code-block:: python
 
     import ramrod
+    import ramrod.errors  # stix-ramrod error module
 
     try:
         # Attempt to update an untranslatable document
         updated = ramrod.update('untranslatable-stix-content.xml')
-    except ramrod.UpdateError as ex:
+    except ramrod.errors.UpdateError as ex:
         # Print untranslatable items
         for node in ex.disallowed:
             print "TAG: %s, LINE: %s" % (node.tag, node.sourceline)  # etree API
@@ -118,7 +119,7 @@ To force the update, pass in ``force=True`` to the :meth:`ramrod.update` method:
 
 After successfully force-updating the document, items that had IDs remapped
 or that were lost in translation can be retrieved from the returned
-:class:`ramrod.UpdateResults` object instance.
+:class:`.UpdateResults` object instance.
 
 .. code-block:: python
 
@@ -139,11 +140,11 @@ or that were lost in translation can be retrieved from the returned
 Using the UpdateOptions Class
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Instances of the :class:`ramrod.UpdateOptions` class can be passed into the
+Instances of the :class:`.UpdateOptions` class can be passed into the
 :meth:`ramrod.update` method to tweak what gets updated in a STIX or CybOX
 document.
 
-The following example shows how to use the :class:`ramrod.UpdateOptions` class
+The following example shows how to use the :class:`.UpdateOptions` class
 to let the update code know **not** to update controlled vocabulary instances:
 
 .. code-block:: python
@@ -172,7 +173,7 @@ consume and produce specific versions of STIX, as detailed
 
 Because python-stix consumes specific versions of STIX content, older content
 needs to be updated before it can be parsed. Luckily, updating old versions of
-STIX content is easy with **stix-ramrod**!.
+STIX content is easy with **stix-ramrod**!
 
 Example
 ~~~~~~~
@@ -201,4 +202,4 @@ python-stix can parse it. This code works with python-stix v1.1.1.1.
 .. note::
 
     The example above assumes that the input content can be upgraded without
-    raising a :class:`ramrod.UpdateError` or any other exceptions.
+    raising a :class:`.UpdateError` or any other exceptions.
