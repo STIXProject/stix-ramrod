@@ -3,9 +3,14 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
+# builtin
 import sys
 import argparse
+
+# internal
 import ramrod
+import ramrod.errors as errors
+
 
 EXIT_SUCCESS = 0
 EXIT_FAILURE = 1
@@ -208,23 +213,26 @@ def main():
 
     try:
         options = _get_options(args)
-        updated = ramrod.update(args.infile,
-                                from_=args.from_,
-                                to_=args.to_,
-                                options=options,
-                                force=args.force)
+
+        updated = ramrod.update(
+            args.infile,
+            from_=args.from_,
+            to_=args.to_,
+            options=options,
+            force=args.force
+        )
 
         _write_xml(updated.document, args.outfile)
         _write_removed(updated.removed)
         _write_remapped_ids(updated.remapped_ids)
 
-    except ramrod.UpdateError as ex:
+    except errors.UpdateError as ex:
         _print_update_error(ex)
         sys.exit(EXIT_FAILURE)
-    except ramrod.InvalidVersionError as ex:
+    except errors.InvalidVersionError as ex:
         _print_invalid_version_error(ex)
         sys.exit(EXIT_FAILURE)
-    except ramrod.UnknownVersionError as ex:
+    except errors.UnknownVersionError as ex:
         _print_unknown_version_error(str(ex))
         sys.exit(EXIT_FAILURE)
 
