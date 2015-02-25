@@ -3,9 +3,14 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
+# builtin
 import sys
 import argparse
+
+# internal
 import ramrod
+import ramrod.errors as errors
+
 
 EXIT_SUCCESS = 0
 EXIT_FAILURE = 1
@@ -41,10 +46,10 @@ def _write_xml(document, outfn=None):
 
 
 def _print_update_error(err):
-    """Prints ramrod.UpdateError information to stdout.
+    """Prints ramrod.errors.UpdateError information to stdout.
 
     Args:
-        err: A ramrod.UpdateError instance.
+        err: A ramrod.errors.UpdateError instance.
 
     """
     _print_error("[!] %s", str(err))
@@ -67,7 +72,7 @@ def _print_invalid_version_error(err):
     """Prints ``ramrod.InvalidVersionError`` information to stderr.
 
     Args:
-        err: Instance of ``ramrod.InvalidVersionError``.
+        err: Instance of ``ramrod.errors.InvalidVersionError``.
 
     """
     _print_error("[!] %s", str(err))
@@ -88,7 +93,7 @@ def _print_unknown_version_error(err):
     """Prints ``ramrod.UnknownVersionError`` information to stderr.
 
     Args:
-        err: Instance of ``ramrod.UnknownVersionError``.
+        err: Instance of ``ramrod.errors.UnknownVersionError``.
 
     """
     _print_error("[!] %s", str(err))
@@ -151,50 +156,64 @@ def _get_options(args):
 
 def _get_arg_parser():
     """Returns an ArgumentParser instance for this script."""
-    parser = argparse.ArgumentParser(
-        description=(
-            "Ramrod Updater v%s: Updates STIX and CybOX documents." %
-            ramrod.__version__
-        )
-    )
+    desc = "Ramrod Updater v{0}: Updates STIX and CybOX documents."
+    desc = desc.format(ramrod.__version__)
+
+    parser = argparse.ArgumentParser(description=desc)
 
     parser.add_argument(
-        "--infile", default=None, required=True,
+        "--infile",
+        default=None,
+        required=True,
         help="Input STIX/CybOX document filename."
     )
 
     parser.add_argument(
-        "--outfile", default=None,
+        "--outfile",
+        default=None,
         help="Output XML document filename. Prints to stdout if no filename is "
              "provided."
     )
 
     parser.add_argument(
-        "--from", default=None, dest="from_",  metavar="VERSION IN",
+        "--from",
+        default=None,
+        dest="from_",
+        metavar="VERSION IN",
         help="The version of the input document. If not supplied, RAMROD will "
              "try to determine the version of the input document."
     )
 
     parser.add_argument(
-        "--to", default=None, dest="to_",  metavar="VERSION OUT",
+        "--to",
+        default=None,
+        dest="to_",
+        metavar="VERSION OUT",
         help="Update document to this version. If no version is supplied, the "
              "document will be updated to the latest version."
     )
 
     parser.add_argument(
-        "--disable-vocab-update", action="store_true",  default=False,
+        "--disable-vocab-update",
+        action="store_true",
+        default=False,
         help="Controlled vocabulary strings will not be updated."
     )
 
     parser.add_argument(
-        "--disable-remove-optionals", action="store_true", default=False,
+        "--disable-remove-optionals",
+        action="store_true",
+        default=False,
         help="Do not remove empty elements and attributes which were required "
              "in previous language versions but became optional in later "
              "releases."
     )
 
     parser.add_argument(
-        "-f", "--force", action="store_true", default=False,
+        "-f",
+        "--force",
+        action="store_true",
+        default=False,
         help="Removes untranslatable fields, remaps non-unique IDs, and "
              "attempts to force the update process."
     )
@@ -208,23 +227,26 @@ def main():
 
     try:
         options = _get_options(args)
-        updated = ramrod.update(args.infile,
-                                from_=args.from_,
-                                to_=args.to_,
-                                options=options,
-                                force=args.force)
+
+        updated = ramrod.update(
+            args.infile,
+            from_=args.from_,
+            to_=args.to_,
+            options=options,
+            force=args.force
+        )
 
         _write_xml(updated.document, args.outfile)
         _write_removed(updated.removed)
         _write_remapped_ids(updated.remapped_ids)
 
-    except ramrod.UpdateError as ex:
+    except errors.UpdateError as ex:
         _print_update_error(ex)
         sys.exit(EXIT_FAILURE)
-    except ramrod.InvalidVersionError as ex:
+    except errors.InvalidVersionError as ex:
         _print_invalid_version_error(ex)
         sys.exit(EXIT_FAILURE)
-    except ramrod.UnknownVersionError as ex:
+    except errors.UnknownVersionError as ex:
         _print_unknown_version_error(str(ex))
         sys.exit(EXIT_FAILURE)
 

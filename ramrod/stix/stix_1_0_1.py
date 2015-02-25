@@ -1,16 +1,22 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
+# builtin
 import itertools
+
+# external
 from lxml import etree
-from ramrod import (UpdateError, _DisallowedFields, _OptionalElements,
-    _TranslatableField, DEFAULT_UPDATE_OPTIONS)
-from ramrod.stix import (_STIXUpdater, _STIXVocab)
+
+# internal
+import ramrod
+from ramrod import base, errors, utils
 from ramrod.cybox import Cybox_2_0_1_Updater
-import ramrod.utils as utils
+
+# relative
+from . import base as stixbase
 
 
-class MotivationVocab(_STIXVocab):
+class MotivationVocab(stixbase.STIXVocab):
     OLD_TYPES = (
         'MotivationVocab-1.0',
         'MotivationVocab-1.0.1'
@@ -23,27 +29,27 @@ class MotivationVocab(_STIXVocab):
     }
 
 
-class IndicatorTypeVocab(_STIXVocab):
+class IndicatorTypeVocab(stixbase.STIXVocab):
     OLD_TYPES = ("IndicatorTypeVocab-1.0",)
     NEW_TYPE = "IndicatorTypeVocab-1.1"
     VOCAB_NAME = "STIX Default Indicator Type Vocabulary"
     VOCAB_REFERENCE = "http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.0/stix_default_vocabularies.xsd#IndicatorTypeVocab-1.1"
 
 
-class OptionalDataMarkingFields(_OptionalElements):
+class OptionalDataMarkingFields(base.OptionalElements):
     XPATH = (
         ".//marking:Controlled_Structure | "
         ".//marking:Marking_Structure"
     )
 
 
-class DisallowedMAEC(_DisallowedFields):
+class DisallowedMAEC(base.DisallowedFields):
     CTX_TYPES = {
         "MAEC4.0InstanceType": "http://stix.mitre.org/extensions/Malware#MAEC4.0-1"
     }
 
 
-class DisallowedMalware(_DisallowedFields):
+class DisallowedMalware(base.DisallowedFields):
     """A ``ttp:Malware`` field **must** contain at least one child. If all
     children are instances of the MAEC Malware Extension, they will be removed
     and leave the parent ``ttp:Malware`` instance with no children, rendering
@@ -75,13 +81,13 @@ class DisallowedMalware(_DisallowedFields):
         return [x for x in nodes if cls._check_maec(x)]
 
 
-class DisallowedCAPEC(_DisallowedFields):
+class DisallowedCAPEC(base.DisallowedFields):
     CTX_TYPES = {
         "CAPEC2.6InstanceType": "http://stix.mitre.org/extensions/AP#CAPEC2.6-1"
     }
 
 
-class DisallowedAttackPatterns(_DisallowedFields):
+class DisallowedAttackPatterns(base.DisallowedFields):
     """A ``ttp:Attack_Patterns`` field **must** contain at least one child. If
     all children are instances of the CAPEC Attack Pattern Extension, they will
     be removed and leave the parent ``ttp:Attack_Patterns`` instance with no
@@ -113,7 +119,7 @@ class DisallowedAttackPatterns(_DisallowedFields):
         return [x for x in nodes if cls._check_capec(x)]
 
 
-class DisallowedDateTime(_DisallowedFields):
+class DisallowedDateTime(base.DisallowedFields):
     XPATH = ".//campaign:Activity/stixCommon:Date_Time"
 
     # Ugh. This could probably be solved with a regex but I can't find an
@@ -150,7 +156,7 @@ class DisallowedDateTime(_DisallowedFields):
         return [x.getparent() for x in nodes if not cls._validate(x)]
 
 
-class TransTTPExploitTargets(_TranslatableField):
+class TransTTPExploitTargets(base.TranslatableField):
     XPATH_NODE = ".//ttp:Exploit_Targets/stixCommon:Exploit_Target"
 
     @classmethod
@@ -186,7 +192,7 @@ class TransTTPExploitTargets(_TranslatableField):
         return wrapper
 
 
-class TransCommonContributors(_TranslatableField):
+class TransCommonContributors(base.TranslatableField):
     XPATH_NODE = ".//stixCommon:Contributors"
 
     @classmethod
@@ -253,7 +259,7 @@ class TransCommonContributors(_TranslatableField):
 
 
 
-class STIX_1_0_1_Updater(_STIXUpdater):
+class STIX_1_0_1_Updater(stixbase.BaseSTIXUpdater):
     """Updates STIX v1.0.1 content to STIX v1.1.
 
     The following fields and types are translated:
@@ -407,7 +413,7 @@ class STIX_1_0_1_Updater(_STIXUpdater):
             utils.remove_xml_elements(found)
 
 
-    def _get_disallowed(self, root):
+    def _get_disallowed(self, root, options=None):
         """Finds all xml entities under `root` that cannot be updated.
 
         Note:
@@ -453,8 +459,7 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         """
         nodes = self._get_versioned_nodes(root)
         for node in nodes:
-            tag = etree.QName(node)
-            name = tag.localname
+            name = utils.get_localname(node)
 
             if name == "Indicator":
                 node.attrib['version'] = '2.1'
@@ -508,7 +513,7 @@ class STIX_1_0_1_Updater(_STIXUpdater):
 
         for _, nodes in duplicates.iteritems():
             for node in nodes:
-               new_id(node)
+                new_id(node)
 
         return duplicates
 
@@ -524,16 +529,16 @@ class STIX_1_0_1_Updater(_STIXUpdater):
                 ``None``, ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
         Raises:
-            ramrod.UnknownVersionError: If the input document does not have a
+            .UnknownVersionError: If the input document does not have a
                 version.
-            ramrod.InvalidVersionError: If the version of the input document
+            .InvalidVersionError: If the version of the input document
                 does not match the `VERSION` class-level attribute value.
-            ramrod.UpdateError: If the input document contains fields which
+            .UpdateError: If the input document contains fields which
                 cannot be updated or constructs with non-unique IDs are discovered.
 
         """
         root = utils.get_etree_root(root)
-        options = options or DEFAULT_UPDATE_OPTIONS
+        options = options or ramrod.DEFAULT_UPDATE_OPTIONS
 
         if options.check_versions:
             self._check_version(root)
@@ -542,11 +547,15 @@ class STIX_1_0_1_Updater(_STIXUpdater):
         duplicates = self._get_duplicates(root)
         disallowed = self._get_disallowed(root)
 
-        if any((disallowed, duplicates)):
-            raise UpdateError("Found duplicate or untranslatable fields in "
-                              "source document.",
-                              disallowed=disallowed,
-                              duplicates=duplicates)
+        if not (disallowed or duplicates):
+            return
+
+        error = "Found duplicate or untranslatable fields in source document."
+        raise errors.UpdateError(
+            message=error,
+            disallowed=disallowed,
+            duplicates=duplicates
+        )
 
 
     def _update(self, root, options):

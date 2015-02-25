@@ -20,6 +20,7 @@ page.
     :glob:
 
     ramrod
+    errors
     cybox/index
     cybox/*
     stix/index

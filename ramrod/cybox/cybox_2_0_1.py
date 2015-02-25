@@ -1,22 +1,25 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
+# builtin
 import itertools
-from ramrod import (UpdateError, _DisallowedFields, _OptionalElements,
-    _TranslatableField, _RenamedField, DEFAULT_UPDATE_OPTIONS)
-from ramrod.cybox import (_CyboxUpdater, _CyboxVocab, TAG_CYBOX_MAJOR,
-    TAG_CYBOX_MINOR, TAG_CYBOX_UPDATE)
-import ramrod.utils as utils
 
+# internal
+import ramrod
+from ramrod import base, errors, utils
 
-class ObjectRelationshipVocab(_CyboxVocab):
+# relative imports
+from . import base as cyboxbase
+from . import common
+
+class ObjectRelationshipVocab(cyboxbase.CyboxVocab):
     OLD_TYPES = ('ObjectRelationshipVocab-1.0',)
     NEW_TYPE = 'ObjectRelationshipVocab-1.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#ObjectRelationshipVocab-1.1',
     VOCAB_NAME = 'CybOX Default Object-Object Relationships'
 
 
-class ToolTypeVocab(_CyboxVocab):
+class ToolTypeVocab(cyboxbase.CyboxVocab):
     OLD_TYPES = ('ToolTypeVocab-1.0',)
     NEW_TYPE = 'ToolTypeVocab-1.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#ToolTypeVocab-1.1'
@@ -26,18 +29,18 @@ class ToolTypeVocab(_CyboxVocab):
     }
 
 
-class ActionNameVocab(_CyboxVocab):
+class ActionNameVocab(cyboxbase.CyboxVocab):
     OLD_TYPES = ('ActionNameVocab-1.0',)
     NEW_TYPE = 'ActionNameVocab-1.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#DefinedActionNameVocab-1.1'
     VOCAB_NAME = 'CybOX Default Action Names'
 
 
-class DisallowedTaskTriggerType(_DisallowedFields):
+class DisallowedTaskTriggerType(base.DisallowedFields):
     XPATH = ".//WinTaskObj:Trigger_Type"
 
 
-class DisallowedWindowsMailslotHandle(_DisallowedFields):
+class DisallowedWindowsMailslotHandle(base.DisallowedFields):
     XPATH = ".//WinMailslotObj:Handle[WinHandleObj:Handle]"
 
     @classmethod
@@ -66,7 +69,7 @@ class DisallowedWindowsMailslotHandle(_DisallowedFields):
         return contraband
 
 
-class DisallowedWinExecutableFile(_DisallowedFields):
+class DisallowedWinExecutableFile(base.DisallowedFields):
     """Removes the ``Type`` element from instances of PESectionType, defined
     in the WindowsExecutableFileObject schema.
 
@@ -79,38 +82,38 @@ class DisallowedWinExecutableFile(_DisallowedFields):
     XPATH = ".//{0}:Section/{0}:Type".format('WinExecutableFileObj')
 
 
-class DisallowedHTTPSession(_DisallowedFields):
+class DisallowedHTTPSession(base.DisallowedFields):
     XPATH = ".//HTTPSessionObj:X_Forwarded_Proto"
 
 
-class OptionalDNSCacheFields(_OptionalElements):
+class OptionalDNSCacheFields(base.OptionalElements):
     XPATH = ".//DNSCacheObj:DNS_Entry"
 
 
-class OptionalDNSQueryFields(_OptionalElements):
+class OptionalDNSQueryFields(base.OptionalElements):
     XPATH = ".//DNSQueryObj:QName"
 
 
-class OptionalDiskPartitionFields(_OptionalElements):
+class OptionalDiskPartitionFields(base.OptionalElements):
     XPATH = ".//DiskPartitionObj:Partition_ID"
 
 
-class OptionalFileFields(_OptionalElements):
+class OptionalFileFields(base.OptionalElements):
     XPATH = ".//FileObj:Depth"
 
 
-class OptionalHTTPSessionFields(_OptionalElements):
+class OptionalHTTPSessionFields(base.OptionalElements):
     XPATH = (
         ".//HTTPSessionObj:Message_Body | "
         ".//HTTPSessionObj:Domain_Name"
     )
 
 
-class OptionalLinkPackageFields(_OptionalElements):
+class OptionalLinkPackageFields(base.OptionalElements):
     XPATH = ".//LinuxPackageObj:Name"
 
 
-class OptionalNetworkPacketFields(_OptionalElements):
+class OptionalNetworkPacketFields(base.OptionalElements):
     ELEMENTS = (
         'Destination_Unreachable', 'Error_Msg', 'Info_Msg', 'Traceroute',
         'Source_Quench', 'Redirect_Message', 'Time_Exceeded', 'Echo_Reply',
@@ -125,22 +128,22 @@ class OptionalNetworkPacketFields(_OptionalElements):
     XPATH = " | ".join(".//PacketObj:%s" % x for x in ELEMENTS)
 
 
-class OptionalProductFields(_OptionalElements):
+class OptionalProductFields(base.OptionalElements):
     XPATH = (
         ".//ProductObj:Product | "
         ".//ProductObj:Vendor"
     )
 
 
-class OptionalSystemFields(_OptionalElements):
+class OptionalSystemFields(base.OptionalElements):
     XPATH = ".//SystemObj:IP_Address"
 
 
-class OptionalURIFields(_OptionalElements):
+class OptionalURIFields(base.OptionalElements):
     XPATH = ".//URIObj:Value"
 
 
-class OptionalWinComputerAccountFields(_OptionalElements):
+class OptionalWinComputerAccountFields(base.OptionalElements):
     XPATH = (
         ".//WinComputerAccountObj:Delegation | "
         ".//WinComputerAccountObj:Bitmask | "
@@ -148,61 +151,61 @@ class OptionalWinComputerAccountFields(_OptionalElements):
     )
 
 
-class OptionalWinFileFields(_OptionalElements):
+class OptionalWinFileFields(base.OptionalElements):
     XPATH = ".//WinFileObj:Size_In_Bytes"
 
 
-class OptionalWinNetworkShareFields(_OptionalElements):
+class OptionalWinNetworkShareFields(base.OptionalElements):
     XPATH = ".//WinNetworkShareObj:Netname"
 
 
-class OptionalWinPrefetchFields(_OptionalElements):
+class OptionalWinPrefetchFields(base.OptionalElements):
     XPATH =(
         ".//WinPrefetchObj:VolumeItem | "
         ".//WinPrefetchObj:DeviceItem"
     )
 
 
-class TransHTTPSessionDNT(_TranslatableField):
+class TransHTTPSessionDNT(base.TranslatableField):
     XPATH_NODE = ".//HTTPSessionObj:DNT"
     XPATH_VALUE = "./URIObj:Value"
     COPY_ATTRIBUTES = True # TODO: make sure this correct
 
 
-class TransHTTPSessionVary(_TranslatableField):
+class TransHTTPSessionVary(base.TranslatableField):
     XPATH_NODE = ".//HTTPSessionObj:Vary"
     XPATH_VALUE = "./URIObj:Value"
     COPY_ATTRIBUTES = True # TODO: make sure this correct
 
 
-class TransHTTPSessionXRequestedFor(_RenamedField):
+class TransHTTPSessionXRequestedFor(base.RenamedField):
     XPATH_NODE = ".//HTTPSessionObj:X_Requested_For"
     NEW_TAG = "{http://cybox.mitre.org/objects#HTTPSessionObject-2}X_Forwarded_For"
 
 
-class TransHTTPSessionRefresh(_TranslatableField):
+class TransHTTPSessionRefresh(base.TranslatableField):
     XPATH_NODE = ".//HTTPSessionObj:Refresh"
     COPY_ATTRIBUTES = True # TODO: make sure this correct
     OVERRIDE_ATTRIBUTES = {
         'datatype': 'string'
     }
 
-class TransNetPacketProtoAddrSize(_RenamedField):
+class TransNetPacketProtoAddrSize(base.RenamedField):
     XPATH_NODE = ".//PacketObj:Protol_Addr_Size"
     NEW_TAG = "{http://cybox.mitre.org/objects#PacketObject-2}Proto_Addr_Size"
 
 
-class TransNetPacketEncapsulatingSecurityPayload(_RenamedField):
+class TransNetPacketEncapsulatingSecurityPayload(base.RenamedField):
     XPATH_NODE = ".//PacketObj:Excapsulating_Security_Payload"
     NEW_TAG = "{http://cybox.mitre.org/objects#PacketObject-2}Encapsulating_Security_Payload"
 
 
-class TransNetPacketAuthenticationData(_RenamedField):
+class TransNetPacketAuthenticationData(base.RenamedField):
     XPATH_NODE = ".//PacketObj:Authenication_Data"
     NEW_TAG = "{http://cybox.mitre.org/objects#PacketObject-2}Authentication_Data"
 
 
-class TransWinMailslotHandle(_TranslatableField):
+class TransWinMailslotHandle(base.TranslatableField):
     XPATH_NODE = ".//WinMailslotObj:Handle/WinHandleObj:Handle"
     NEW_TAG = "{http://cybox.mitre.org/objects#WinMailslotObject-2}Handle"
 
@@ -219,7 +222,7 @@ class TransWinMailslotHandle(_TranslatableField):
             cls._replace(node)
 
 
-class Cybox_2_0_1_Updater(_CyboxUpdater):
+class Cybox_2_0_1_Updater(cyboxbase.BaseCyboxUpdater):
     """Updates CybOX v2.0.1 content to CybOX v2.1.
 
     The following fields are translated:
@@ -525,11 +528,11 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
 
         for node in nodes:
             attribs = node.attrib
-            attribs[TAG_CYBOX_MAJOR]  = '2'
-            attribs[TAG_CYBOX_MINOR]  = '1'
+            attribs[common.TAG_CYBOX_MAJOR]  = '2'
+            attribs[common.TAG_CYBOX_MINOR]  = '1'
 
             with utils.ignored(KeyError):
-                del attribs[TAG_CYBOX_UPDATE]
+                del attribs[common.TAG_CYBOX_UPDATE]
 
 
     def _translate_fields(self, root):
@@ -564,7 +567,7 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
                 utils.remove_xml_attributes(node, optional.ATTRIBUTES)
 
 
-    def _get_disallowed(self, root):
+    def _get_disallowed(self, root, options=None):
         """Finds all xml entities under `root` that cannot be updated.
 
         Args:
@@ -631,16 +634,16 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
                 ``None``, ``ramrod.DEFAULT_UPDATE_OPTIONS`` will be used.
 
         Raises:
-            ramrod.UnknownVersionError: If the input document does not have a
+            .UnknownVersionError: If the input document does not have a
                 version.
-            ramrod.InvalidVersionError: If the version of the input document
+            .InvalidVersionError: If the version of the input document
                 does not match the `VERSION` class-level attribute value.
-            ramrod.UpdateError: If the input document contains fields which
+            .UpdateError: If the input document contains fields which
                 cannot be updated or constructs with non-unique IDs are discovered.
 
         """
         root = utils.get_etree_root(root)
-        options = options or DEFAULT_UPDATE_OPTIONS
+        options = options or ramrod.DEFAULT_UPDATE_OPTIONS
 
         if options.check_versions:
             self._check_version(root)
@@ -648,11 +651,15 @@ class Cybox_2_0_1_Updater(_CyboxUpdater):
         duplicates = self._get_duplicates(root)
         disallowed = self._get_disallowed(root)
 
-        if any((disallowed, duplicates)):
-            raise UpdateError("Found duplicate or untranslatable fields in "
-                              "source document.",
-                              disallowed=disallowed,
-                              duplicates=duplicates)
+        if not (disallowed or duplicates):
+            return
+
+        error = "Found duplicate or untranslatable fields in source document."
+        raise errors.UpdateError(
+            message=error,
+            disallowed=disallowed,
+            duplicates=duplicates
+        )
 
 
     def _update(self, root, options):
