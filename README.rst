@@ -10,7 +10,7 @@ A Python library for upgrading STIX and CybOX XML content.
 |travis badge| |health badge| |version badge| |downloads badge|
 
 .. |travis badge| image:: https://travis-ci.org/STIXProject/stix-ramrod.svg?branch=master
-   :target: https://travis-ci.org/bworrell/stix-ramrod
+   :target: https://travis-ci.org/STIXProject/stix-ramrod
    :alt: Build Status
 .. |health badge| image:: https://landscape.io/github/STIXProject/stix-ramrod/master/landscape.svg
    :target: https://landscape.io/github/STIXProject/stix-ramrod/master
