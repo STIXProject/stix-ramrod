@@ -12,8 +12,8 @@ from . import errors, utils
 from .version import __version__
 
 # lazy loaded mods
-stix = None
-cybox = None
+pkg_stix = None
+pkg_cybox = None
 
 
 __LAZY_MODS_LOADED = False
@@ -22,16 +22,16 @@ __LAZY_MODS_LOADED = False
 def _load_lazy_mods():
     """Lazy load modules to avoid circular dependencies."""
     global __LAZY_MODS_LOADED
-    global stix, cybox
+    global pkg_stix, pkg_cybox
 
     if __LAZY_MODS_LOADED:
         return
 
-    if not stix:
-        import ramrod.stix as stix
+    if not pkg_stix:
+        import ramrod.stix as pkg_stix
 
-    if not cybox:
-        import ramrod.cybox as cybox
+    if not pkg_cybox:
+        import ramrod.cybox as pkg_cybox
 
     __LAZY_MODS_LOADED = True
 
@@ -232,8 +232,8 @@ def update(doc, from_=None, to_=None, options=None, force=False):
     options = options or DEFAULT_UPDATE_OPTIONS
 
     packages = {
-        'STIX_Package': stix,
-        'Observables': cybox,
+        'STIX_Package': pkg_stix,
+        'Observables': pkg_cybox,
     }
 
     try:
