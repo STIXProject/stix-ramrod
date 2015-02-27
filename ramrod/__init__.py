@@ -11,30 +11,6 @@ from lxml import etree
 from . import errors, utils
 from .version import __version__
 
-# lazy loaded mods
-pkg_stix = None
-pkg_cybox = None
-
-
-__LAZY_MODS_LOADED = False
-
-
-def _load_lazy_mods():
-    """Lazy load modules to avoid circular dependencies."""
-    global __LAZY_MODS_LOADED
-    global pkg_stix, pkg_cybox
-
-    if __LAZY_MODS_LOADED:
-        return
-
-    if not pkg_stix:
-        import ramrod.stix as pkg_stix
-
-    if not pkg_cybox:
-        import ramrod.cybox as pkg_cybox
-
-    __LAZY_MODS_LOADED = True
-
 
 class UpdateResults(object):
     """Returned from :meth:`ramrod.update`, :meth:`ramrod.cybox.update`, and
@@ -225,15 +201,16 @@ def update(doc, from_=None, to_=None, options=None, force=False):
             document does not contain a version attribute.
 
     """
-    _load_lazy_mods()
+    import ramrod.stix
+    import ramrod.cybox
 
     root = utils.get_etree_root(doc)
     name = utils.get_localname(root)
     options = options or DEFAULT_UPDATE_OPTIONS
 
     packages = {
-        'STIX_Package': pkg_stix,
-        'Observables': pkg_cybox,
+        'STIX_Package': ramrod.stix,
+        'Observables': ramrod.cybox,
     }
 
     try:
