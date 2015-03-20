@@ -2,8 +2,7 @@
 # See LICENSE.txt for complete terms.
 
 # internal
-import ramrod
-import ramrod.utils as utils
+from ramrod import utils, DEFAULT_UPDATE_OPTIONS
 
 # relative
 from . import base as cyboxbase
@@ -296,7 +295,7 @@ class Cybox_2_0_Updater(cyboxbase.BaseCyboxUpdater):
 
         """
         root = utils.get_etree_root(root)
-        options = options or ramrod.DEFAULT_UPDATE_OPTIONS
+        options = options or DEFAULT_UPDATE_OPTIONS
 
         if options.check_versions:
             self._check_version(root)

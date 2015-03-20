@@ -8,9 +8,7 @@ import itertools
 from lxml import etree
 
 # internal
-import ramrod
-from ramrod import base, errors, utils
-from ramrod.cybox import Cybox_2_0_1_Updater
+from ramrod import base, errors, utils, DEFAULT_UPDATE_OPTIONS
 
 # relative
 from . import base as stixbase
@@ -293,6 +291,8 @@ class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
 
 
     def _init_cybox_updater(self):
+        from ramrod.cybox import Cybox_2_0_1_Updater
+
         # This is used for updating schemalocations only
         self._cybox_updater = Cybox_2_0_1_Updater()
 
@@ -392,7 +392,7 @@ class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
 
         """
         root = utils.get_etree_root(root)
-        options = options or ramrod.DEFAULT_UPDATE_OPTIONS
+        options = options or DEFAULT_UPDATE_OPTIONS
 
         if options.check_versions:
             self._check_version(root)

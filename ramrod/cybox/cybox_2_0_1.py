@@ -5,8 +5,7 @@
 import itertools
 
 # internal
-import ramrod
-from ramrod import base, errors, utils
+from ramrod import base, errors, utils, DEFAULT_UPDATE_OPTIONS
 
 # relative imports
 from . import base as cyboxbase
@@ -643,7 +642,7 @@ class Cybox_2_0_1_Updater(cyboxbase.BaseCyboxUpdater):
 
         """
         root = utils.get_etree_root(root)
-        options = options or ramrod.DEFAULT_UPDATE_OPTIONS
+        options = options or DEFAULT_UPDATE_OPTIONS
 
         if options.check_versions:
             self._check_version(root)
