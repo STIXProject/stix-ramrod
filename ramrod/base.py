@@ -7,11 +7,8 @@ import collections
 # external
 from lxml import etree
 
-# internal
-import ramrod
-
 # relative
-from . import errors, utils, xmlconst
+from . import errors, utils, xmlconst, DEFAULT_UPDATE_OPTIONS, UpdateResults
 
 
 # Constants
@@ -799,7 +796,7 @@ class BaseUpdater(object):
         return new_node
 
     def _create_update_results(self, root, remapped=None, removed=None):
-        """Creates and returns a :class:`ramrod.UpdateResults` object instance
+        """Creates and returns a :class:`UpdateResults` object instance
         from the input `root` parameter, and the class instance attributes
         ``cleaned_ids`` and ``cleaned_fields``.
 
@@ -810,7 +807,7 @@ class BaseUpdater(object):
             An instance of ``ramrod.UpdateResults``.
 
         """
-        update_results = ramrod.UpdateResults(root)
+        update_results = UpdateResults(root)
         update_results.remapped_ids = remapped or ()
         update_results.removed = removed or {}
 
@@ -830,7 +827,7 @@ class BaseUpdater(object):
         invocation of sub-cleaning methods (e.g., ``_clean_disallowed()``).
 
         """
-        options = options or ramrod.DEFAULT_UPDATE_OPTIONS
+        options = options or DEFAULT_UPDATE_OPTIONS
         disallowed = self._get_disallowed(root, options=options)
         duplicates = self._get_duplicates(root)
         remapped, removed = {}, ()
@@ -841,7 +838,7 @@ class BaseUpdater(object):
         if disallowed:
             removed = self._clean_disallowed(disallowed, options=options)
 
-        results = ramrod.UpdateResults(root)
+        results = UpdateResults(root)
         results.remapped_ids = remapped
         results.removed = tuple(removed)
 
@@ -979,7 +976,7 @@ class BaseUpdater(object):
 
         """
         root = utils.get_etree_root(root, make_copy=True)
-        options = options or ramrod.DEFAULT_UPDATE_OPTIONS
+        options = options or DEFAULT_UPDATE_OPTIONS
 
         try:
             self.check_update(root, options)
