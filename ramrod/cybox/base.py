@@ -1,11 +1,12 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
-import ramrod.base as base
-import ramrod.errors as errors
-import ramrod.utils as utils
+# internal
+from ramrod import base, errors, utils
 
+# relative
 from . import common
+
 
 class BaseCyboxUpdater(base.BaseUpdater):
     """Base class for CybOX updating code. Sets default values for

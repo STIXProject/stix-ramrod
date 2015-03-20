@@ -368,7 +368,7 @@ class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
             instance.
 
         """
-        self._cybox_updater._update_schemalocs(root)
+        self._cybox_updater._update_schemalocs(root)  # noqa
 
 
     def check_update(self, root, options=None):
@@ -396,7 +396,7 @@ class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
 
         if options.check_versions:
             self._check_version(root)
-            self._cybox_updater._check_version(root)
+            self._cybox_updater._check_version(root)  # noqa
 
         disallowed = self._get_disallowed(root)
 

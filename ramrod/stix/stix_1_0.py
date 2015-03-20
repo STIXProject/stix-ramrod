@@ -294,7 +294,7 @@ class STIX_1_0_Updater(stixbase.BaseSTIXUpdater):
             instance.
 
         """
-        updated = self._cybox_updater._update(root, options)
+        updated = self._cybox_updater._update(root, options)  # noqa
         return updated
 
     def check_update(self, root, options=None):

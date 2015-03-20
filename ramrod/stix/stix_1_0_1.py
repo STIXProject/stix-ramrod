@@ -475,7 +475,7 @@ class STIX_1_0_1_Updater(stixbase.BaseSTIXUpdater):
             instance.
 
         """
-        update_func = self._cybox_updater._update
+        update_func = self._cybox_updater._update  # noqa
         updated = update_func(root, options)
         return updated
 

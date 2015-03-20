@@ -9,7 +9,7 @@ from lxml import etree
 
 # internal
 from . import errors, utils
-from .version import __version__
+from .version import __version__  # noqa
 
 
 class UpdateResults(object):
