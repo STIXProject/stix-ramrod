@@ -8,15 +8,14 @@ import itertools
 from lxml import etree
 
 # internal
-import ramrod
 from ramrod import base, errors, utils
-from ramrod.cybox import Cybox_2_0_1_Updater
+from ramrod.options import DEFAULT_UPDATE_OPTIONS
 
 # relative
-from . import base as stixbase
+from .base import BaseSTIXUpdater, STIXVocab
 
 
-class AvailabilityLossVocab(stixbase.STIXVocab):
+class AvailabilityLossVocab(STIXVocab):
     OLD_TYPES = ("AvailabilityLossTypeVocab-1.0",)
     NEW_TYPE = "AvailabilityLossTypeVocab-1.1.1"
     VOCAB_NAME = "STIX Default Availability Loss Type Vocabulary"
@@ -24,6 +23,7 @@ class AvailabilityLossVocab(stixbase.STIXVocab):
     TERMS = {
        'Degredation': 'Degradation'
     }
+
 
 class TransCommonSource(base.TranslatableField):
     FIELD = "stixCommon:Source"
@@ -48,7 +48,6 @@ class TransCommonSource(base.TranslatableField):
         ".//ta:Planning_And_Operational_Support/{0} | "
         ".//ttp:Intended_Effect/{0}"
     ).format(FIELD)
-
 
     @classmethod
     def _translate_fields(cls, node):
@@ -140,7 +139,6 @@ class TransSightingsSource(base.TranslatableField):
         return source
 
 
-
 class TransIndicatorRelatedCampaign(base.TranslatableField):
     XPATH_NODE = ".//indicator:Related_Campaigns/indicator:Related_Campaign"
     NEW_TAG =  "{http://stix.mitre.org/common-1}Campaign"
@@ -190,7 +188,7 @@ class OptionalGenericTestMechanismFields(base.OptionalElements):
     }
 
 
-class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
+class STIX_1_1_Updater(BaseSTIXUpdater):
     """Updates STIX v1.1 content to STIX v1.1.1.
 
     The following update operations are performed:
@@ -215,6 +213,7 @@ class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
 
     """
     VERSION = '1.1'
+
     NSMAP = {
         'TOUMarking': 'http://data-marking.mitre.org/extensions/MarkingStructure#Terms_Of_Use-1',
         'campaign': 'http://stix.mitre.org/Campaign-1',
@@ -271,7 +270,6 @@ class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
         'http://stix.mitre.org/stix-1': 'http://stix.mitre.org/XMLSchema/core/1.1.1/stix_core.xsd'
     }
 
-
     UPDATE_VOCABS = (
         AvailabilityLossVocab,
     )
@@ -291,16 +289,15 @@ class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
     def __init__(self):
         super(STIX_1_1_Updater, self).__init__()
 
-
     def _init_cybox_updater(self):
+        from ramrod.cybox import Cybox_2_0_1_Updater
+
         # This is used for updating schemalocations only
         self._cybox_updater = Cybox_2_0_1_Updater()
-
 
     def _translate_fields(self, root):
         for field in self.TRANSLATABLE_FIELDS:
             field.translate(root)
-
 
     def _update_optionals(self, root):
         """Finds and removes empty xml elements and attributes which are
@@ -317,7 +314,6 @@ class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
             found = optional.find(root, typed=typed_nodes)
             utils.remove_xml_elements(found)
 
-
     def _get_disallowed(self, root, options=None):
         """There are no untranslatable fields between STIX v1.1 and
         STIX v1.1.1.
@@ -328,7 +324,6 @@ class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
         """
         pass
 
-
     def _get_duplicates(self, root):
         """The STIX v1.1 and v1.1.1 schemas both enforces ID uniqueness, so
         this overrides the default ``_get_duplicates()``.
@@ -338,7 +333,6 @@ class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
 
         """
         pass
-
 
     def _update_versions(self, root):
         """Updates the versions of versioned nodes under `root` to align with
@@ -354,8 +348,7 @@ class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
             else:
                 node.attrib['version'] = '1.1.1'
 
-
-    def _update_cybox(self, root, options=None):
+    def _update_cybox(self, root):
         """Updates the CybOX content found under the `root` node.
 
         Note:
@@ -369,7 +362,6 @@ class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
 
         """
         self._cybox_updater._update_schemalocs(root)  # noqa
-
 
     def check_update(self, root, options=None):
         """Determines if the input document can be upgraded.
@@ -392,7 +384,7 @@ class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
 
         """
         root = utils.get_etree_root(root)
-        options = options or ramrod.DEFAULT_UPDATE_OPTIONS
+        options = options or DEFAULT_UPDATE_OPTIONS
 
         if options.check_versions:
             self._check_version(root)
@@ -410,7 +402,7 @@ class STIX_1_1_Updater(stixbase.BaseSTIXUpdater):
         )
 
     def _update(self, root, options):
-        self._update_cybox(root, options)
+        self._update_cybox(root)
         self._update_schemalocs(root)
         self._update_versions(root)
         self._translate_fields(root)
@@ -430,5 +422,7 @@ nsmapped = itertools.chain(
     STIX_1_1_Updater.OPTIONAL_ELEMENTS,
     STIX_1_1_Updater.TRANSLATABLE_FIELDS,
 )
+
+
 for klass in nsmapped:
     klass.NSMAP = STIX_1_1_Updater.NSMAP

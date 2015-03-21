@@ -2,15 +2,14 @@
 # See LICENSE.txt for complete terms.
 
 # internal
-import ramrod
 from ramrod import base, errors, utils
-from ramrod.cybox import Cybox_2_0_Updater
+from ramrod.options import DEFAULT_UPDATE_OPTIONS
 
 # relative
-from . import base as stixbase
+from .base import BaseSTIXUpdater, STIXVocab
 
 
-class MotivationVocab(stixbase.STIXVocab):
+class MotivationVocab(STIXVocab):
     OLD_TYPES = ('MotivationVocab-1.0',)
     NEW_TYPE = 'MotivationVocab-1.0.1'
     VOCAB_REFERENCE = 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd#MotivationVocab-1.0.1'
@@ -20,7 +19,7 @@ class MotivationVocab(stixbase.STIXVocab):
     }
 
 
-class PlanningAndOperationalSupportVocab(stixbase.STIXVocab):
+class PlanningAndOperationalSupportVocab(STIXVocab):
     OLD_TYPES = ('PlanningAndOperationalSupportVocab-1.0',)
     NEW_TYPE = 'PlanningAndOperationalSupportVocab-1.0.1'
     VOCAB_REFERENCE = 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd#PlanningAndOperationalSupportVocab-1.0.1',
@@ -108,7 +107,7 @@ class DisallowedAttackPatterns(base.DisallowedFields):
         return [x for x in nodes if cls._check_capec(x)]
 
 
-class STIX_1_0_Updater(stixbase.BaseSTIXUpdater):
+class STIX_1_0_Updater(BaseSTIXUpdater):
     """Updates STIX v1.0 content to STIX v1.0.1.
 
     The following fields and types are translated:
@@ -207,6 +206,8 @@ class STIX_1_0_Updater(stixbase.BaseSTIXUpdater):
         self._init_cybox_updater()
 
     def _init_cybox_updater(self):
+        from ramrod.cybox import Cybox_2_0_Updater
+
         updater_klass = Cybox_2_0_Updater
         updater = updater_klass()
         updater.NSMAP = dict(self.NSMAP.items() + updater_klass.NSMAP.items())
@@ -247,7 +248,7 @@ class STIX_1_0_Updater(stixbase.BaseSTIXUpdater):
             found = klass.find(root)
             disallowed.extend(found)
 
-        disallowed_cybox = self._cybox_updater._get_disallowed(root)
+        disallowed_cybox = self._cybox_updater._get_disallowed(root) # noqa
 
         if disallowed_cybox:
             disallowed.extend(disallowed_cybox)
@@ -317,11 +318,11 @@ class STIX_1_0_Updater(stixbase.BaseSTIXUpdater):
 
         """
         root = utils.get_etree_root(root)
-        options = options or ramrod.DEFAULT_UPDATE_OPTIONS
+        options = options or DEFAULT_UPDATE_OPTIONS
 
         if options.check_versions:
             self._check_version(root)
-            self._cybox_updater._check_version(root)
+            self._cybox_updater._check_version(root) # noqa
 
         disallowed  = self._get_disallowed(root)
 

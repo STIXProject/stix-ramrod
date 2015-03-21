@@ -2,15 +2,15 @@
 # See LICENSE.txt for complete terms.
 
 # internal
-import ramrod
-import ramrod.utils as utils
+from ramrod import utils
+from ramrod.options import DEFAULT_UPDATE_OPTIONS
 
 # relative
-from . import base as cyboxbase
 from . import common
+from .base import CyboxVocab, BaseCyboxUpdater
 
 
-class EventTypeVocab(cyboxbase.CyboxVocab):
+class EventTypeVocab(CyboxVocab):
     OLD_TYPES = ('EventTypeVocab-1.0',)
     NEW_TYPE = 'EventTypeVocab-1.0.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.0.1/cybox_default_vocabularies.xsd#EventTypeVocab-1.0.1'
@@ -20,7 +20,7 @@ class EventTypeVocab(cyboxbase.CyboxVocab):
     }
 
 
-class Cybox_2_0_Updater(cyboxbase.BaseCyboxUpdater):
+class Cybox_2_0_Updater(BaseCyboxUpdater):
     """Updates CybOX v2.0 content to CybOX v2.0.1.
 
     The following fields are translated:
@@ -204,15 +204,12 @@ class Cybox_2_0_Updater(cyboxbase.BaseCyboxUpdater):
         'http://cybox.mitre.org/objects#X509CertificateObject-2': 'http://cybox.mitre.org/XMLSchema/objects/X509_Certificate/2.0.1/X509_Certificate_Object.xsd',
     }
 
-
     UPDATE_VOCABS = (
         EventTypeVocab,
     )
 
-
     def __init__(self):
         super(Cybox_2_0_Updater, self).__init__()
-
 
     def _update_versions(self, root):
         """Updates the version of Observables instances under `root` to
@@ -226,7 +223,6 @@ class Cybox_2_0_Updater(cyboxbase.BaseCyboxUpdater):
             attribs[common.TAG_CYBOX_MAJOR]  = '2'
             attribs[common.TAG_CYBOX_MINOR]  = '0'
             attribs[common.TAG_CYBOX_UPDATE] = '1'
-
 
     def _update_lists(self, root):
         """Replaces CybOX v2.0 list delimiters with CybOX v2.0.1 list
@@ -255,14 +251,12 @@ class Cybox_2_0_Updater(cyboxbase.BaseCyboxUpdater):
                 text = text.replace("&comma;", ",")
                 child.text = text
 
-
     def _get_disallowed(self, root, options=None):
         """There are no untranslatable fields between CybOX 2.0 and
         CybOX v2.0.1..
 
         """
         pass
-
 
     def _get_duplicates(self, root):
         """There is no need to remap non-unique IDs between CybOX 2.0 and
@@ -274,7 +268,6 @@ class Cybox_2_0_Updater(cyboxbase.BaseCyboxUpdater):
 
         """
         pass
-
 
     def check_update(self, root, options=None):
         """Determines if the input document can be upgraded.
@@ -296,11 +289,10 @@ class Cybox_2_0_Updater(cyboxbase.BaseCyboxUpdater):
 
         """
         root = utils.get_etree_root(root)
-        options = options or ramrod.DEFAULT_UPDATE_OPTIONS
+        options = options or DEFAULT_UPDATE_OPTIONS
 
         if options.check_versions:
             self._check_version(root)
-
 
     def _update(self, root, options):
         self._update_schemalocs(root)

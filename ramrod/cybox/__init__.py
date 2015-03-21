@@ -1,27 +1,17 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
-# internal
-import ramrod
-import ramrod.utils as utils
+from ramrod import utils, results
 
 # relative
-from . import base, common
-from .cybox_2_0 import Cybox_2_0_Updater
-from .cybox_2_0_1 import Cybox_2_0_1_Updater
-
-CYBOX_UPDATERS = {
-    '2.0': Cybox_2_0_Updater,
-    '2.0.1': Cybox_2_0_1_Updater
-}
-
-CYBOX_VERSIONS = common.CYBOX_VERSIONS
+from . import common
+from .base import BaseCyboxUpdater
 
 
 def get_version(doc):
     """Returns the version number for input CybOX document."""
     root = utils.get_etree_root(doc)
-    return base.BaseCyboxUpdater.get_version(root)
+    return BaseCyboxUpdater.get_version(root)
 
 
 def update(doc, from_=None, to_=None, options=None, force=False):
@@ -59,7 +49,7 @@ def update(doc, from_=None, to_=None, options=None, force=False):
     """
     root = utils.get_etree_root(doc)
     versions = common.CYBOX_VERSIONS
-    from_ = from_ or base.BaseCyboxUpdater.get_version(root)
+    from_ = from_ or BaseCyboxUpdater.get_version(root)
     to_ = to_ or versions[-1]  # The latest version if not specified
 
     utils.validate_versions(from_, to_, versions)
@@ -69,16 +59,30 @@ def update(doc, from_=None, to_=None, options=None, force=False):
 
     for version in versions[idx(from_):idx(to_)]:
         updater   = CYBOX_UPDATERS[version]
-        results   = updater().update(root, options=options, force=force)
-        root      = results.document.as_element()
-        removed.extend(results.removed)
-        remapped.update(results.remapped_ids)
+        result    = updater().update(root, options=options, force=force)
+        root      = result.document.as_element()
 
+        # Update record of removed and remapped fields
+        removed.extend(result.removed)
+        remapped.update(result.remapped_ids)
 
-    results = ramrod.UpdateResults(
+    result = results.UpdateResults(
         document=root,
         removed=removed,
         remapped_ids=remapped
     )
 
-    return results
+    return result
+
+
+from .cybox_2_0 import Cybox_2_0_Updater
+from .cybox_2_0_1 import Cybox_2_0_1_Updater
+
+
+CYBOX_UPDATERS = {
+    '2.0': Cybox_2_0_Updater,
+    '2.0.1': Cybox_2_0_1_Updater
+}
+
+
+CYBOX_VERSIONS = common.CYBOX_VERSIONS

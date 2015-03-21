@@ -8,15 +8,14 @@ import itertools
 from lxml import etree
 
 # internal
-import ramrod
 from ramrod import base, errors, utils
-from ramrod.cybox import Cybox_2_0_1_Updater
+from ramrod.options import DEFAULT_UPDATE_OPTIONS
 
 # relative
-from . import base as stixbase
+from .base import BaseSTIXUpdater, STIXVocab
 
 
-class MotivationVocab(stixbase.STIXVocab):
+class MotivationVocab(STIXVocab):
     OLD_TYPES = (
         'MotivationVocab-1.0',
         'MotivationVocab-1.0.1'
@@ -29,7 +28,7 @@ class MotivationVocab(stixbase.STIXVocab):
     }
 
 
-class IndicatorTypeVocab(stixbase.STIXVocab):
+class IndicatorTypeVocab(STIXVocab):
     OLD_TYPES = ("IndicatorTypeVocab-1.0",)
     NEW_TYPE = "IndicatorTypeVocab-1.1"
     VOCAB_NAME = "STIX Default Indicator Type Vocabulary"
@@ -258,8 +257,7 @@ class TransCommonContributors(base.TranslatableField):
         return contributing_sources
 
 
-
-class STIX_1_0_1_Updater(stixbase.BaseSTIXUpdater):
+class STIX_1_0_1_Updater(BaseSTIXUpdater):
     """Updates STIX v1.0.1 content to STIX v1.1.
 
     The following fields and types are translated:
@@ -378,6 +376,8 @@ class STIX_1_0_1_Updater(stixbase.BaseSTIXUpdater):
 
 
     def _init_cybox_updater(self):
+        from ramrod.cybox import Cybox_2_0_1_Updater
+
         updater_klass = Cybox_2_0_1_Updater
         updater = updater_klass()
         updater.NSMAP = dict(self.NSMAP.items() + updater_klass.NSMAP.items())
@@ -391,11 +391,9 @@ class STIX_1_0_1_Updater(stixbase.BaseSTIXUpdater):
         updater.XPATH_VERSIONED_NODES = updater.XPATH_ROOT_NODES
         self._cybox_updater = updater
 
-
     def _translate_fields(self, root):
         for field in self.TRANSLATABLE_FIELDS:
             field.translate(root)
-
 
     def _update_optionals(self, root):
         """Finds and removes empty xml elements and attributes which are
@@ -411,7 +409,6 @@ class STIX_1_0_1_Updater(stixbase.BaseSTIXUpdater):
         for optional in optional_elements:
             found = optional.find(root, typed=typed_nodes)
             utils.remove_xml_elements(found)
-
 
     def _get_disallowed(self, root, options=None):
         """Finds all xml entities under `root` that cannot be updated.
@@ -432,12 +429,11 @@ class STIX_1_0_1_Updater(stixbase.BaseSTIXUpdater):
             found = klass.find(root)
             disallowed.extend(found)
 
-        disallowed_cybox = self._cybox_updater._get_disallowed(root)
+        disallowed_cybox = self._cybox_updater._get_disallowed(root)  # noqa
         if disallowed_cybox:
             disallowed.extend(disallowed_cybox)
 
         return disallowed
-
 
     def _get_duplicates(self, root):
         """Returns nodes with non-unique IDs from `root`.
@@ -450,7 +446,6 @@ class STIX_1_0_1_Updater(stixbase.BaseSTIXUpdater):
         duplicates = super(STIX_1_0_1_Updater, self)._get_duplicates(root)
         cybox = self._cybox_updater._get_duplicates(root)
         return dict(duplicates.items() + cybox.items())
-
 
     def _update_versions(self, root):
         """Updates the versions of versioned nodes under `root` to align with
@@ -466,7 +461,6 @@ class STIX_1_0_1_Updater(stixbase.BaseSTIXUpdater):
             else:
                 node.attrib['version'] = '1.1'
 
-
     def _update_cybox(self, root, options):
         """Updates the CybOX content found under the `root` node.
 
@@ -478,7 +472,6 @@ class STIX_1_0_1_Updater(stixbase.BaseSTIXUpdater):
         update_func = self._cybox_updater._update  # noqa
         updated = update_func(root, options)
         return updated
-
 
     def _clean_disallowed(self, disallowed, options):
         """Removes the `disallowed` nodes from the source document.
@@ -498,7 +491,6 @@ class STIX_1_0_1_Updater(stixbase.BaseSTIXUpdater):
 
         return removed
 
-
     def _clean_duplicates(self, duplicates, options):
         """Assigns a unique ID to each node in `duplicates`.
 
@@ -516,7 +508,6 @@ class STIX_1_0_1_Updater(stixbase.BaseSTIXUpdater):
                 new_id(node)
 
         return duplicates
-
 
     def check_update(self, root, options=None):
         """Determines if the input document can be upgraded.
@@ -538,11 +529,11 @@ class STIX_1_0_1_Updater(stixbase.BaseSTIXUpdater):
 
         """
         root = utils.get_etree_root(root)
-        options = options or ramrod.DEFAULT_UPDATE_OPTIONS
+        options = options or DEFAULT_UPDATE_OPTIONS
 
         if options.check_versions:
             self._check_version(root)
-            self._cybox_updater._check_version(root)
+            self._cybox_updater._check_version(root)  # noqa
 
         duplicates = self._get_duplicates(root)
         disallowed = self._get_disallowed(root)
@@ -556,7 +547,6 @@ class STIX_1_0_1_Updater(stixbase.BaseSTIXUpdater):
             disallowed=disallowed,
             duplicates=duplicates
         )
-
 
     def _update(self, root, options):
         updated = self._update_cybox(root, options)
@@ -581,5 +571,7 @@ nsmapped = itertools.chain(
     STIX_1_0_1_Updater.OPTIONAL_ELEMENTS,
     STIX_1_0_1_Updater.TRANSLATABLE_FIELDS,
 )
+
+
 for klass in nsmapped:
     klass.NSMAP = STIX_1_0_1_Updater.NSMAP

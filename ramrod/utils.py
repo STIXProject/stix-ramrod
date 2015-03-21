@@ -55,9 +55,9 @@ def get_etree_root(doc, make_copy=False):
     """
     deepcopy = copy.deepcopy
 
-    if isinstance(doc, etree._Element):
+    if isinstance(doc, etree._Element):  # noqa
         root = deepcopy(doc) if make_copy else doc
-    elif isinstance(doc, etree._ElementTree):
+    elif isinstance(doc, etree._ElementTree):  # noqa
         root = deepcopy(doc.getroot()) if make_copy else doc.getroot()
     else:
         parser = get_xml_parser()

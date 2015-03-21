@@ -1,30 +1,17 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
-# internal
-import ramrod
-import ramrod.utils as utils
+from ramrod import utils, results
 
 # relative
-from . import base, common
-from .stix_1_0 import STIX_1_0_Updater
-from .stix_1_0_1 import STIX_1_0_1_Updater
-from .stix_1_1 import STIX_1_1_Updater
-
-
-STIX_UPDATERS = {
-    '1.0': STIX_1_0_Updater,
-    '1.0.1': STIX_1_0_1_Updater,
-    '1.1': STIX_1_1_Updater
-}
-
-STIX_VERSIONS = common.STIX_VERSIONS
+from . import common
+from .base import BaseSTIXUpdater
 
 
 def get_version(doc):
     """Returns the version number for input STIX document."""
     root = utils.get_etree_root(doc)
-    return base.BaseSTIXUpdater.get_version(root)
+    return BaseSTIXUpdater.get_version(root)
 
 
 def update(doc, from_=None, to_=None, options=None, force=False):
@@ -62,7 +49,7 @@ def update(doc, from_=None, to_=None, options=None, force=False):
     """
     root = utils.get_etree_root(doc)
     versions = common.STIX_VERSIONS
-    from_ = from_ or base.BaseSTIXUpdater.get_version(root)
+    from_ = from_ or BaseSTIXUpdater.get_version(root)
     to_ = to_ or versions[-1]  # The latest version if not specified
 
     utils.validate_versions(from_, to_, versions)
@@ -72,15 +59,31 @@ def update(doc, from_=None, to_=None, options=None, force=False):
 
     for version in versions[idx(from_):idx(to_)]:
         updater   = STIX_UPDATERS[version]
-        results   = updater().update(root, options=options, force=force)
-        root      = results.document.as_element()
-        removed.extend(results.removed)
-        remapped.update(results.remapped_ids)
+        result    = updater().update(root, options=options, force=force)
+        root      = result.document.as_element()
 
-    results = ramrod.UpdateResults(
+        removed.extend(result.removed)
+        remapped.update(result.remapped_ids)
+
+    result = results.UpdateResults(
         document=root,
         removed=removed,
         remapped_ids=remapped
     )
 
-    return results
+    return result
+
+
+from .stix_1_0 import STIX_1_0_Updater
+from .stix_1_0_1 import STIX_1_0_1_Updater
+from .stix_1_1 import STIX_1_1_Updater
+
+
+STIX_UPDATERS = {
+    '1.0': STIX_1_0_Updater,
+    '1.0.1': STIX_1_0_1_Updater,
+    '1.1': STIX_1_1_Updater
+}
+
+
+STIX_VERSIONS = common.STIX_VERSIONS
