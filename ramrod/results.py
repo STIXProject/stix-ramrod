@@ -109,3 +109,9 @@ class ResultDocument(object):
         """
         buf = etree.tounicode(self._document, pretty_print=True)
         return StringIO.StringIO(buf)
+
+
+__all__ = [
+    'ResultDocument',
+    'UpdateResults'
+]

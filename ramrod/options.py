@@ -43,3 +43,9 @@ class UpdateOptions(object):
 
 
 DEFAULT_UPDATE_OPTIONS = UpdateOptions()
+
+
+__all__ = [
+    'UpdateOptions',
+    'DEFAULT_UPDATE_OPTIONS'
+]
