@@ -8,7 +8,8 @@ import collections
 from lxml import etree
 
 # relative
-from . import errors, utils, xmlconst, DEFAULT_UPDATE_OPTIONS, UpdateResults
+from . import errors, utils, xmlconst, results
+from .options import DEFAULT_UPDATE_OPTIONS
 
 
 # Constants
@@ -55,7 +56,6 @@ class Vocab(object):
                 found.append(node)
 
         return found
-
 
     @classmethod
     def update(cls, root, typed=None):
@@ -130,7 +130,6 @@ class TranslatableField(object):
     COPY_ATTRIBUTES = False
     OVERRIDE_ATTRIBUTES = {}
 
-
     @classmethod
     def _translate_value(cls, old, new):
         xpath, nsmap = cls.XPATH_VALUE, cls.NSMAP
@@ -140,7 +139,6 @@ class TranslatableField(object):
         else:
             # Used when the fields are the same datatype, just different names
             new[:] = old[:]  # TODO: verify that namespaces don't get messed up here
-
 
     @classmethod
     def _translate_attributes(cls, old, new):
@@ -168,7 +166,6 @@ class TranslatableField(object):
                 continue
             new.attrib[name] = val
 
-
     @classmethod
     def _translate_fields(cls, node):
         """Translates values and attributes from `node` to a new XML
@@ -185,7 +182,6 @@ class TranslatableField(object):
 
         return new
 
-
     @classmethod
     def _find(cls, root):
         """Discovers translatable fields in the `root` document.
@@ -198,7 +194,6 @@ class TranslatableField(object):
         found = root.xpath(xpath, namespaces=nsmap)
         return found
 
-
     @classmethod
     def translate(cls, root):
         """Translates and replaces nodes found in `root` with new nodes."""
@@ -206,7 +201,6 @@ class TranslatableField(object):
         for node in nodes:
             new_node = cls._translate_fields(node)
             utils.replace_xml_element(node, new_node)
-
 
 
 class RenamedField(TranslatableField):
@@ -246,7 +240,6 @@ class DisallowedFields(object):
     def __init__(self,):
         pass
 
-
     @classmethod
     def _interrogate(cls, nodes):
         """Overriden by implemmentation classes if a set of requirments must
@@ -265,7 +258,6 @@ class DisallowedFields(object):
 
         """
         return nodes
-
 
     @classmethod
     def _get_contexts(cls, root, typed=None):
@@ -383,7 +375,6 @@ class OptionalElements(DisallowedFields):
     """
     def __init__(self):
         super(OptionalElements, self).__init__()
-
 
     @classmethod
     def _is_empty(cls, node):
@@ -807,7 +798,7 @@ class BaseUpdater(object):
             An instance of ``ramrod.UpdateResults``.
 
         """
-        update_results = UpdateResults(root)
+        update_results = results.UpdateResults(root)
         update_results.remapped_ids = remapped or ()
         update_results.removed = removed or {}
 
@@ -838,11 +829,11 @@ class BaseUpdater(object):
         if disallowed:
             removed = self._clean_disallowed(disallowed, options=options)
 
-        results = UpdateResults(root)
-        results.remapped_ids = remapped
-        results.removed = tuple(removed)
+        result = results.UpdateResults(root)
+        result.remapped_ids = remapped
+        result.removed = tuple(removed)
 
-        return results
+        return result
 
     def clean(self, root, options=None):
         """Removes disallowed elements from `root` and remaps non-unique
@@ -989,4 +980,3 @@ class BaseUpdater(object):
                 raise
 
         return results
-

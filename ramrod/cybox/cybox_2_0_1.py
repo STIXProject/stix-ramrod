@@ -5,20 +5,22 @@
 import itertools
 
 # internal
-from ramrod import base, errors, utils, DEFAULT_UPDATE_OPTIONS
+from ramrod import base, errors, utils
+from ramrod.options import DEFAULT_UPDATE_OPTIONS
 
 # relative imports
-from . import base as cyboxbase
 from . import common
+from .base import BaseCyboxUpdater, CyboxVocab
 
-class ObjectRelationshipVocab(cyboxbase.CyboxVocab):
+
+class ObjectRelationshipVocab(CyboxVocab):
     OLD_TYPES = ('ObjectRelationshipVocab-1.0',)
     NEW_TYPE = 'ObjectRelationshipVocab-1.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#ObjectRelationshipVocab-1.1',
     VOCAB_NAME = 'CybOX Default Object-Object Relationships'
 
 
-class ToolTypeVocab(cyboxbase.CyboxVocab):
+class ToolTypeVocab(CyboxVocab):
     OLD_TYPES = ('ToolTypeVocab-1.0',)
     NEW_TYPE = 'ToolTypeVocab-1.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#ToolTypeVocab-1.1'
@@ -28,7 +30,7 @@ class ToolTypeVocab(cyboxbase.CyboxVocab):
     }
 
 
-class ActionNameVocab(cyboxbase.CyboxVocab):
+class ActionNameVocab(CyboxVocab):
     OLD_TYPES = ('ActionNameVocab-1.0',)
     NEW_TYPE = 'ActionNameVocab-1.1'
     VOCAB_REFERENCE = 'http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd#DefinedActionNameVocab-1.1'
@@ -221,7 +223,7 @@ class TransWinMailslotHandle(base.TranslatableField):
             cls._replace(node)
 
 
-class Cybox_2_0_1_Updater(cyboxbase.BaseCyboxUpdater):
+class Cybox_2_0_1_Updater(BaseCyboxUpdater):
     """Updates CybOX v2.0.1 content to CybOX v2.1.
 
     The following fields are translated:
@@ -506,17 +508,14 @@ class Cybox_2_0_1_Updater(cyboxbase.BaseCyboxUpdater):
         'http://cybox.mitre.org/objects#X509CertificateObject-2': 'http://cybox.mitre.org/XMLSchema/objects/X509_Certificate/2.1/X509_Certificate_Object.xsd',
     }
 
-
     UPDATE_VOCABS = (
         ObjectRelationshipVocab,
         ToolTypeVocab,
         ActionNameVocab,
     )
 
-
     def __init__(self):
         super(Cybox_2_0_1_Updater, self).__init__()
-
 
     def _update_versions(self, root):
         """Updates the version of Observables instances under `root` to
@@ -533,14 +532,12 @@ class Cybox_2_0_1_Updater(cyboxbase.BaseCyboxUpdater):
             with utils.ignored(KeyError):
                 del attribs[common.TAG_CYBOX_UPDATE]
 
-
     def _translate_fields(self, root):
         """Translates fields which have changed in structure or data type.
 
         """
         for field in self.TRANSLATABLE_FIELDS:
             field.translate(root)
-
 
     def _update_optionals(self, root):
         """Finds and removes empty xml elements and attributes which are
@@ -565,7 +562,6 @@ class Cybox_2_0_1_Updater(cyboxbase.BaseCyboxUpdater):
             for node in found:
                 utils.remove_xml_attributes(node, optional.ATTRIBUTES)
 
-
     def _get_disallowed(self, root, options=None):
         """Finds all xml entities under `root` that cannot be updated.
 
@@ -583,7 +579,6 @@ class Cybox_2_0_1_Updater(cyboxbase.BaseCyboxUpdater):
             disallowed.extend(found)
 
         return disallowed
-
 
     def _clean_disallowed(self, disallowed, options):
         """Removes the `disallowed` nodes from the source document.
@@ -603,7 +598,6 @@ class Cybox_2_0_1_Updater(cyboxbase.BaseCyboxUpdater):
 
         return removed
 
-
     def _clean_duplicates(self, duplicates, options):
         """Assigns a unique ID to each node in `duplicates`.
 
@@ -620,7 +614,6 @@ class Cybox_2_0_1_Updater(cyboxbase.BaseCyboxUpdater):
                 new_id(node)
 
         return duplicates
-
 
     def check_update(self, root, options=None):
         """Determines if the input document can be upgraded.
@@ -660,7 +653,6 @@ class Cybox_2_0_1_Updater(cyboxbase.BaseCyboxUpdater):
             duplicates=duplicates
         )
 
-
     def _update(self, root, options):
         updated = self._update_namespaces(root)
 
@@ -684,5 +676,7 @@ nsmapped = itertools.chain(
     Cybox_2_0_1_Updater.OPTIONAL_ATTRIBUTES,
     Cybox_2_0_1_Updater.TRANSLATABLE_FIELDS
 )
+
+
 for klass in nsmapped:
     klass.NSMAP = Cybox_2_0_1_Updater.NSMAP

@@ -2,13 +2,14 @@
 # See LICENSE.txt for complete terms.
 
 # internal
-from ramrod import base, errors, utils, DEFAULT_UPDATE_OPTIONS
+from ramrod import base, errors, utils
+from ramrod.options import DEFAULT_UPDATE_OPTIONS
 
 # relative
-from . import base as stixbase
+from .base import BaseSTIXUpdater, STIXVocab
 
 
-class MotivationVocab(stixbase.STIXVocab):
+class MotivationVocab(STIXVocab):
     OLD_TYPES = ('MotivationVocab-1.0',)
     NEW_TYPE = 'MotivationVocab-1.0.1'
     VOCAB_REFERENCE = 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd#MotivationVocab-1.0.1'
@@ -18,7 +19,7 @@ class MotivationVocab(stixbase.STIXVocab):
     }
 
 
-class PlanningAndOperationalSupportVocab(stixbase.STIXVocab):
+class PlanningAndOperationalSupportVocab(STIXVocab):
     OLD_TYPES = ('PlanningAndOperationalSupportVocab-1.0',)
     NEW_TYPE = 'PlanningAndOperationalSupportVocab-1.0.1'
     VOCAB_REFERENCE = 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.0.1/stix_default_vocabularies.xsd#PlanningAndOperationalSupportVocab-1.0.1',
@@ -106,7 +107,7 @@ class DisallowedAttackPatterns(base.DisallowedFields):
         return [x for x in nodes if cls._check_capec(x)]
 
 
-class STIX_1_0_Updater(stixbase.BaseSTIXUpdater):
+class STIX_1_0_Updater(BaseSTIXUpdater):
     """Updates STIX v1.0 content to STIX v1.0.1.
 
     The following fields and types are translated:

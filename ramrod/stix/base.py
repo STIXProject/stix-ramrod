@@ -39,7 +39,6 @@ class BaseSTIXUpdater(base.BaseUpdater):
 
     XPATH_ROOT_NODES = "//stix:STIX_Package"
 
-
     def __init__(self):
         super(BaseSTIXUpdater, self).__init__()
         self._init_cybox_updater()
