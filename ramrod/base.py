@@ -423,8 +423,8 @@ class BaseUpdater(object):
             not appear in the export document.
         UPDATE_NS_MAP: A dictionary of namespaces that are updated between
             language revisions. For example, CybOX 2.1 defines a new namespace
-            for the Windows Driver Object. This dictionary would contain the old
-            namespace as a key, and the new namespace as a value.
+            for the Windows Driver Object. This dictionary would contain the
+            old namespace as a key, and the new namespace as a value.
         UPDATE_SCHEMALOC_MAP: A dictionary of language namespaces to their
             updated schemalocations. If a namespace has been updated between
             langauge revisions, the new namespace will be used as the key (as
@@ -851,7 +851,7 @@ class BaseUpdater(object):
 
         >>> results = updater.clean(root)
         >>> print results.remapped_ids
-        {'example:Observable-duplicate': [<Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67e64>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f2c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f54>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f7c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67fa4>]}
+        {'example:Observable-duplicate': [<Element {http://cybox.mitre.org...
 
         Note:
             This does not remap ``idref`` attributes to new ID values because
@@ -940,7 +940,7 @@ class BaseUpdater(object):
 
         >>> results = updater.update(root, force=True)
         >>> print results.remapped_ids
-        {'example:Observable-duplicate-id-1': [<Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67e64>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f2c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f54>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67f7c>, <Element {http://cybox.mitre.org/cybox-2}Observable at 0xffd67fa4>]}
+        {'example:Observable-duplicate-id-1': [<Element {http://cybox.mitre...
 
         Args:
             root: The XML document. This can be a filename, a file-like object,

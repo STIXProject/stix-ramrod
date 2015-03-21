@@ -348,7 +348,7 @@ class STIX_1_1_Updater(BaseSTIXUpdater):
             else:
                 node.attrib['version'] = '1.1.1'
 
-    def _update_cybox(self, root, options=None):
+    def _update_cybox(self, root):
         """Updates the CybOX content found under the `root` node.
 
         Note:
@@ -402,7 +402,7 @@ class STIX_1_1_Updater(BaseSTIXUpdater):
         )
 
     def _update(self, root, options):
-        self._update_cybox(root, options)
+        self._update_cybox(root)
         self._update_schemalocs(root)
         self._update_versions(root)
         self._translate_fields(root)

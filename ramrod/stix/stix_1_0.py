@@ -248,7 +248,7 @@ class STIX_1_0_Updater(BaseSTIXUpdater):
             found = klass.find(root)
             disallowed.extend(found)
 
-        disallowed_cybox = self._cybox_updater._get_disallowed(root)
+        disallowed_cybox = self._cybox_updater._get_disallowed(root) # noqa
 
         if disallowed_cybox:
             disallowed.extend(disallowed_cybox)
@@ -322,7 +322,7 @@ class STIX_1_0_Updater(BaseSTIXUpdater):
 
         if options.check_versions:
             self._check_version(root)
-            self._cybox_updater._check_version(root)
+            self._cybox_updater._check_version(root) # noqa
 
         disallowed  = self._get_disallowed(root)
 
