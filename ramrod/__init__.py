@@ -83,7 +83,7 @@ def update(doc, from_=None, to_=None, options=None, force=False):
 
 __all__ = [
     'update',
-    'UpdateOptions'  # defined in ramrod.options
+    'UpdateOptions',  # defined in ramrod.options
     'DEFAULT_UPDATE_OPTIONS',  # defined in ramrod.options
     'UpdateResults',  # defined in ramrod.results
     'ResultDocument'  # defined in ramrod.results
