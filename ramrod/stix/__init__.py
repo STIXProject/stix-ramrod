@@ -49,7 +49,7 @@ def update(doc, from_=None, to_=None, options=None, force=False):
     """
     root = utils.get_etree_root(doc)
     versions = common.STIX_VERSIONS
-    from_ = from_ or base.BaseSTIXUpdater.get_version(root)
+    from_ = from_ or BaseSTIXUpdater.get_version(root)
     to_ = to_ or versions[-1]  # The latest version if not specified
 
     utils.validate_versions(from_, to_, versions)

@@ -69,7 +69,7 @@ class ResultDocument(object):
 
     """
     def __init__(self, document):
-        allowed_types = (etree._Element, etree._ElementTree)
+        allowed_types = (etree._Element, etree._ElementTree)  # noqa
 
         if not isinstance(document, allowed_types):
             raise ValueError("Document must be one of %s" % (allowed_types,))
