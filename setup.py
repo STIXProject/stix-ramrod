@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2015 - The MITRE Corporation
+# Copyright (c) 2015 - The MITRE Corporation
 # For license information, see the LICENSE.txt file
 
+from os.path import abspath, dirname, join
 import sys
-from os.path import abspath, dirname, join, realpath
+
 from setuptools import setup, find_packages
 
 BASE_DIR = dirname(abspath(__file__))
-INIT_FILE = join(BASE_DIR, 'ramrod', '__init__.py')
 VERSION_FILE = join(BASE_DIR, 'ramrod', 'version.py')
 
 def get_version():

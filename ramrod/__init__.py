@@ -7,6 +7,7 @@ from . import errors, utils
 # Namepsace flattening and backwards compatibility
 from .options import UpdateOptions, DEFAULT_UPDATE_OPTIONS  # noqa
 from .results import ResultDocument, UpdateResults  # noqa
+
 from .version import __version__  # noqa
 
 
