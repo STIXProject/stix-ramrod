@@ -1,10 +1,5 @@
-.. stix-ramrod documentation master file, created by
-   sphinx-quickstart on Tue Sep 30 14:08:10 2014.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to stix-ramrod's documentation!
-=======================================
+stix-ramrod |release| Documentation
+===================================
 
 The **stix-ramrod** library provides scripts and APIs for updating STIX and
 CybOX XML content.
