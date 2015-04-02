@@ -43,9 +43,6 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
 else:
     html_theme = 'default'
 
-html_show_sourcelink = False
-htmlhelp_basename = 'stix-ramroddoc'
-
 latex_elements = {}
 latex_documents = [
   ('index', 'stix-ramrod.tex', u'stix-ramrod Documentation',
