@@ -10,13 +10,15 @@ release = version
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
+    'sphinx.ext.ifconfig',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage',
+    'sphinx.ext.viewcode',
     'sphinxcontrib.napoleon',
 ]
 
-intersphinx_mapping = {'http://docs.python.org/': None}
+intersphinx_mapping = {
+    'python': ('http://docs.python.org/', None),
+}
 
 templates_path = ['_templates']
 source_suffix = '.rst'
@@ -30,13 +32,11 @@ exclude_patterns = [
     '_build',
     '_includes',
     'updates/cybox/cybox*.rst',
-    'updates/stix/stix*.rst'
+    'updates/stix/stix*.rst',
 ]
 
-pygments_style = 'sphinx'
-
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-if not on_rtd:  # only import and set the theme if we're building docs locally
+if not on_rtd:
     import sphinx_rtd_theme
     html_theme = 'sphinx_rtd_theme'
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
@@ -45,6 +45,6 @@ else:
 
 latex_elements = {}
 latex_documents = [
-  ('index', 'stix-ramrod.tex', u'stix-ramrod Documentation',
-   u'The MITRE Corporation', 'manual'),
+    ('index', 'stix-ramrod.tex', u'stix-ramrod Documentation',
+     u'The MITRE Corporation', 'manual'),
 ]
