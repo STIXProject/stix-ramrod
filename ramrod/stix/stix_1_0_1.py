@@ -9,6 +9,7 @@ from lxml import etree
 
 # internal
 from ramrod import base, errors, utils
+from ramrod.cybox import Cybox_2_0_1_Updater
 from ramrod.options import DEFAULT_UPDATE_OPTIONS
 
 # relative
@@ -372,13 +373,25 @@ class STIX_1_0_1_Updater(BaseSTIXUpdater):
         TransTTPExploitTargets,
     )
 
+    CYBOX_UPDATER = Cybox_2_0_1_Updater
+
     def __init__(self):
         super(STIX_1_0_1_Updater, self).__init__()
         self._init_cybox_updater()
 
 
     def _init_cybox_updater(self):
-        pass
+        super(STIX_1_0_1_Updater, self)._init_cybox_updater()
+
+        self._cybox_updater.XPATH_ROOT_NODES = (
+            ".//stix:Observables | "
+            ".//incident:Structured_Description | "
+            ".//ttp:Observable_Characterization | "
+            ".//ttp:Targeted_Technical_Details | "
+            ".//coa:Parameter_Observables "
+        )
+
+        self._cybox_updater.XPATH_VERSIONED_NODES = self._cybox_updater.XPATH_ROOT_NODES
 
     def _translate_fields(self, root):
         for field in self.TRANSLATABLE_FIELDS:
@@ -552,15 +565,3 @@ class STIX_1_0_1_Updater(BaseSTIXUpdater):
             self._update_optionals(updated)
 
         return updated
-
-
-# Wiring namespace dictionaries
-nsmapped = itertools.chain(
-    STIX_1_0_1_Updater.DISALLOWED,
-    STIX_1_0_1_Updater.OPTIONAL_ELEMENTS,
-    STIX_1_0_1_Updater.TRANSLATABLE_FIELDS,
-)
-
-
-for klass in nsmapped:
-    klass.NSMAP = STIX_1_0_1_Updater.NSMAP

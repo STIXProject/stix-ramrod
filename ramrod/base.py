@@ -438,6 +438,13 @@ class BaseUpdater(object):
         XPATH_ROOT_NODES: An xpath which discovers all "root" nodes
             (implementations of ``STIXType and ObservablesType``) which may
             contain document-level version information.
+        DISALLOWED: An iterable collection of DisallowedFields instances.
+        OPTIONAL_ELEMENTS: An iterable collection of OptionalElements
+            instances.
+        OPTIONAL_ATTRIBUTES: An iterable collection of OptionalAttributes
+            instances.
+        TRANSLATABLE_FIELDS: An iterable collection of TranslatableField
+            instances.
         cleaned_fields: A tuple of untranslatable nodes which were removed
             during a forced `update` or `clean` process.
         cleaned_ids: A dictionary of id => [nodes] which contains a list of
@@ -460,12 +467,14 @@ class BaseUpdater(object):
     XPATH_VERSIONED_NODES = "."
     XPATH_ROOT_NODES = "."
 
-    def __init__(self):
-        pass
+    DISALLOWED = ()
+    OPTIONAL_ELEMENTS = ()
+    OPTIONAL_ATTRIBUTES = ()
+    TRANSLATABLE_FIELDS = ()
 
     def _is_leaf(self, node):
         """Returns ``True`` if the `node` has no children."""
-        return (len(node) == 0)
+        return (len(node.xpath(xmlconst.XPATH_RELATIVE_CHILDREN)) == 0)
 
     def _get_ns_alias(self, root, ns):
         """Returns the XML Namespace alias defined for a namespace in a given

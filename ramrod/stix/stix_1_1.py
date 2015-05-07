@@ -9,6 +9,7 @@ from lxml import etree
 
 # internal
 from ramrod import base, errors, utils, xmlconst
+from ramrod.cybox import Cybox_2_0_1_Updater
 from ramrod.options import DEFAULT_UPDATE_OPTIONS
 
 # relative
@@ -280,22 +281,16 @@ class STIX_1_1_Updater(BaseSTIXUpdater):
         OptionalGenericTestMechanismFields,
     )
 
-    DISALLOWED = ()
-
     TRANSLATABLE_FIELDS = (
         TransCommonSource,
         TransSightingsSource,
         TransIndicatorRelatedCampaign,
     )
 
+    CYBOX_UPDATER = Cybox_2_0_1_Updater
+
     def __init__(self):
         super(STIX_1_1_Updater, self).__init__()
-
-    def _init_cybox_updater(self):
-        from ramrod.cybox import Cybox_2_0_1_Updater
-
-        # This is used for updating schemalocations only
-        self._cybox_updater = Cybox_2_0_1_Updater()
 
     def _translate_fields(self, root):
         for field in self.TRANSLATABLE_FIELDS:
@@ -390,7 +385,6 @@ class STIX_1_1_Updater(BaseSTIXUpdater):
 
         if options.check_versions:
             self._check_version(root)
-            self._cybox_updater._check_version(root)  # noqa
 
         disallowed = self._get_disallowed(root)
 
@@ -416,15 +410,3 @@ class STIX_1_1_Updater(BaseSTIXUpdater):
             self._update_optionals(root)
 
         return root
-
-
-# Wiring namespace dictionaries
-nsmapped = itertools.chain(
-    STIX_1_1_Updater.DISALLOWED,
-    STIX_1_1_Updater.OPTIONAL_ELEMENTS,
-    STIX_1_1_Updater.TRANSLATABLE_FIELDS,
-)
-
-
-for klass in nsmapped:
-    klass.NSMAP = STIX_1_1_Updater.NSMAP

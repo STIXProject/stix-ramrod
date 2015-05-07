@@ -1,6 +1,9 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
+# stdlib
+import itertools
+
 # internal
 from ramrod import base, errors, utils
 
@@ -39,6 +42,8 @@ class BaseSTIXUpdater(base.BaseUpdater):
 
     XPATH_ROOT_NODES = "//stix:STIX_Package"
 
+    CYBOX_UPDATER = None
+
     def __init__(self):
         super(BaseSTIXUpdater, self).__init__()
         self._init_cybox_updater()
@@ -50,7 +55,20 @@ class BaseSTIXUpdater(base.BaseUpdater):
             This needs to be implemented by derived classes.
 
         """
-        raise NotImplementedError()
+        if not self.CYBOX_UPDATER:
+            self._cybox_updater = None
+            return
+
+        updater = self.CYBOX_UPDATER()
+
+        updater.NSMAP = dict(
+            itertools.chain(
+                self.NSMAP.iteritems(),
+                self.CYBOX_UPDATER.NSMAP.iteritems()
+            )
+        )
+
+        self._cybox_updater = updater
 
     @classmethod
     def get_version(cls, package):

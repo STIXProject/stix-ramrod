@@ -1,9 +1,13 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
+# stdlib
+import itertools
+
 # internal
 from ramrod import base, errors, utils
 from ramrod.options import DEFAULT_UPDATE_OPTIONS
+from ramrod.cybox import Cybox_2_0_Updater
 
 # relative
 from . import register_updater
@@ -202,24 +206,22 @@ class STIX_1_0_Updater(BaseSTIXUpdater):
         PlanningAndOperationalSupportVocab,
     )
 
+    CYBOX_UPDATER = Cybox_2_0_Updater
 
     def __init__(self):
         super(STIX_1_0_Updater, self).__init__()
         self._init_cybox_updater()
 
     def _init_cybox_updater(self):
-        from ramrod.cybox import Cybox_2_0_Updater
+        super(STIX_1_0_Updater, self)._init_cybox_updater()
 
-        updater_klass = Cybox_2_0_Updater
-        updater = updater_klass()
-        updater.NSMAP = dict(self.NSMAP.items() + updater_klass.NSMAP.items())
-        updater.XPATH_ROOT_NODES = (
+        self._cybox_updater.XPATH_ROOT_NODES = (
             "//stix:Observables | "
             "//incident:Structured_Description | "
             "//ttp:Observable_Characterization"
         )
-        updater.XPATH_VERSIONED_NODES = updater.XPATH_ROOT_NODES
-        self._cybox_updater = updater
+
+        self._cybox_updater.XPATH_VERSIONED_NODES = self._cybox_updater.XPATH_ROOT_NODES
 
     def _get_duplicates(self, root):
         """The STIX v1.0.1 schema does not enforce ID uniqueness, so this
@@ -347,8 +349,3 @@ class STIX_1_0_Updater(BaseSTIXUpdater):
             self._update_vocabs(updated)
 
         return updated
-
-
-# Wiring namespace dictionaries
-for klass in STIX_1_0_Updater.DISALLOWED:
-    klass.NSMAP = STIX_1_0_Updater.NSMAP

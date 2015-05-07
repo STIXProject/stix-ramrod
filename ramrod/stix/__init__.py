@@ -1,6 +1,10 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
+# stdlib
+import itertools
+
+# internal
 from ramrod import utils, results
 
 # relative
@@ -80,6 +84,18 @@ STIX_VERSIONS = common.STIX_VERSIONS
 # A mapping of STIX version numbers to its respective updater class.
 STIX_UPDATERS = {}
 
+def _wire_nsmaps(cls):
+    # Wiring namespace dictionaries
+    nsmapped = itertools.chain(
+        cls.DISALLOWED,
+        cls.OPTIONAL_ELEMENTS,
+        cls.OPTIONAL_ATTRIBUTES,
+        cls.TRANSLATABLE_FIELDS,
+    )
+
+    for klass in nsmapped:
+        klass.NSMAP = cls.NSMAP
+
 def register_updater(cls):
     """Registers a STIX updater class.
 
@@ -89,12 +105,18 @@ def register_updater(cls):
     if version not in STIX_VERSIONS:
         raise ValueError("Invalid STIX version found on updater: %s" % version)
 
+    # Attach the cls NSMAP to each of the updater subcomponent classes.
+    _wire_nsmaps(cls)
+
+    # Register the updater in the global dictionary.
     STIX_UPDATERS[version] = cls
+
     return cls
 
 
 from .stix_1_0 import STIX_1_0_Updater
 from .stix_1_0_1 import STIX_1_0_1_Updater
 from .stix_1_1 import STIX_1_1_Updater
+from .stix_1_1_1 import STIX_1_1_1_Updater
 
 

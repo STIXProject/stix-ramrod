@@ -396,8 +396,6 @@ class Cybox_2_0_1_Updater(BaseCyboxUpdater):
         OptionalWinPrefetchFields,
     )
 
-    OPTIONAL_ATTRIBUTES = ()
-
     TRANSLATABLE_FIELDS = (
         TransHTTPSessionDNT,
         TransHTTPSessionVary,
@@ -669,16 +667,3 @@ class Cybox_2_0_1_Updater(BaseCyboxUpdater):
             self._update_optionals(updated)
 
         return updated
-
-
-# Wiring namespace dictionaries
-nsmapped = itertools.chain(
-    Cybox_2_0_1_Updater.DISALLOWED,
-    Cybox_2_0_1_Updater.OPTIONAL_ELEMENTS,
-    Cybox_2_0_1_Updater.OPTIONAL_ATTRIBUTES,
-    Cybox_2_0_1_Updater.TRANSLATABLE_FIELDS
-)
-
-
-for klass in nsmapped:
-    klass.NSMAP = Cybox_2_0_1_Updater.NSMAP
