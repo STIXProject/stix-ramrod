@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2015 - The MITRE Corporation
+# Copyright (c) 2015 - The MITRE Corporation
 # For license information, see the LICENSE.txt file
 
+from os.path import abspath, dirname, join
 import sys
-from os.path import abspath, dirname, join, realpath
+
 from setuptools import setup, find_packages
 
 BASE_DIR = dirname(abspath(__file__))
-INIT_FILE = join(BASE_DIR, 'ramrod', '__init__.py')
 VERSION_FILE = join(BASE_DIR, 'ramrod', 'version.py')
 
 def get_version():
@@ -38,6 +38,7 @@ extras_require = {
     'docs': [
         'Sphinx==1.2.1',
         'sphinxcontrib-napoleon==0.2.4',
+        'sphinx_rtd_theme==0.1.7',
     ],
     'test': [
         "nose==1.3.0",
