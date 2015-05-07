@@ -115,8 +115,9 @@ def register_updater(cls):
     return cls
 
 
-from .cybox_2_0 import Cybox_2_0_Updater
-from .cybox_2_0_1 import Cybox_2_0_1_Updater
+# Registers the updaters and flattens the namespaces.
+from .cybox_2_0 import Cybox_2_0_Updater  # noqa
+from .cybox_2_0_1 import Cybox_2_0_1_Updater  # noqa
 
 
 

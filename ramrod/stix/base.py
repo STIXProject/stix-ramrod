@@ -59,7 +59,7 @@ class BaseSTIXUpdater(base.BaseUpdater):
             self._cybox_updater = None
             return
 
-        updater = self.CYBOX_UPDATER()
+        updater = self.CYBOX_UPDATER()  # noqa
 
         updater.NSMAP = dict(
             itertools.chain(

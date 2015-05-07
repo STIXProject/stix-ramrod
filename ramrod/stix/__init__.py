@@ -114,9 +114,10 @@ def register_updater(cls):
     return cls
 
 
-from .stix_1_0 import STIX_1_0_Updater
-from .stix_1_0_1 import STIX_1_0_1_Updater
-from .stix_1_1 import STIX_1_1_Updater
-from .stix_1_1_1 import STIX_1_1_1_Updater
+# Registers the classes as updaters and flattens the namespaces
+from .stix_1_0 import STIX_1_0_Updater  # noqa
+from .stix_1_0_1 import STIX_1_0_1_Updater  # noqa
+from .stix_1_1 import STIX_1_1_Updater  # noqa
+from .stix_1_1_1 import STIX_1_1_1_Updater  # noqa
 
 

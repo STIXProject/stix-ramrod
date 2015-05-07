@@ -1,12 +1,6 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
-# builtin
-import itertools
-
-# external
-from lxml import etree
-
 # internal
 from ramrod import errors, utils
 from ramrod.options import DEFAULT_UPDATE_OPTIONS
