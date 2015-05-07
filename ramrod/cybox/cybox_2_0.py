@@ -2,11 +2,12 @@
 # See LICENSE.txt for complete terms.
 
 # internal
-from ramrod import utils
+from ramrod import utils, xmlconst
 from ramrod.options import DEFAULT_UPDATE_OPTIONS
 
 # relative
 from . import common
+from . import register_updater
 from .base import CyboxVocab, BaseCyboxUpdater
 
 
@@ -20,6 +21,7 @@ class EventTypeVocab(CyboxVocab):
     }
 
 
+@register_updater
 class Cybox_2_0_Updater(BaseCyboxUpdater):
     """Updates CybOX v2.0 content to CybOX v2.0.1.
 
@@ -242,7 +244,7 @@ class Cybox_2_0_Updater(BaseCyboxUpdater):
         props = root.xpath(self.XPATH_OBJECT_PROPS, namespaces=self.NSMAP)
 
         for prop in props:
-            for child in prop.findall(".//*"):
+            for child in prop.findall(xmlconst.XPATH_RELATIVE_DESCENDANTS):
                 if not child.text:
                     continue
 

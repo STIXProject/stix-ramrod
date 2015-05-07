@@ -6,6 +6,7 @@ from ramrod import base, errors, utils
 from ramrod.options import DEFAULT_UPDATE_OPTIONS
 
 # relative
+from . import register_updater
 from .base import BaseSTIXUpdater, STIXVocab
 
 
@@ -107,6 +108,7 @@ class DisallowedAttackPatterns(base.DisallowedFields):
         return [x for x in nodes if cls._check_capec(x)]
 
 
+@register_updater
 class STIX_1_0_Updater(BaseSTIXUpdater):
     """Updates STIX v1.0 content to STIX v1.0.1.
 

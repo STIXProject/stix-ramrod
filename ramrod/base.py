@@ -663,7 +663,7 @@ class BaseUpdater(object):
         a new `ns0` namespace alias.
 
         """
-        for node in root.findall(".//*"):
+        for node in root.findall(xmlconst.XPATH_RELATIVE_DESCENDANTS):
             node_ns = utils.get_namespace(node)
             updated_ns = self.UPDATE_NS_MAP.get(node_ns, node_ns)
             node.tag = node.tag.replace(node_ns, updated_ns)

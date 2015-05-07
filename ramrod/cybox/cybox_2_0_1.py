@@ -10,6 +10,7 @@ from ramrod.options import DEFAULT_UPDATE_OPTIONS
 
 # relative imports
 from . import common
+from . import register_updater
 from .base import BaseCyboxUpdater, CyboxVocab
 
 
@@ -223,6 +224,7 @@ class TransWinMailslotHandle(base.TranslatableField):
             cls._replace(node)
 
 
+@register_updater
 class Cybox_2_0_1_Updater(BaseCyboxUpdater):
     """Updates CybOX v2.0.1 content to CybOX v2.1.
 

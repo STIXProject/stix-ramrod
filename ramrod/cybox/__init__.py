@@ -74,15 +74,28 @@ def update(doc, from_=None, to_=None, options=None, force=False):
 
     return result
 
+# All known CybOX versions.
+CYBOX_VERSIONS = common.CYBOX_VERSIONS
+
+# Dictionary mapping CybOX versions to their respective updater class.
+CYBOX_UPDATERS = {}
+
+def register_updater(cls):
+    """Registers a CybOX updater class.
+
+    """
+    version = cls.VERSION
+
+    if version not in CYBOX_VERSIONS:
+        raise ValueError("Invalid CybOX version found on updater: %s" % version)
+
+    CYBOX_UPDATERS[version] = cls
+    return cls
+
 
 from .cybox_2_0 import Cybox_2_0_Updater
 from .cybox_2_0_1 import Cybox_2_0_1_Updater
 
 
-CYBOX_UPDATERS = {
-    '2.0': Cybox_2_0_Updater,
-    '2.0.1': Cybox_2_0_1_Updater
-}
 
 
-CYBOX_VERSIONS = common.CYBOX_VERSIONS

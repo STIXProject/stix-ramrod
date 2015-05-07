@@ -74,16 +74,27 @@ def update(doc, from_=None, to_=None, options=None, force=False):
     return result
 
 
+# All known STIX versions.
+STIX_VERSIONS = common.STIX_VERSIONS
+
+# A mapping of STIX version numbers to its respective updater class.
+STIX_UPDATERS = {}
+
+def register_updater(cls):
+    """Registers a STIX updater class.
+
+    """
+    version = cls.VERSION
+
+    if version not in STIX_VERSIONS:
+        raise ValueError("Invalid STIX version found on updater: %s" % version)
+
+    STIX_UPDATERS[version] = cls
+    return cls
+
+
 from .stix_1_0 import STIX_1_0_Updater
 from .stix_1_0_1 import STIX_1_0_1_Updater
 from .stix_1_1 import STIX_1_1_Updater
 
 
-STIX_UPDATERS = {
-    '1.0': STIX_1_0_Updater,
-    '1.0.1': STIX_1_0_1_Updater,
-    '1.1': STIX_1_1_Updater
-}
-
-
-STIX_VERSIONS = common.STIX_VERSIONS

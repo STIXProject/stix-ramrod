@@ -12,6 +12,7 @@ from ramrod import base, errors, utils
 from ramrod.options import DEFAULT_UPDATE_OPTIONS
 
 # relative
+from . import register_updater
 from .base import BaseSTIXUpdater, STIXVocab
 
 
@@ -257,6 +258,7 @@ class TransCommonContributors(base.TranslatableField):
         return contributing_sources
 
 
+@register_updater
 class STIX_1_0_1_Updater(BaseSTIXUpdater):
     """Updates STIX v1.0.1 content to STIX v1.1.
 
@@ -376,20 +378,7 @@ class STIX_1_0_1_Updater(BaseSTIXUpdater):
 
 
     def _init_cybox_updater(self):
-        from ramrod.cybox import Cybox_2_0_1_Updater
-
-        updater_klass = Cybox_2_0_1_Updater
-        updater = updater_klass()
-        updater.NSMAP = dict(self.NSMAP.items() + updater_klass.NSMAP.items())
-        updater.XPATH_ROOT_NODES = (
-            ".//stix:Observables | "
-            ".//incident:Structured_Description | "
-            ".//ttp:Observable_Characterization | "
-            ".//ttp:Targeted_Technical_Details | "
-            ".//coa:Parameter_Observables "
-        )
-        updater.XPATH_VERSIONED_NODES = updater.XPATH_ROOT_NODES
-        self._cybox_updater = updater
+        pass
 
     def _translate_fields(self, root):
         for field in self.TRANSLATABLE_FIELDS:

@@ -8,10 +8,11 @@ import itertools
 from lxml import etree
 
 # internal
-from ramrod import base, errors, utils
+from ramrod import base, errors, utils, xmlconst
 from ramrod.options import DEFAULT_UPDATE_OPTIONS
 
 # relative
+from . import register_updater
 from .base import BaseSTIXUpdater, STIXVocab
 
 
@@ -182,12 +183,13 @@ class TransIndicatorRelatedCampaign(base.TranslatableField):
 
 
 class OptionalGenericTestMechanismFields(base.OptionalElements):
-    XPATH = "./*"
+    XPATH = xmlconst.XPATH_RELATIVE_CHILDREN
     CTX_TYPES = {
         'GenericTestMechanismType': 'http://stix.mitre.org/extensions/TestMechanism#Generic-1'
     }
 
 
+@register_updater
 class STIX_1_1_Updater(BaseSTIXUpdater):
     """Updates STIX v1.1 content to STIX v1.1.1.
 
