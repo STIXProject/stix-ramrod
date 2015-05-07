@@ -4,7 +4,7 @@
 # internal
 from . import errors, utils
 
-# Namepsace flattening and backwards compatibility
+# Namespace flattening and backwards compatibility
 from .options import UpdateOptions, DEFAULT_UPDATE_OPTIONS  # noqa
 from .results import ResultDocument, UpdateResults  # noqa
 from .version import __version__  # noqa
@@ -20,7 +20,7 @@ def update(doc, from_=None, to_=None, options=None, force=False):
         * Update schemalocations
         * Update construct versions (``STIX_Package``, ``Observables``, etc.)
         * Update controlled vocabularies and fix typos
-        * Translate structures to new XSD datatype instances where possible.
+        * Translate structures to new XSD data type instances where possible.
         * Remove empty instances of attributes and elements which were required
           in one version of the language and declared optional in another.
 
