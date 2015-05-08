@@ -28,9 +28,8 @@ class STIX_1_1_1_Updater(BaseSTIXUpdater):
 
     * Instances of ``DiscoveryMethodTypeVocab-1.0`` are upgraded to
       ``DiscoveryMethodTypeVocab-2.0.``
-
-    Note:
-        All fields can be translated between STIX v1.1.1 and STIX v1.2.
+    * Component versions are updated.
+    * Schemalocations are updated.
 
     """
     VERSION = '1.1.1'
