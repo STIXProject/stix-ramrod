@@ -11,8 +11,8 @@ from .base import BaseSTIXUpdater, STIXVocab
 
 
 class DiscoveryMethodVocab(STIXVocab):
-    OLD_TYPES = ("DiscoveryMethodTypeVocab-1.0",)
-    NEW_TYPE = "DiscoveryMethodTypeVocab-2.0"
+    OLD_TYPES = ("DiscoveryMethodVocab-1.0",)
+    NEW_TYPE = "DiscoveryMethodVocab-2.0"
     VOCAB_NAME = "STIX Default Discovery Method Vocabulary"
     VOCAB_REFERENCE = "http://stix.mitre.org/XMLSchema/default_vocabularies/1.2/stix_default_vocabularies.xsd#DiscoveryMethodTypeVocab-2.0"
     TERMS = {
@@ -148,9 +148,6 @@ class STIX_1_1_1_Updater(BaseSTIXUpdater):
                 version.
             .InvalidVersionError: If the version of the input document
                 does not match the `VERSION` class-level attribute value.
-            .UpdateError: If the input document contains fields which
-                cannot be updated or constructs with non-unique IDs are
-                discovered.
 
         """
         root = utils.get_etree_root(root)
