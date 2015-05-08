@@ -8,7 +8,7 @@ General Updates
 ^^^^^^^^^^^^^^^
 
 The following general changes are made to STIX v1.1 content when updating to
-STIX v1.1.1
+STIX v1.1.1:
 
 * The ``xsi:schemaLocation`` attribute updated to refer to STIX v1.1 schemas,
   hosted at http://stix.mitre.org/.
