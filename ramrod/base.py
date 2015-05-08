@@ -288,7 +288,7 @@ class DisallowedFields(object):
 
         contexts = []
         for node in typed:
-            _, type_ = utils.get_type_info(node)
+            type_ = utils.get_type_info(node)[1]
             ns = utils.get_ext_namespace(node)
 
             if ctx.get(type_) == ns:

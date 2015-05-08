@@ -2,7 +2,7 @@
 # See LICENSE.txt for complete terms.
 
 # internal
-from ramrod import errors, utils
+from ramrod import utils
 from ramrod.options import DEFAULT_UPDATE_OPTIONS
 
 # relative
@@ -76,7 +76,7 @@ class STIX_1_1_1_Updater(BaseSTIXUpdater):
         'http://stix.mitre.org/TTP-1': 'http://stix.mitre.org/XMLSchema/ttp/1.2/ttp.xsd',
         'http://stix.mitre.org/ThreatActor-1': 'http://stix.mitre.org/XMLSchema/threat_actor/1.2/threat_actor.xsd',
         'http://stix.mitre.org/common-1': 'http://stix.mitre.org/XMLSchema/common/1.2/stix_common.xsd',
-        'http://stix.mitre.org/default_vocabularies-1': 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.2/stix_default_vocabularies.xsd',
+        'http://stix.mitre.org/default_vocabularies-1': 'http://stix.mitre.org/XMLSchema/default_vocabularies/1.2.0/stix_default_vocabularies.xsd',
         'http://stix.mitre.org/extensions/AP#CAPEC2.7-1': 'http://stix.mitre.org/XMLSchema/extensions/attack_pattern/capec_2.7/1.1/capec_2.7_attack_pattern.xsd',
         'http://stix.mitre.org/extensions/Address#CIQAddress3.0-1': 'http://stix.mitre.org/XMLSchema/extensions/address/ciq_3.0/1.2/ciq_3.0_address.xsd',
         'http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1': 'http://stix.mitre.org/XMLSchema/extensions/identity/ciq_3.0/1.2/ciq_3.0_identity.xsd',
@@ -133,21 +133,6 @@ class STIX_1_1_1_Updater(BaseSTIXUpdater):
             else:
                 node.attrib['version'] = '1.2'
 
-    def _update_cybox(self, root):
-        """Updates the CybOX content found under the `root` node.
-
-        Note:
-            STIX v1.1 and STIX v1.1.1 import CybOX 2.1, so this just updates
-            schemalocation attributes to point to the schemas hosted on
-            http://cybox.mitre.org.
-
-        Returns:
-            An updated `root` node. This may be a new ``etree._Element``
-            instance.
-
-        """
-        self._cybox_updater._update_schemalocs(root)  # noqa
-
     def check_update(self, root, options=None):
         """Determines if the input document can be upgraded.
 
@@ -174,16 +159,6 @@ class STIX_1_1_1_Updater(BaseSTIXUpdater):
         if options.check_versions:
             self._check_version(root)
 
-        disallowed = self._get_disallowed(root)
-
-        if not disallowed:
-            return
-
-        error = "Found duplicate or untranslatable fields in source document."
-        raise errors.UpdateError(
-            message=error,
-            disallowed=disallowed
-        )
 
     def _update(self, root, options):
         self._update_schemalocs(root)
