@@ -444,7 +444,7 @@ class STIX_1_0_1_Updater(BaseSTIXUpdater):
 
         """
         duplicates = super(STIX_1_0_1_Updater, self)._get_duplicates(root)
-        cybox = self._cybox_updater._get_duplicates(root)
+        cybox = self._cybox_updater._get_duplicates(root)  # noqa
         return dict(duplicates.items() + cybox.items())
 
     def _update_versions(self, root):
@@ -503,7 +503,7 @@ class STIX_1_0_1_Updater(BaseSTIXUpdater):
         """
         new_id = options.new_id_func
 
-        for _, nodes in duplicates.iteritems():
+        for nodes in duplicates.itervalues():
             for node in nodes:
                 new_id(node)
 
