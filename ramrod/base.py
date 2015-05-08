@@ -777,7 +777,6 @@ class BaseUpdater(object):
             ``NSMAP``, then this function returns `node` itself.
 
         """
-
         try:
             ns = utils.get_namespace(node)
         except ValueError:
