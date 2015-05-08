@@ -376,11 +376,10 @@ class STIX_1_0_1_Updater(BaseSTIXUpdater):
         super(STIX_1_0_1_Updater, self).__init__()
         self._init_cybox_updater()
 
-
     def _init_cybox_updater(self):
         super(STIX_1_0_1_Updater, self)._init_cybox_updater()
 
-        self._cybox_updater.XPATH_ROOT_NODES = (
+        selectors = (
             ".//stix:Observables | "
             ".//incident:Structured_Description | "
             ".//ttp:Observable_Characterization | "
@@ -388,7 +387,9 @@ class STIX_1_0_1_Updater(BaseSTIXUpdater):
             ".//coa:Parameter_Observables "
         )
 
-        self._cybox_updater.XPATH_VERSIONED_NODES = self._cybox_updater.XPATH_ROOT_NODES
+        updater = self._cybox_updater  # noqa
+        updater.XPATH_ROOT_NODES = selectors
+        updater.XPATH_VERSIONED_NODES = selectors
 
     def _translate_fields(self, root):
         for field in self.TRANSLATABLE_FIELDS:

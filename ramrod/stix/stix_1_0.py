@@ -212,13 +212,15 @@ class STIX_1_0_Updater(BaseSTIXUpdater):
     def _init_cybox_updater(self):
         super(STIX_1_0_Updater, self)._init_cybox_updater()
 
-        self._cybox_updater.XPATH_ROOT_NODES = (
+        selectors = (
             "//stix:Observables | "
             "//incident:Structured_Description | "
             "//ttp:Observable_Characterization"
         )
 
-        self._cybox_updater.XPATH_VERSIONED_NODES = self._cybox_updater.XPATH_ROOT_NODES
+        updater = self._cybox_updater  # noqa
+        updater.XPATH_ROOT_NODES = selectors
+        updater.XPATH_VERSIONED_NODES = selectors
 
     def _get_duplicates(self, root):
         """The STIX v1.0.1 schema does not enforce ID uniqueness, so this
