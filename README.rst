@@ -24,7 +24,7 @@ Overview
 --------
 
 The stix-ramrod package provides APIs and scripts for upgrading STIX and CybOX
-content. STIX content can be upgraded from ``1.0`` to ``1.1.1`` (the current release)
+content. STIX content can be upgraded from ``1.0`` to ``1.2`` (the current release)
 and anwhere in between. CybOX content can be upgraded from ``2.0`` to ``2.1`` (the
 current release) and anywhere in between.
 

@@ -9,7 +9,7 @@ For more information about STIX, please visit the
 please visit the `CybOX website <http://cybox.mitre.org>`_.
 
 Contents
-=========
+========
 
 .. toctree::
    :maxdepth: 2
@@ -17,7 +17,6 @@ Contents
    installation
    getting_started
    what_gets_updated
-
 
 
 API Reference
@@ -28,6 +27,7 @@ API Reference
 
    api/index
    api/examples
+
 
 Contributing
 ============
