@@ -396,7 +396,7 @@ class OptionalElements(DisallowedFields):
         """
         nodes = node.xpath(xmlconst.XPATH_DESCENDANT_OR_SELF)
         content = any(x.attrib or utils.strip_whitespace(x.text) for x in nodes)
-        return content == False
+        return content is False
 
     @classmethod
     def _interrogate(cls, nodes):
