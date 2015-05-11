@@ -155,7 +155,6 @@ class STIX_1_1_1_Updater(BaseSTIXUpdater):
         if options.check_versions:
             self._check_version(root)
 
-
     def _update(self, root, options):
         self._update_schemalocs(root)
         self._update_versions(root)

@@ -168,7 +168,7 @@ def get_ext_namespace(node):
 
     """
     xsi_type = node.attrib[xmlconst.TAG_XSI_TYPE]
-    alias, _ = xsi_type.split(":")
+    alias = xsi_type.split(":")[0]
     namespace = node.nsmap[alias]
     return namespace
 
@@ -278,7 +278,6 @@ def validate_version(version, allowed):
         raise errors.InvalidVersionError(error)
 
 
-
 def validate_versions(from_, to_, allowed):
     validate_version(from_, allowed)
     validate_version(to_, allowed)
@@ -287,3 +286,19 @@ def validate_versions(from_, to_, allowed):
         error =  "Cannot upgrade from '{0}' to '{1}'"
         error = error.format(from_, to_)
         raise errors.InvalidVersionError(error)
+
+
+def children(node):
+    """Returns an iterable collection of etree Element nodes that are direct
+    children of `node`.
+
+    """
+    return node.xpath(xmlconst.XPATH_RELATIVE_CHILDREN)
+
+
+def descendants(node):
+    """Returns an iterable collection of etree Element nodes that are
+    descendants of `node`.
+
+    """
+    return node.xpath(xmlconst.XPATH_RELATIVE_DESCENDANTS)
