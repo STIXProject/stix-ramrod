@@ -305,20 +305,33 @@ def validate_versions(from_, to_, allowed):
         raise errors.InvalidVersionError(error)
 
 
+def iterchildren(node):
+    """Returns an iterator which yields direct child elements of `node`.
+
+    """
+    return node.iterchildren('*')
+
+
 def children(node):
     """Returns an iterable collection of etree Element nodes that are direct
     children of `node`.
 
     """
-    return node.xpath(xmlconst.XPATH_RELATIVE_CHILDREN)
+    return list(iterchildren(node))
+
+
+def iterdescendants(node):
+    """Returns an iterator which yields descendant elements of `node`.
+
+    """
+    return node.iterdescendants('*')
 
 
 def descendants(node):
-    """Returns an iterable collection of etree Element nodes that are
-    descendants of `node`.
+    """Returns a list of etree Element nodes that are descendants of `node`.
 
     """
-    return node.xpath(xmlconst.XPATH_RELATIVE_DESCENDANTS)
+    return list(iterdescendants(node))
 
 
 def strip_whitespace(string):

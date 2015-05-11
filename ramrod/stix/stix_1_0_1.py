@@ -68,7 +68,7 @@ class DisallowedMalware(base.DisallowedFields):
         """
         try:
 
-            namespaces = (utils.get_ext_namespace(x) for x in utils.children(node))
+            namespaces = (utils.get_ext_namespace(x) for x in utils.iterchildren(node))
             return all(ns == cls.NS_MAEC_EXT for ns in namespaces)
         except KeyError:
             # At least one node didn't contain an xsi:type attribute
@@ -105,7 +105,7 @@ class DisallowedAttackPatterns(base.DisallowedFields):
 
         """
         try:
-            namespaces = (utils.get_ext_namespace(x) for x in utils.children(node))
+            namespaces = (utils.get_ext_namespace(x) for x in utils.iterchildren(node))
             return all(ns == cls.NS_CAPEC_EXT for ns in namespaces)
         except KeyError:
             # At least one node didn't contain an xsi:type attribute

@@ -394,7 +394,7 @@ class OptionalElements(DisallowedFields):
         attributes or text values.
 
         """
-        nodes = node.xpath(xmlconst.XPATH_DESCENDANT_OR_SELF)
+        nodes = node.iter('*')
         content = any(x.attrib or utils.strip_whitespace(x.text) for x in nodes)
         return content is False
 
@@ -508,7 +508,7 @@ class BaseUpdater(object):
         namespaces = self.NSMAP.values()
         id_nodes = collections.defaultdict(list)
 
-        for desc in utils.descendants(root):
+        for desc in utils.iterdescendants(root):
             if 'id' not in desc.attrib:
                 continue
 
@@ -678,7 +678,7 @@ class BaseUpdater(object):
         a new `ns0` namespace alias.
 
         """
-        for node in utils.descendants(root):
+        for node in utils.iterdescendants(root):
             node_ns = utils.get_namespace(node)
             updated_ns = self.UPDATE_NS_MAP.get(node_ns, node_ns)
             node.tag = node.tag.replace(node_ns, updated_ns)
