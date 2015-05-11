@@ -6,6 +6,7 @@
 # builtin
 import sys
 import argparse
+import os.path
 
 # internal
 import ramrod
@@ -221,13 +222,30 @@ def _get_arg_parser():
     return parser
 
 
+def _validate_args(args):
+    """Validates the input command-line arguments.
+
+    """
+    infile = args.infile
+
+    if os.path.exists(infile):
+        return
+
+    raise ValueError("Input file '%s' does not exist." % infile)
+
+
 def main():
     parser = _get_arg_parser()
     args = parser.parse_args()
 
     try:
+        # Validate the input commandline arguments
+        _validate_args(args)
+
+        # Build UpdateOptions from commandline arguments
         options = _get_options(args)
 
+        # Run the update process.
         updated = ramrod.update(
             args.infile,
             from_=args.from_,
@@ -236,6 +254,7 @@ def main():
             force=args.force
         )
 
+        # Write results
         _write_xml(updated.document, args.outfile)
         _write_removed(updated.removed)
         _write_remapped_ids(updated.remapped_ids)
@@ -249,6 +268,6 @@ def main():
     except errors.UnknownVersionError as ex:
         _print_unknown_version_error(str(ex))
         sys.exit(EXIT_FAILURE)
-
+    
 if __name__ == "__main__":
     main()
