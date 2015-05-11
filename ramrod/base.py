@@ -43,16 +43,23 @@ class Vocab(object):
 
     @classmethod
     def find(cls, root, typed=None):
-        typed = typed or utils.get_typed_nodes(root)
-        vocab_ns = cls.VOCAB_NAMESPACE
-        old = cls.OLD_TYPES
+        """Finds and returns a list of nodes that are instances of old
+        controlled vocabularies.
+
+        """
+        if typed is None:
+            typed = utils.get_typed_nodes(root)
 
         found = []
         for node in typed:
-            _, type_ = utils.get_type_info(node)
+            _, typename = utils.get_type_info(node)
             ext_ns = utils.get_ext_namespace(node)
 
-            if all((ext_ns == vocab_ns, type_ in old)):
+            if ext_ns != cls.VOCAB_NAMESPACE:
+                continue
+            elif typename not in cls.OLD_TYPES:
+                continue
+            else:
                 found.append(node)
 
         return found
@@ -68,7 +75,9 @@ class Vocab(object):
         * Updates ``vocab_reference`` attribute value if present.
 
         """
-        typed = typed or utils.get_typed_nodes(root)
+        if typed is None:
+            typed = utils.get_typed_nodes(root)
+
         vocabs = cls.find(root, typed)
 
         for node in vocabs:
@@ -76,13 +85,13 @@ class Vocab(object):
 
             attribs    = node.attrib
             terms      = cls.TERMS
-            new_type_  = cls.NEW_TYPE
+            new_type   = cls.NEW_TYPE
             vocab_ref  = cls.VOCAB_REFERENCE
             vocab_name = cls.VOCAB_NAME
 
             # Update the xsi:type attribute to identify the new
             # controlled vocabulary
-            new_xsi_type = "%s:%s" % (alias, new_type_)
+            new_xsi_type = "%s:%s" % (alias, new_type)
             attribs[xmlconst.TAG_XSI_TYPE] = new_xsi_type
 
             # Update the vocab_reference attribute if present
@@ -96,7 +105,8 @@ class Vocab(object):
             # Update the node value if there is a new value in the updated
             # controlled vocabulary
             value = node.text
-            node.text = terms.get(value, value)
+            if value in terms:
+                node.text = terms[value]
 
 
 class TranslatableField(object):
@@ -137,7 +147,7 @@ class TranslatableField(object):
             value = old.xpath(xpath, namespaces=nsmap)[0]
             new.text = value.text
         else:
-            # Used when the fields are the same datatype, just different names
+            # Used when the fields are the same data type, just different names
             new[:] = old[:]  # TODO: verify that namespaces don't get messed up here
 
     @classmethod
@@ -190,14 +200,15 @@ class TranslatableField(object):
             A list of nodes discovered via the `XPATH_NODE` xpath.
 
         """
-        xpath, nsmap = cls.XPATH_NODE, cls.NSMAP
-        found = root.xpath(xpath, namespaces=nsmap)
-        return found
+        return root.xpath(cls.XPATH_NODE, namespaces=cls.NSMAP)
 
     @classmethod
     def translate(cls, root):
-        """Translates and replaces nodes found in `root` with new nodes."""
+        """Translates and replaces nodes found in `root` with new nodes.
+
+        """
         nodes = cls._find(root)
+
         for node in nodes:
             new_node = cls._translate_fields(node)
             utils.replace_xml_element(node, new_node)
@@ -214,6 +225,7 @@ class RenamedField(TranslatableField):
     @classmethod
     def translate(cls, root):
         nodes = cls._find(root)
+
         for node in nodes:
             node.tag = cls.NEW_TAG
 
@@ -283,7 +295,7 @@ class DisallowedFields(object):
         if not ctx:
             return (root,)
 
-        if not typed:
+        if typed is None:
             typed = utils.get_typed_nodes(root)
 
         contexts = []
@@ -350,10 +362,10 @@ class OptionalAttributes(DisallowedFields):
         attrs = cls.ATTRIBUTES
 
         def is_empty(node, attr):
-            try:
+            if attr in node.attrib:
                 val = node.attrib[attr]
-                return not val
-            except KeyError:
+                return len(val) == 0
+            else:
                 return False
 
         for node in nodes:
@@ -378,15 +390,13 @@ class OptionalElements(DisallowedFields):
 
     @classmethod
     def _is_empty(cls, node):
-        if any((node.attrib, node.text)):
-            return False
+        """Returns ``False`` if `node` or any of its descendants contain
+        attributes or text values.
 
-        for child in node:
-            if not cls._is_empty(child):
-                return False
-
-        return True
-
+        """
+        nodes = node.xpath(xmlconst.XPATH_DESCENDANT_OR_SELF)
+        content = any(x.attrib or utils.strip_whitespace(x.text) for x in nodes)
+        return content == False
 
     @classmethod
     def _interrogate(cls, nodes):
@@ -401,12 +411,7 @@ class OptionalElements(DisallowedFields):
             A list of nodes that are empty.
 
         """
-        contraband = []
-        for node in nodes:
-            if cls._is_empty(node):
-                contraband.append(node)
-
-        return contraband
+        return [x for x in nodes if cls._is_empty(x)]
 
 
 class BaseUpdater(object):
@@ -474,7 +479,7 @@ class BaseUpdater(object):
 
     def _is_leaf(self, node):
         """Returns ``True`` if the `node` has no children."""
-        return (len(node.xpath(xmlconst.XPATH_RELATIVE_CHILDREN)) == 0)
+        return len(node.xpath(xmlconst.XPATH_RELATIVE_CHILDREN)) == 0
 
     def _get_ns_alias(self, root, ns):
         """Returns the XML Namespace alias defined for a namespace in a given
@@ -503,22 +508,24 @@ class BaseUpdater(object):
         namespaces = self.NSMAP.values()
         id_nodes = collections.defaultdict(list)
 
-        for child in root.iterdescendants():
-            try:
-                ns = utils.get_namespace(child)
-            except ValueError:
+        for desc in utils.descendants(root):
+            if 'id' not in desc.attrib:
                 continue
+
+            ns = utils.get_namespace(desc)
 
             if ns not in namespaces:
                 continue
 
-            if 'id' not in child.attrib:
-                continue
+            id_ = desc.attrib['id']
+            id_nodes[id_].append(desc)
 
-            id_ = child.attrib['id']
-            id_nodes[id_].append(child)
+        filtered = {}
+        for id_, nodes in id_nodes.iteritems():
+            if len(nodes) > 1:
+                filtered[id_] = nodes
 
-        return dict((id_, nodes) for id_, nodes in id_nodes.iteritems() if len(nodes) > 1)
+        return filtered
 
     def _get_versioned_nodes(self, root):
         """Discovers all versioned nodes under `root` defined by the class-level
@@ -601,7 +608,7 @@ class BaseUpdater(object):
             An ``xsi:schemaLocation`` value string.
 
         """
-        schemaloc_str = "   ".join(("%s %s" % (ns, loc)) for ns, loc in pairs)
+        schemaloc_str = "   ".join("%s %s" % (ns, loc) for ns, loc in pairs)
         return schemaloc_str
 
     def _clean_schemalocs(self, pairs):
@@ -650,12 +657,11 @@ class BaseUpdater(object):
             root (lxml.etree._Element): The top-level xml node.
 
         """
-        try:
-            schemaloc = utils.get_schemaloc_pairs(root)
-        except KeyError:
+        if xmlconst.TAG_SCHEMALOCATION not in root.attrib:
             return
 
-        cleaned = self._clean_schemalocs(schemaloc)
+        schemalocs = utils.get_schemaloc_pairs(root)
+        cleaned = self._clean_schemalocs(schemalocs)
         remapped = self._remap_schemalocs(cleaned)
         updated = self._create_schemaloc_str(remapped)
 
@@ -672,7 +678,7 @@ class BaseUpdater(object):
         a new `ns0` namespace alias.
 
         """
-        for node in root.findall(xmlconst.XPATH_RELATIVE_DESCENDANTS):
+        for node in utils.descendants(root):
             node_ns = utils.get_namespace(node)
             updated_ns = self.UPDATE_NS_MAP.get(node_ns, node_ns)
             node.tag = node.tag.replace(node_ns, updated_ns)
@@ -777,17 +783,13 @@ class BaseUpdater(object):
             ``NSMAP``, then this function returns `node` itself.
 
         """
-        try:
-            ns = utils.get_namespace(node)
-        except ValueError:
-            # The `node` was probably an XML comment
-            return node
-
+        ns = utils.get_namespace(node)
         namespaces = self.NSMAP.itervalues()
+
         if ns not in namespaces:
             return node
 
-        for child in node:
+        for child in utils.children(node):
             self._update_namespaces(child)
 
         new_node = self._update_nsmap(node)
@@ -911,7 +913,9 @@ class BaseUpdater(object):
         # Update the document
         updated = self._update(cleaned_doc, options)
         results = self._create_update_results(
-            updated, remapped=remapped, removed=removed
+            root=updated,
+            remapped=remapped,
+            removed=removed
         )
 
         return results

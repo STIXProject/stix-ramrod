@@ -131,8 +131,8 @@ def get_type_info(node):
 
     """
     xsi_type = node.attrib[xmlconst.TAG_XSI_TYPE]
-    alias, type_ = xsi_type.split(':')
-    return (alias, type_)
+    alias, typename = xsi_type.split(':')
+    return (alias, typename)
 
 
 def get_typed_nodes(root):
@@ -268,6 +268,14 @@ def is_version_equal(x, y):
 
 
 def validate_version(version, allowed):
+    """Raises a :class:`.InvalidVersionError` if `version` is not found in
+    `allowed`.
+
+    Args:
+        version: A version string.
+        allowed: An iterable collection of version strings.
+
+    """
     if not version:
         error = "The version was `None` or could not be determined."
         raise errors.UnknownVersionError(error)
@@ -279,6 +287,15 @@ def validate_version(version, allowed):
 
 
 def validate_versions(from_, to_, allowed):
+    """Raises a :class:`.InvalidVersionError` if `from_` or `to_` are not
+    found in `allowed` or `from_` is greater than or equal to `to_`.
+
+    Args:
+        from_: A version string.
+        to_: A version string.
+        allowed: An iterable collection of version strings.
+
+    """
     validate_version(from_, allowed)
     validate_version(to_, allowed)
 
@@ -302,3 +319,13 @@ def descendants(node):
 
     """
     return node.xpath(xmlconst.XPATH_RELATIVE_DESCENDANTS)
+
+
+def strip_whitespace(string):
+    """Returns a copy of `string` with its whitespace stripped.
+
+    """
+    if string is None:
+        return None
+
+    return "".join(string.split())

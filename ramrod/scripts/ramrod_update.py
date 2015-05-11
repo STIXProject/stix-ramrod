@@ -268,6 +268,6 @@ def main():
     except errors.UnknownVersionError as ex:
         _print_unknown_version_error(str(ex))
         sys.exit(EXIT_FAILURE)
-    
+
 if __name__ == "__main__":
     main()
