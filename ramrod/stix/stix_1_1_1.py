@@ -14,7 +14,7 @@ class DiscoveryMethodVocab(STIXVocab):
     OLD_TYPES = ("DiscoveryMethodVocab-1.0",)
     NEW_TYPE = "DiscoveryMethodVocab-2.0"
     VOCAB_NAME = "STIX Default Discovery Method Vocabulary"
-    VOCAB_REFERENCE = "http://stix.mitre.org/XMLSchema/default_vocabularies/1.2/stix_default_vocabularies.xsd#DiscoveryMethodTypeVocab-2.0"
+    VOCAB_REFERENCE = "http://stix.mitre.org/XMLSchema/default_vocabularies/1.2.0/stix_default_vocabularies.xsd#DiscoveryMethodTypeVocab-2.0"
     TERMS = {
        'Fraud Detection': 'External - Fraud Detection'
     }
@@ -86,7 +86,7 @@ class STIX_1_1_1_Updater(BaseSTIXUpdater):
         'http://stix.mitre.org/extensions/TestMechanism#OpenIOC2010-1': 'http://stix.mitre.org/XMLSchema/extensions/test_mechanism/open_ioc_2010/1.2/open_ioc_2010_test_mechanism.xsd',
         'http://stix.mitre.org/extensions/TestMechanism#Snort-1': 'http://stix.mitre.org/XMLSchema/extensions/test_mechanism/snort/1.2/snort_test_mechanism.xsd',
         'http://stix.mitre.org/extensions/TestMechanism#YARA-1': 'http://stix.mitre.org/XMLSchema/extensions/test_mechanism/yara/1.2/yara_test_mechanism.xsd',
-        'http://stix.mitre.org/extensions/Vulnerability#CVRF-1': 'http://stix.mitre.org/XMLSchema/extensions/vulnerability/cvrf_1.2/cvrf_1.1_vulnerability.xsd',
+        'http://stix.mitre.org/extensions/Vulnerability#CVRF-1': 'http://stix.mitre.org/XMLSchema/extensions/vulnerability/cvrf_1.1/1.2/cvrf_1.1_vulnerability.xsd',
         'http://stix.mitre.org/stix-1': 'http://stix.mitre.org/XMLSchema/core/1.2/stix_core.xsd'
     }
 
