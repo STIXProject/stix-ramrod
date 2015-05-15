@@ -1,5 +1,5 @@
-stix-ramrod v1.1.0.dev0
-=======================
+stix-ramrod
+===========
 
 A Python library for upgrading STIX and CybOX XML content.
 
