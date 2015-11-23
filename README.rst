@@ -1,11 +1,11 @@
 stix-ramrod
 ===========
 
-A Python library for upgrading STIX and CybOX XML content.
+A Python library for upgrading Structured Threat Information eXpression (STIX) and Cyber Observable eXpression (CybOX) XML content.
 
 :Source: https://github.com/STIXProject/stix-ramrod
 :Documentation: http://stix-ramrod.readthedocs.org
-:Information: http://stixproject.github.io
+:Information: https://stixproject.github.io | https://cyboxproject.github.io/
 
 |travis badge| |health badge| |version badge| |downloads badge|
 
@@ -82,10 +82,7 @@ follow `semantic versioning <http://semver.org/>`_ guidelines.
 Feedback
 --------
 
-You are encouraged to provide feedback by commenting on open issues or signing
-up for the `STIX discussion list
-<http://stix.mitre.org/community/registration.html>`_ and posting your
-questions.
+Please provide feedback to [stix@mitre.org](mailto:stix@mitre.org).
 
 
 Terms
