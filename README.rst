@@ -15,9 +15,9 @@ A Python library for upgrading Structured Threat Information eXpression (STIX) a
 .. |health badge| image:: https://landscape.io/github/STIXProject/stix-ramrod/master/landscape.svg
    :target: https://landscape.io/github/STIXProject/stix-ramrod/master
    :alt: Code Health
-.. |version badge| image:: https://pypip.in/v/stix-ramrod/badge.png
+.. |version badge| image:: https://img.shields.io/pypi/v/stix-ramrod.png?maxAge=2592000
    :target: https://pypi.python.org/pypi/stix-ramrod/
-.. |downloads badge| image:: https://pypip.in/d/stix-ramrod/badge.png
+.. |downloads badge| image:: https://img.shields.io/pypi/dm/stix-ramrod.png?maxAge=2592000
    :target: https://pypi.python.org/pypi/stix-ramrod/
 
 Overview
@@ -25,7 +25,7 @@ Overview
 
 The stix-ramrod package provides APIs and scripts for upgrading STIX and CybOX
 content. STIX content can be upgraded from ``1.0`` to ``1.2`` (the current release)
-and anwhere in between. CybOX content can be upgraded from ``2.0`` to ``2.1`` (the
+and anywhere in between. CybOX content can be upgraded from ``2.0`` to ``2.1`` (the
 current release) and anywhere in between.
 
 Our goal is to make it easy for developers, content authors, and content
@@ -82,7 +82,7 @@ follow `semantic versioning <http://semver.org/>`_ guidelines.
 Feedback
 --------
 
-Please provide feedback to [stix@mitre.org](mailto:stix@mitre.org).
+Please provide feedback to stix@mitre.org.
 
 
 Terms
