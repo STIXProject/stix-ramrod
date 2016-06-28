@@ -145,10 +145,10 @@ def update_namespaces(elt, ns_mapping):
         # namespace decl still hangs around.
 
         ns, loc = split_braced_name(elt.tag)
-        if ns is not None:
-            new_elt_name = "{{{}}}{}".format(ns_mapping.get(ns, ns), loc)
-        else:
+        if ns is None:
             new_elt_name = elt.tag
+        else:
+            new_elt_name = "{{{}}}{}".format(ns_mapping.get(ns, ns), loc)
 
         new_attrib = {}
         for attr_name, attr_val in elt.items():
