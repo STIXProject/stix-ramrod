@@ -305,15 +305,30 @@ def parse_args():
     return parser.parse_args()
 
 
+def update_from_lists(tree, from_ns, to_ns):
+    """Update XML from lists of old and new namespaces."""
+    ns_mapping = dict(zip(from_ns, to_ns))
+
+    new_root = update_namespaces(tree.getroot(), ns_mapping)
+    if new_root is not tree.getroot():
+        tree._setroot(new_root)
+
+    update_schemalocations(tree, ns_mapping)
+
+
+def main(tree, from_id, to_id):
+    """Update XML from IDs or filenames as given on the commandline."""
+    from_ns = get_namespace_list(from_id)
+    to_ns = get_namespace_list(to_id)
+
+    update_from_lists(tree, from_ns, to_ns)
+
+    special_case_version_update(tree, to_id)
+
+
 if __name__ == "__main__":
 
     args = parse_args()
-
-    # "from" is a python keyword... can't use the normal syntax here.
-    from_ns = get_namespace_list(getattr(args, "from"))
-    to_ns = get_namespace_list(args.to)
-
-    ns_mapping = dict(zip(from_ns, to_ns))
 
     # The parser stix-ramrod uses.
     parser = ET.ETCompatXMLParser(
@@ -326,13 +341,10 @@ if __name__ == "__main__":
 
     tree = ET.parse(args.file, parser)
 
-    new_root = update_namespaces(tree.getroot(), ns_mapping)
-    if new_root is not tree.getroot():
-        tree._setroot(new_root)
-
-    update_schemalocations(tree, ns_mapping)
-
-    special_case_version_update(tree, args.to)
+    main(tree,
+         # "from" is a python keyword... can't use the normal syntax here.
+         getattr(args, "from"),
+         args.to)
 
     output_encoding = "utf-8"
 
