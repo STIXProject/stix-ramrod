@@ -765,10 +765,6 @@ class BaseUpdater(object):
         namespaces if found in the instance document.
 
         Note:
-            Only nodes that exist within the namespaces defined by
-            the ``NS_MAP`` class attribute will be updated.
-
-        Note:
             The lxml library does not allow you to modify the ``nsmap``
             attribute of an ``_Element`` directly. To modify the ``nsmap``,
             A copy of `root` must be made with a new initial ``nsmap``.
@@ -777,24 +773,19 @@ class BaseUpdater(object):
             A copy of the `node` with an updated ``nsmap`` attribute. Each
             of its descendants which belong to known namespaces are updated
             as well.
-
-            If `node` is not an ``etree._Element`` (e.g, a comment node),
-            or it does not belong to any namespace defined in the class-level
-            ``NSMAP``, then this function returns `node` itself.
-
         """
-        ns = utils.get_namespace(node)
-        namespaces = self.NSMAP.itervalues()
-
-        if ns not in namespaces:
-            return node
-
         for child in utils.children(node):
             self._update_namespaces(child)
 
-        new_node = self._update_nsmap(node)
-        utils.replace_xml_element(node, new_node)
-        return new_node
+        ns = utils.get_namespace(node)
+
+        if ns in self.UPDATE_NS_MAP:
+            new_node = self._update_nsmap(node)
+            utils.replace_xml_element(node, new_node)
+            node = new_node
+
+        return node
+
 
     def _create_update_results(self, root, remapped=None, removed=None):
         """Creates and returns a :class:`UpdateResults` object instance
