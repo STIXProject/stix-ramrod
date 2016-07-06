@@ -119,5 +119,5 @@ from .stix_1_0 import STIX_1_0_Updater  # noqa
 from .stix_1_0_1 import STIX_1_0_1_Updater  # noqa
 from .stix_1_1 import STIX_1_1_Updater  # noqa
 from .stix_1_1_1 import STIX_1_1_1_Updater  # noqa
-
+from .stix_1_2 import STIX_1_2_Updater
 
