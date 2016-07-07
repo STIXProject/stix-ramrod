@@ -32,7 +32,7 @@ fn_readme = join(BASE_DIR, "README.rst")
 with open(fn_readme) as f:
     readme = f.read()
 
-install_requires = ['lxml>=3.3.5']
+install_requires = ['lxml>=3.3.5', 'six>=1.9.0']
 
 extras_require = {
     'docs': [
@@ -53,7 +53,7 @@ setup(
     url='http://stix.mitre.org/',
     version=get_version(),
     packages=find_packages(),
-    scripts=['ramrod/scripts/ramrod_update.py'],
+    scripts=['ramrod/scripts/ramrod_update.py', 'ramrod/scripts/update_ns.py'],
     install_requires=install_requires,
     extras_require=extras_require,
     long_description=readme,
