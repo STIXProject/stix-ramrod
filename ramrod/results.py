@@ -72,7 +72,7 @@ class ResultDocument(object):
         allowed_types = (etree._Element, etree._ElementTree)  # noqa
 
         if not isinstance(document, allowed_types):
-            raise ValueError("Document must be one of %s" % (allowed_types,))
+            raise ValueError("Document must be one of %s, got %s" % (allowed_types, type(document)))
 
         try:
             self._document = document.getroottree()
