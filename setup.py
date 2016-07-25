@@ -23,7 +23,7 @@ def get_version():
 py_maj, py_minor = sys.version_info[:2]
 
 if (py_maj, py_minor) < (2, 6):
-    raise Exception('stix-validator requires at least Python 2.6')
+    raise Exception('stix-ramrod requires at least Python 2.6')
 
 fn_readme = join(BASE_DIR, "README.rst")
 with open(fn_readme) as f:

@@ -14,9 +14,8 @@ only involves namespace changes).  stix-ramrod can only upgrade.
 from __future__ import print_function
 import argparse
 import lxml.etree as ET
-import six
 import sys
-from six import iteritems, itervalues
+from six import iteritems, itervalues, PY2
 
 STIX_NS_1_2 = [
     # "Core" stuff
@@ -293,7 +292,7 @@ def parse_args():
     Pretty-print output.
     """)
 
-    if six.PY2:
+    if PY2:
         bin_stdin = sys.stdin
     else:
         bin_stdin = sys.stdin.buffer
@@ -349,7 +348,7 @@ if __name__ == "__main__":
 
     output_encoding = "utf-8"
 
-    if six.PY2:
+    if PY2:
         bin_stdout = sys.stdout
     else:
         bin_stdout = sys.stdout.buffer
