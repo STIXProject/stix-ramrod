@@ -1,11 +1,9 @@
 # Copyright (c) 2015, The MITRE Corporation. All rights reserved.
 # See LICENSE.txt for complete terms.
 
-# stdlib
-import StringIO
-
 # external
 from lxml import etree
+from six import StringIO, BytesIO, text_type, binary_type, python_2_unicode_compatible
 
 
 class UpdateResults(object):
@@ -46,16 +44,17 @@ class UpdateResults(object):
         if not self.document:
             return u''
 
-        return unicode(self.document)
+        return text_type(self.document)
 
 
     def __str__(self):
         if not self.document:
             return ''
 
-        return str(self.document)
+        return binary_type(self.document)
 
 
+@python_2_unicode_compatible
 class ResultDocument(object):
     """Used to encapsulate an updated XML document. This is the type of the
     ``document`` attribute on :class:`ramrod.UpdateResults`
@@ -80,12 +79,8 @@ class ResultDocument(object):
             self._document = document
 
 
-    def __unicode__(self):
-        return unicode(self.as_stringio().getvalue())
-
-
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return text_type(self.as_stringio().getvalue())
 
 
     def as_element(self):
@@ -103,12 +98,12 @@ class ResultDocument(object):
         return self._document
 
     def as_stringio(self):
-        """Returns a ``StringIO.StringIO`` representation of the
+        """Returns a ``StringIO`` representation of the
         ``ResultDocument`` instance.
 
         """
         buf = etree.tounicode(self._document, pretty_print=True)
-        return StringIO.StringIO(buf)
+        return StringIO(buf)
 
 
 __all__ = [

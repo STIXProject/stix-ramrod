@@ -3,6 +3,7 @@
 
 # external
 from lxml import etree
+from six import itervalues
 
 # internal
 from ramrod import base, errors, utils
@@ -444,7 +445,7 @@ class STIX_1_0_1_Updater(BaseSTIXUpdater):
         """
         duplicates = super(STIX_1_0_1_Updater, self)._get_duplicates(root)
         cybox = self._cybox_updater._get_duplicates(root)  # noqa
-        return dict(duplicates.items() + cybox.items())
+        return dict(list(duplicates.items()) + list(cybox.items()))
 
     def _update_versions(self, root):
         """Updates the versions of versioned nodes under `root` to align with
@@ -502,7 +503,7 @@ class STIX_1_0_1_Updater(BaseSTIXUpdater):
         """
         new_id = options.new_id_func
 
-        for nodes in duplicates.itervalues():
+        for nodes in itervalues(duplicates):
             for node in nodes:
                 new_id(node)
 

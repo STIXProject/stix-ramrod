@@ -16,6 +16,7 @@ import argparse
 import lxml.etree as ET
 import six
 import sys
+from six import iteritems, itervalues
 
 STIX_NS_1_2 = [
     # "Core" stuff
@@ -127,7 +128,7 @@ def update_namespaces(elt, ns_mapping):
     # Wholesale replacement is only necessary when we need to modify
     # nsmap.
     need_replace_elt = False
-    for ns in six.itervalues(elt.nsmap):
+    for ns in itervalues(elt.nsmap):
         if ns in ns_mapping:
             need_replace_elt = True
             break
@@ -135,7 +136,7 @@ def update_namespaces(elt, ns_mapping):
     if need_replace_elt:
         # Update nsmap
         new_ns_map = {}
-        for pfx, old_ns in six.iteritems(elt.nsmap):
+        for pfx, old_ns in iteritems(elt.nsmap):
             new_ns_map[pfx] = ns_mapping.get(old_ns, old_ns)
 
         # Must update the element and attribute names when we update nsmap,

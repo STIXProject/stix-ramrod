@@ -9,6 +9,7 @@ from distutils.version import StrictVersion
 
 # external
 from lxml import etree
+from six import text_type
 
 # relative
 from . import errors, xmlconst
@@ -229,7 +230,7 @@ def get_node_text(node):
     if len(node) > 0:
         return None
 
-    if "<![CDATA[" in etree.tostring(node):
+    if "<![CDATA[" in etree.tostring(node, encoding=text_type):
         return etree.CDATA(node.text)
 
     return node.text

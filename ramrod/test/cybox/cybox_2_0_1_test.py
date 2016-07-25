@@ -2,7 +2,7 @@
 # See LICENSE.txt for complete terms.
 
 import unittest
-from StringIO import StringIO
+from six import StringIO
 
 import ramrod
 import ramrod.cybox

@@ -7,6 +7,9 @@ import itertools
 # internal
 from ramrod import base, errors, utils
 
+# external
+from six import iteritems
+
 
 class BaseSTIXUpdater(base.BaseUpdater):
     """Base class for STIX updating code. Sets default values for
@@ -63,8 +66,8 @@ class BaseSTIXUpdater(base.BaseUpdater):
 
         updater.NSMAP = dict(
             itertools.chain(
-                self.NSMAP.iteritems(),
-                self.CYBOX_UPDATER.NSMAP.iteritems()
+                iteritems(self.NSMAP),
+                iteritems(self.CYBOX_UPDATER.NSMAP)
             )
         )
 
