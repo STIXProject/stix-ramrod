@@ -5,11 +5,13 @@
 from ramrod import base, errors, utils
 from ramrod.options import DEFAULT_UPDATE_OPTIONS
 
+# external
+from six import iteritems
+
 # relative imports
 from . import common
 from . import register_updater
 from .base import BaseCyboxUpdater, CyboxVocab
-
 
 class ObjectRelationshipVocab(CyboxVocab):
     OLD_TYPES = ('ObjectRelationshipVocab-1.0',)
@@ -606,7 +608,7 @@ class Cybox_2_0_1_Updater(BaseCyboxUpdater):
 
         """
         new_id = options.new_id_func
-        for _, nodes in duplicates.iteritems():
+        for _, nodes in iteritems(duplicates):
             for node in nodes:
                 new_id(node)
 

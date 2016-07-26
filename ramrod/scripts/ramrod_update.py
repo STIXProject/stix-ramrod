@@ -12,6 +12,9 @@ import os.path
 import ramrod
 import ramrod.errors as errors
 
+# external
+from six import iteritems, PY2
+
 
 EXIT_SUCCESS = 0
 EXIT_FAILURE = 1
@@ -41,7 +44,12 @@ def _write_xml(document, outfn=None):
         tree: A :class:`ramrod.ResultDocument` instance.
 
     """
-    out = outfn or sys.stdout
+    if PY2:
+        bin_stdout = sys.stdout
+    else:
+        bin_stdout = sys.stdout.buffer
+
+    out = outfn or bin_stdout
     tree = document.as_element_tree()
     tree.write(out, pretty_print=True)
 
@@ -64,8 +72,8 @@ def _print_update_error(err):
            _print_error("  Line %s: %s", node.sourceline, node.tag)
 
     if duplicates:
-        print "[!] Found items with duplicate ids:"
-        for id_, nodes in duplicates.iteritems():
+        print("[!] Found items with duplicate ids:")
+        for id_, nodes in iteritems(duplicates):
             _print_error("  '%s' on lines %s", id_, [x.sourceline for x in nodes])
 
 
@@ -111,11 +119,11 @@ def _write_removed(removed):
     if not removed:
         return
 
-    print ("\n[!] The following nodes were removed from the source document "
+    print("\n[!] The following nodes were removed from the source document "
            "during the update process:")
     
     for node in removed:
-        print "    Line %s: %s" % (node.sourceline, node.tag)
+        print("    Line %s: %s" % (node.sourceline, node.tag))
 
 
 def _write_remapped_ids(remapped):
@@ -130,11 +138,11 @@ def _write_remapped_ids(remapped):
     if not remapped:
         return
 
-    print ("\n[!] The following ids were duplicated in the source document and "
+    print("\n[!] The following ids were duplicated in the source document and "
            "remapped during the update process:")
 
-    for orig_id, nodes in remapped.iteritems():
-        print "'%s': %s" % (orig_id, [x.attrib['id'] for x in nodes])
+    for orig_id, nodes in iteritems(remapped):
+        print("'%s': %s" % (orig_id, [x.attrib['id'] for x in nodes]))
 
 
 def _get_options(args):

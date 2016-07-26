@@ -6,6 +6,7 @@ import collections
 
 # external
 from lxml import etree
+from six import iteritems
 
 # relative
 from . import errors, utils, xmlconst, results
@@ -171,7 +172,7 @@ class TranslatableField(object):
         if cls.COPY_ATTRIBUTES:
             new.attrib.update(source.attrib)
 
-        for name, val in cls.OVERRIDE_ATTRIBUTES.iteritems():
+        for name, val in iteritems(cls.OVERRIDE_ATTRIBUTES):
             if name not in source.attrib:
                 continue
             new.attrib[name] = val
@@ -521,7 +522,7 @@ class BaseUpdater(object):
             id_nodes[id_].append(desc)
 
         filtered = {}
-        for id_, nodes in id_nodes.iteritems():
+        for id_, nodes in iteritems(id_nodes):
             if len(nodes) > 1:
                 filtered[id_] = nodes
 
@@ -700,7 +701,7 @@ class BaseUpdater(object):
 
         """
         remapped = {}
-        for alias, ns in node.nsmap.iteritems():
+        for alias, ns in iteritems(node.nsmap):
             if ns in self.DISALLOWED_NAMESPACES:
                 continue
 
@@ -844,14 +845,14 @@ class BaseUpdater(object):
         return value:
 
         >>> results = updater.clean(root)
-        >>> print results.removed
+        >>> print(results.removed)
         (<Element at 0xffdcf234>, <Element at 0xffdcf284>)
 
         Items which have been reassigned IDs can be retrieved via the
         ``remapped_ids`` attribute on the return value:
 
         >>> results = updater.clean(root)
-        >>> print results.remapped_ids
+        >>> print(results.remapped_ids)
         {'example:Observable-duplicate': [<Element {http://cybox.mitre.org...
 
         Note:
@@ -935,14 +936,14 @@ class BaseUpdater(object):
         return value:
 
         >>> results = updater.update(root, force=True)
-        >>> print results.removed
+        >>> print(results.removed)
         (<Element at 0xffdcf234>, <Element at 0xffdcf284>)
 
         Items which have been reassigned IDs can be retrieved via the
         ``remappped_ids`` attribute on the return value:
 
         >>> results = updater.update(root, force=True)
-        >>> print results.remapped_ids
+        >>> print(results.remapped_ids)
         {'example:Observable-duplicate-id-1': [<Element {http://cybox.mitre...
 
         Args:

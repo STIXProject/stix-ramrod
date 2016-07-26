@@ -6,10 +6,10 @@
 
 # builtin
 import unittest
-import StringIO
 
 # external
 from lxml import etree
+from six import StringIO, text_type
 
 # internal
 import ramrod
@@ -51,9 +51,9 @@ class STIXVersionTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls._bad_version = StringIO.StringIO(cls.GOOD_VERSION_XML)
-        cls._upgradable = StringIO.StringIO(cls.UPGRADABLE_XML)
-        cls._no_version = StringIO.StringIO(cls.NO_VERSION_XML)
+        cls._bad_version = StringIO(cls.GOOD_VERSION_XML)
+        cls._upgradable = StringIO(cls.UPGRADABLE_XML)
+        cls._no_version = StringIO(cls.NO_VERSION_XML)
 
     def test_invalid_supplied_from_version(self):
         self.assertRaises(
@@ -111,9 +111,9 @@ class CYBOXVersionTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls._bad_version = StringIO.StringIO(cls.GOOD_VERSION_XML)
-        cls._upgradable = StringIO.StringIO(cls.UPGRADABLE_XML)
-        cls._no_version = StringIO.StringIO(cls.NO_VERSION_XML)
+        cls._bad_version = StringIO(cls.GOOD_VERSION_XML)
+        cls._upgradable = StringIO(cls.UPGRADABLE_XML)
+        cls._no_version = StringIO(cls.NO_VERSION_XML)
 
     def test_invalid_supplied_from_version(self):
         self.assertRaises(
@@ -167,9 +167,9 @@ class DocumentTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls._cybox_observables = StringIO.StringIO(cls.OBSERVABLES_XML)
-        cls._stix_package = StringIO.StringIO(cls.STIX_PACKAGE_XML)
-        cls._unknown = StringIO.StringIO(cls.UNKNOWN_XML)
+        cls._cybox_observables = StringIO(cls.OBSERVABLES_XML)
+        cls._stix_package = StringIO(cls.STIX_PACKAGE_XML)
+        cls._unknown = StringIO(cls.UNKNOWN_XML)
 
     def test_unknown(self):
         self.assertRaises(
@@ -195,7 +195,7 @@ class ResultDocumentTest(unittest.TestCase):
         cls._result = ramrod.ResultDocument(cls._xml)
 
     def test_unicode(self):
-        self.assertEqual(unicode(self.XML).strip(), unicode(self._result).strip())
+        self.assertEqual(text_type(self.XML).strip(), text_type(self._result).strip())
 
     def test_str(self):
         self.assertEqual(str(self.XML).strip(), str(self._result).strip())
