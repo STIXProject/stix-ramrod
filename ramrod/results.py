@@ -3,9 +3,10 @@
 
 # external
 from lxml import etree
-from six import StringIO, BytesIO, text_type, binary_type, python_2_unicode_compatible
+from six import StringIO, text_type, python_2_unicode_compatible
 
 
+@python_2_unicode_compatible
 class UpdateResults(object):
     """Returned from :meth:`ramrod.update`, :meth:`ramrod.cybox.update`, and
     :meth:`ramrod.stix.update` methods.
@@ -40,18 +41,11 @@ class UpdateResults(object):
             self._document = ResultDocument(value)
 
 
-    def __unicode__(self):
-        if not self.document:
-            return u''
-
-        return text_type(self.document)
-
-
     def __str__(self):
         if not self.document:
             return ''
 
-        return binary_type(self.document)
+        return text_type(self.document)
 
 
 @python_2_unicode_compatible
