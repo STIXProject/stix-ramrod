@@ -15,9 +15,9 @@ A Python library for upgrading Structured Threat Information eXpression (STIX) a
 .. |health badge| image:: https://landscape.io/github/STIXProject/stix-ramrod/master/landscape.svg
    :target: https://landscape.io/github/STIXProject/stix-ramrod/master
    :alt: Code Health
-.. |version badge| image:: https://img.shields.io/pypi/v/stix-ramrod.png?maxAge=2592000
+.. |version badge| image:: https://img.shields.io/pypi/v/stix-ramrod.svg?maxAge=3600
    :target: https://pypi.python.org/pypi/stix-ramrod/
-.. |downloads badge| image:: https://img.shields.io/pypi/dm/stix-ramrod.png?maxAge=2592000
+.. |downloads badge| image:: https://img.shields.io/pypi/dm/stix-ramrod.svg?maxAge=3600
    :target: https://pypi.python.org/pypi/stix-ramrod/
 
 Overview
